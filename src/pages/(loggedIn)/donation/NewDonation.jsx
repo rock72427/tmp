@@ -21,6 +21,7 @@ const NewDonation = () => {
       >
         <div style={{ width: "70%" }}>
           <DonorDetails activeTab={activeTab} />
+          <DonationAction />
         </div>
         <div style={{ width: "30%" }}>
           <Details
@@ -29,10 +30,7 @@ const NewDonation = () => {
           />
         </div>
       </div>
-      <div style={{ width: "70%" }}>
-        <DonationAction />
-      </div>
-      <div style={{ display: "flex", gap: "20px" }}>
+      <div style={{ display: "flex", gap: "20px", marginTop: "15px" }}>
         <div style={{ width: "70%" }}>
           <DonationHistory />
         </div>
