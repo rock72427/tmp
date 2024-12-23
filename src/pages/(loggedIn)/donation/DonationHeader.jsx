@@ -1,8 +1,30 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./DonationHeader.scss";
 
 const DonationHeader = () => {
   const [activeTab, setActiveTab] = useState("Math");
+  const [currentDateTime, setCurrentDateTime] = useState(new Date());
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentDateTime(new Date());
+    }, 1000);
+
+    // Cleanup interval on component unmount
+    return () => clearInterval(timer);
+  }, []);
+
+  const formatDateTime = (date) => {
+    return date.toLocaleString("en-IN", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: true,
+    });
+  };
 
   return (
     <div className="atth-donation-wrapper">
@@ -10,10 +32,10 @@ const DonationHeader = () => {
         <div className="atth-header-left">
           <h2 className="atth-header-title">New Donation</h2>
           <div className="atth-header-actions">
-            <button className="atth-btn-donor" style={{ fontSize: "1.1rem" }}>
+            <button className="atth-btn-donor" style={{ fontSize: "0.95rem" }}>
               New Donor ×
             </button>
-            <button className="atth-btn-add" style={{ fontSize: "1.1rem" }}>
+            <button className="atth-btn-add" style={{ fontSize: "0.95rem" }}>
               + Add Donation
             </button>
           </div>
@@ -30,7 +52,9 @@ const DonationHeader = () => {
           </div>
           <div className="atth-info-group">
             <span className="atth-label">DATE & TIME</span>
-            <span className="atth-value">24/12/2024 1:17:29 AM</span>
+            <span className="atth-value">
+              {formatDateTime(currentDateTime)}
+            </span>
           </div>
         </div>
       </div>
