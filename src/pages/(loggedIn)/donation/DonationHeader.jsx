@@ -4,6 +4,8 @@ import "./DonationHeader.scss";
 const DonationHeader = () => {
   const [activeTab, setActiveTab] = useState("Math");
   const [currentDateTime, setCurrentDateTime] = useState(new Date());
+  const [donorTabs, setDonorTabs] = useState([{ id: 1, label: "New Donor" }]);
+  const [activeDonorTab, setActiveDonorTab] = useState(1);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -26,16 +28,37 @@ const DonationHeader = () => {
     });
   };
 
+  const handleAddDonation = () => {
+    const newId = donorTabs.length + 1;
+    setDonorTabs([...donorTabs, { id: newId, label: `New Donor ${newId}` }]);
+    setActiveDonorTab(newId);
+  };
+
   return (
     <div className="atth-donation-wrapper">
       <div className="atth-donation-header">
         <div className="atth-header-left">
           <h2 className="atth-header-title">New Donation</h2>
           <div className="atth-header-actions">
-            <button className="atth-btn-donor" style={{ fontSize: "0.95rem" }}>
-              New Donor ×
-            </button>
-            <button className="atth-btn-add" style={{ fontSize: "0.95rem" }}>
+            <div className="atth-donor-tabs">
+              {donorTabs.map((tab) => (
+                <button
+                  key={tab.id}
+                  className={`atth-btn-donor ${
+                    activeDonorTab === tab.id ? "active" : ""
+                  }`}
+                  style={{ fontSize: "0.95rem", margin: "0 4px" }}
+                  onClick={() => setActiveDonorTab(tab.id)}
+                >
+                  {tab.label} ×
+                </button>
+              ))}
+            </div>
+            <button
+              className="atth-btn-add"
+              style={{ fontSize: "0.95rem", marginLeft: "12px" }}
+              onClick={handleAddDonation}
+            >
               + Add Donation
             </button>
           </div>
