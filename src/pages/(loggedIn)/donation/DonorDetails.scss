@@ -76,26 +76,20 @@
     }
   }
 
-  &__name-input,
-  &__identity-input {
+  &__name-input {
     display: flex;
-    gap: 0.5rem;
+    gap: 10px;
+    width: 100%;
 
-    select {
-      width: 120px;
+    .donor-select {
+      min-width: 70px;
+      width: auto;
       flex-shrink: 0;
     }
 
-    input {
+    .donor-input {
       flex: 1;
-    }
-
-    @media (max-width: 1300px) {
-      flex-direction: column;
-
-      select {
-        width: 100%;
-      }
+      min-width: 0;
     }
   }
 
