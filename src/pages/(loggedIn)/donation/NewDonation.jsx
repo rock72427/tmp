@@ -4,6 +4,7 @@ import DonorDetails from "./DonorDetails";
 import Details from "./Details";
 import DonationAction from "./DonationAction";
 import DonationHistory from "./DonationHistory";
+import TransactionDetails from "./TransactionDetails";
 
 const NewDonation = () => {
   const [activeTab, setActiveTab] = useState("Math");
@@ -30,6 +31,9 @@ const NewDonation = () => {
       <div style={{ display: "flex", gap: "20px" }}>
         <div style={{ width: "70%" }}>
           <DonationHistory />
+        </div>
+        <div style={{ width: "30%" }}>
+          <TransactionDetails />
         </div>
       </div>
     </div>
