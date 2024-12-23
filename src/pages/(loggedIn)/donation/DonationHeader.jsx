@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./DonationHeader.scss";
 
-const DonationHeader = () => {
+const DonationHeader = ({ onTabChange }) => {
   const [activeTab, setActiveTab] = useState("Math");
   const [currentDateTime, setCurrentDateTime] = useState(new Date());
   const [donorTabs, setDonorTabs] = useState([{ id: 1, label: "New Donor 1" }]);
@@ -15,6 +15,10 @@ const DonationHeader = () => {
     // Cleanup interval on component unmount
     return () => clearInterval(timer);
   }, []);
+
+  useEffect(() => {
+    onTabChange(activeTab);
+  }, [activeTab]);
 
   const formatDateTime = (date) => {
     return date.toLocaleString("en-IN", {

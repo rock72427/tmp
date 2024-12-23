@@ -98,11 +98,7 @@ const DonorDetails = () => {
                 <option>Dr</option>
                 <option>Prof</option>
               </select>
-              <input
-                className="donor-input"
-                type="text"
-                placeholder="Enter donor name"
-              />
+              <input className="donor-input" type="text" placeholder="" />
             </div>
           </div>
 
@@ -138,11 +134,7 @@ const DonorDetails = () => {
         <div className="donor-details__row">
           <div className="donor-details__field">
             <label className="donor-label">Email</label>
-            <input
-              className="donor-input"
-              type="email"
-              placeholder="Enter email address"
-            />
+            <input className="donor-input" type="email" placeholder="" />
           </div>
 
           <div className="donor-details__field">

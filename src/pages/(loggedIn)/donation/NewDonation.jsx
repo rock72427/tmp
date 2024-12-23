@@ -1,12 +1,14 @@
-import React from "react";
+import React, { useState } from "react";
 import DonationHeader from "./DonationHeader";
 import DonorDetails from "./DonorDetails";
 import Details from "./Details";
 
 const NewDonation = () => {
+  const [activeTab, setActiveTab] = useState("Math");
+
   return (
     <div>
-      <DonationHeader />
+      <DonationHeader onTabChange={setActiveTab} />
       <div
         style={{
           display: "flex",
@@ -17,7 +19,7 @@ const NewDonation = () => {
           <DonorDetails />
         </div>
         <div style={{ width: "30%" }}>
-          <Details />
+          <Details activeTab={activeTab} />
         </div>
       </div>
     </div>
