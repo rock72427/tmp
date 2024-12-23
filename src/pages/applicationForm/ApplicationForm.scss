@@ -1,0 +1,321 @@
+:root {
+  --commonColor: #9867e9;
+}
+
+.application-form {
+  padding: 30px 50px;
+  border-radius: 10px;
+  background: #fff2ea !important;
+
+  .progress-bar-container {
+    width: 100%;
+    padding: 0px !important;
+    background-color: #fff !important;
+    height: 10px;
+    border-radius: 5px;
+  }
+
+  .progress-bar {
+    height: 100%;
+    background-color: #EA7704 !important;
+    border-radius: 5px;
+    transition: width 0.3s ease-in-out;
+  }
+
+  h2 {
+    color: #B34800 !important;
+    font-family: var(--NunitoSansFontFamily);
+    font-size: 30px;
+    font-style: normal;
+    font-weight: 800;
+    line-height: normal;
+  }
+
+  .application-form-section {
+    padding: 10px 50px;
+  }
+
+  .form-tabs {
+    padding-top: 20px;
+    list-style: none;
+
+    li {
+      padding-right: 40px;
+      color: var(--Text-Primary, #1a212b);
+
+      /* Label/Large */
+      font-family: Lexend;
+      font-size: 16px;
+      font-style: normal;
+      font-weight: 500;
+      line-height: 24px;
+      display: inline-block;
+    }
+
+    .form-tabs ul {
+      list-style: none;
+      padding: 0;
+      border: none !important;
+    }
+
+    .tab-item {
+      padding: 10px;
+      cursor: pointer;
+      font-size: 16px;
+      border: none !important;
+      background-color: #fff2ea !important;
+    }
+
+    .tab-item .tabIndex {
+      display: inline-block;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background-color: #ddd;
+      text-align: center;
+      line-height: 30px;
+      margin-right: 10px;
+      font-weight: bold;
+    }
+
+    .tab-item.active .tabIndex {
+      background-color: #EA7704 !important;
+      color: #fff;
+    }
+
+    .tab-item.active {
+      color: #EA7704 !important;
+      /* Green text for active tabName */
+    }
+  }
+
+  .form-section {
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: row;
+    gap: 30px;
+  }
+
+  .tabs {
+    display: flex;
+
+    button {
+      flex: 1;
+      padding: 10px;
+      background-color: #f2f2f2;
+      border: 1px solid #ccc;
+      cursor: pointer;
+    }
+  }
+}
+
+.form-left-section,
+.form-right-section {
+  width: 50%;
+}
+
+.form-group {
+  margin-bottom: 15px;
+  display: flex;
+  flex-direction: column;
+
+  label {
+    margin-bottom: 5px;
+    color: #000;
+    font-family: var(--NunitoSansFontFamily);
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+  }
+
+  input,
+  textarea,
+  select,
+  button {
+    padding: 8px;
+    border: 1px solid #515151;
+    border-radius: 5px;
+    background: #fff;
+    box-shadow: 0px 3px 10px 0px rgba(0, 0, 0, 0.123);
+    color: #515151;
+    font-family: var(--NunitoSansFontFamily);
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+  }
+
+  .aadhaar-section {
+    display: flex;
+
+    button {
+      margin-left: 10px;
+      background-color: #6c63ff;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+  }
+
+  .upload-section {
+    p {
+      margin-top: 10px;
+      font-size: 12px;
+      color: #888;
+    }
+  }
+}
+
+.tab-content {
+  padding-top: 10px;
+  border: 1px solid #b6c2d3;
+  display: flex;
+  flex-direction: column;
+  padding: 30px 20px;
+  border-radius: 0px 15px 15px 15px;
+}
+
+.formTabSection {
+  display: flex;
+  flex-direction: row;
+  gap: 30px;
+  justify-content: space-between;
+
+  .addressInputBox {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    flex-direction: column;
+    gap: 10px;
+  }
+}
+
+.VisitDetails,
+.tab-content {
+  display: flex;
+  gap: 30px;
+}
+
+.file-upload-section {
+  .upload-container {
+    width: 100%;
+    max-width: 100%;
+    height: 110px;
+    border: 1px solid #515151;
+    border-radius: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    cursor: pointer;
+    margin: 0 auto;
+  }
+
+  .upload-label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+  }
+
+  .upload-icon {
+    font-size: 24px;
+    margin-bottom: 10px;
+  }
+
+  .upload-text {
+    font-size: 16px;
+    color: #555;
+  }
+
+  .upload-subtext {
+    font-size: 12px;
+    color: #888;
+  }
+
+  .upload-container:hover {
+    border-color: #888;
+  }
+
+  .upload-container.dragover {
+    border-color: #555;
+  }
+}
+
+.error {
+  color: red;
+  font-size: 15px;
+  margin-top: 5px;
+  letter-spacing: 0.5;
+  font-family: var(--NunitoSansFontFamily);
+}
+
+.form-tabs {
+  display: flex;
+
+  .tab {
+    padding: 15px 30px;
+    border: 1px solid #ccc;
+    border-bottom: none;
+    cursor: pointer;
+    margin-right: 10px;
+    border: none;
+    border-bottom: 1px solid #b6c2d3;
+    border-radius: 14px 14px 0 0;
+    margin-bottom: 15px;
+    color: #000000;
+    font-family: Lexend;
+    font-size: 20px;
+    font-weight: 400;
+    line-height: 25px;
+    background: #dee4ed;
+
+    &.active {
+      background-color: #ffffff;
+      border: 1px solid #b6c2d3;
+      border-bottom: none;
+    }
+  }
+}
+
+.submit-button {
+  text-align: right;
+  margin-top: 40px;
+  cursor: pointer;
+}
+
+.phone-input {
+  display: flex;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.phone-input select {
+  border: none;
+  cursor: pointer;
+  background: #fff;
+  box-shadow: 0px 3px 10px 0px rgba(0, 0, 0, 0.123);
+  color: #515151;
+  border-top-right-radius: 0px;
+  border-bottom-right-radius: 0px;
+}
+
+.phone-input input {
+  width: 100%;
+  border: none;
+  outline: none;
+  border-top-left-radius: 0px;
+  border-bottom-left-radius: 0px;
+  /* Remove outline on focus */
+}
+
+.phone-input select:focus,
+.phone-input input:focus {
+  border: none;
+  /* Change border color on focus */
+}

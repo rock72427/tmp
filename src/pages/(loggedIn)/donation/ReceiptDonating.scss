@@ -1,0 +1,290 @@
+.receipt-form {
+  padding: 10px;
+
+  .form-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+
+    h2 {
+      font-size: 30px;
+      color: #333;
+    }
+
+    .search-wrapper {
+      width: 100%;
+      max-width: 1000px;
+      margin: 20px auto;
+      position: relative;
+
+      .search-container {
+        display: flex;
+        align-items: center;
+        background-color: #f0f2f5;
+        border-radius: 50px;
+        padding: 8px 8px 8px 20px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+
+        .search-icon {
+          color: #6b7280;
+          margin-right: 12px;
+        }
+
+        input {
+          flex: 1;
+          border: none;
+          background: transparent;
+          padding: 8px;
+          font-size: 16px;
+          color: #374151;
+          outline: none;
+
+          &::placeholder {
+            color: #9ca3af;
+          }
+        }
+
+        .search-button {
+          background-color: #8b5cf6; // Purple color
+          color: white;
+          border: none;
+          padding: 12px 32px;
+          border-radius: 50px;
+          font-size: 16px;
+          cursor: pointer;
+          transition: background-color 0.2s;
+
+          &:hover {
+            background-color: #7c3aed;
+          }
+        }
+      }
+
+      .search-dropdown {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: white;
+        border-radius: 12px;
+        margin-top: 8px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        z-index: 1000;
+        max-height: 300px;
+        overflow-y: auto;
+
+        .dropdown-item {
+          padding: 12px 20px;
+          cursor: pointer;
+          transition: background-color 0.2s;
+
+          &:hover {
+            background-color: #f3f4f6;
+          }
+
+          &.no-results {
+            color: #6b7280;
+            font-style: italic;
+            cursor: default;
+
+            &:hover {
+              background-color: transparent;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  form {
+    .form-section {
+      margin-bottom: 2rem;
+
+      h3 {
+        font-size: 24px;
+        color: #555;
+        margin-bottom: 1rem;
+        // border-bottom: 2px solid #ddd;
+        padding-bottom: 0.5rem;
+      }
+
+      .receipt-details,
+      .donor-details {
+        margin: 0px 20px;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        flex-wrap: wrap;
+
+        .row {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          gap: 10px;
+          margin-bottom: 1rem;
+
+          label {
+            font-size: 1rem;
+            color: #333;
+            margin-bottom: 0.5rem;
+          }
+
+          input,
+          select {
+            padding: 0.5rem;
+            font-size: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            // transition: border-color 0.3s;
+            min-width: 30%;
+
+            &:focus {
+              border-color: #9867e9;
+              outline: none;
+            }
+          }
+        }
+      }
+
+      .donation-details {
+        margin-top: 40px;
+
+        .donation-row {
+          display: grid;
+          grid-template-columns: auto auto;
+          justify-content: space-evenly;
+          gap: 40px;
+          margin-bottom: 1.5rem;
+          border-radius: 4px;
+          background-color: #fff;
+        }
+
+        .transaction {
+          display: grid;
+          grid-template-columns: auto auto;
+          justify-content: space-evenly;
+          gap: 40px;
+          width: 100%;
+
+          .row {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 1rem;
+
+            label {
+              font-size: 1rem;
+              color: #333;
+              margin-bottom: 0.5rem;
+            }
+
+            input,
+            select {
+              padding: 0.5rem;
+              font-size: 1rem;
+              border: 1px solid #ccc;
+              border-radius: 4px;
+              // transition: border-color 0.3s;
+              min-width: 30%;
+
+              &:focus {
+                border-color: #9867e9;
+                outline: none;
+              }
+            }
+          }
+        }
+      }
+
+      button.add-donor {
+        color: #9867e9;
+        border: none;
+        background-color: #fff;
+        padding: 12px 20px;
+        border-radius: 8px;
+        font-size: 16px;
+        cursor: pointer;
+      }
+    }
+
+    .total-donation {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem;
+      // background-color: #f1f1f1;
+      border-top: 2px solid #ddd;
+      border-radius: 4px;
+
+      label {
+        font-size: 1.2rem;
+        font-weight: bold;
+        margin: 0px 20px;
+      }
+
+      input {
+        width: 150px;
+        text-align: right;
+        font-size: 1.2rem;
+      }
+    }
+
+    .form-buttons {
+      display: flex;
+      justify-content: space-between;
+      width: 25%;
+
+      button {
+        padding: 0.75rem 1.5rem;
+        font-size: 1rem;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+
+        &.get-consent {
+          background-color: #fff;
+          border: 1px solid #9867e9;
+          color: #9867e9;
+
+          // &:hover {
+          //   background-color: #117a8b;
+          // }
+        }
+
+        &.submit {
+          background-color: #9867e9;
+          color: #fff;
+
+          // &:hover {
+          //   background-color: #218838;
+          // }
+        }
+        .dropdown-menu {
+          position: absolute;
+          top: 100%;
+          left: 0;
+          background-color: #ffffff;
+          border: 1px solid #8a2be2;
+          border-radius: 8px;
+          width: 100%;
+          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+          z-index: 1000;
+          overflow: hidden;
+        }
+
+        /* Dropdown item */
+        .dropdown-item {
+          padding: 10px 20px;
+          font-size: 16px;
+          color: #8a2be2;
+          cursor: pointer;
+          transition: background-color 0.2s ease;
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,292 @@
+.deekshaAddressform-container {
+  padding: 40px;
+  font-family: "lexend";
+  width: 75%;
+  margin: 0 auto;
+
+  /* Progress Bar */
+  .deekshaAddressform-progress-bar {
+    width: 100%;
+    height: 8px;
+    background: #e0e0e0;
+    border-radius: 4px;
+    margin-bottom: 20px;
+
+    .deekshaAddressform-progress {
+      width: 10%; /* Dynamic progress */
+      height: 100%;
+      background: #9867e9;
+      border-radius: 4px;
+      transition: width 0.3s ease-in-out;
+    }
+  }
+
+  /* Title */
+  h2 {
+    text-align: center;
+    color: #9a4efc;
+    font-size: 32px;
+    margin-top: 40px;
+  }
+
+  /* Form */
+  form {
+    margin-top: 6%;
+    width: 100%;
+
+    .deekshaAddressform-input-group {
+      width: 100%;
+      margin-bottom: 30px;
+
+      label {
+        display: block;
+        // margin-bottom: 10px;
+      }
+
+      input {
+        margin-left: 0;
+        width: 100%;
+        max-width: 100%;
+      }
+    }
+
+    /* Country, State, and District */
+    .deekshaAddressform-address-group {
+      display: flex;
+      gap: 25px;
+      width: 50%;
+      margin-bottom: 30px;
+
+      .deekshaAddressform-input-wrapper {
+        width: 100%;
+        background-color: white;
+
+        label {
+          font-size: 15px;
+          font-weight: bold;
+        }
+
+        input {
+          display: block;
+          margin-top: 5px;
+          padding: 12px;
+          border-radius: 5px;
+          border: 1px solid #ccc;
+          width: 250px;
+          font-size: 16px;
+        }
+      }
+    }
+
+    /* House Number and Street Name */
+    .deekshaAddressform-house-street {
+      margin-bottom: 30px;
+      width: 50%;
+      display: flex;
+      gap: 30px;
+
+      .deekshaAddressform-house-number,
+      .deekshaAddressform-street-name {
+        width: 50%;
+
+        .label {
+          margin-bottom: 10px;
+          font-size: 20px;
+          font-weight: bold;
+        }
+
+        input {
+          display: block;
+          margin-top: 5px;
+          padding: 12px;
+          border-radius: 5px;
+          border: 1px solid #ccc;
+          width: 250px;
+          font-size: 16px;
+        }
+      }
+    }
+
+    /* Update grid layouts */
+    .deekshaAddressform-address-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      width: 100%;
+      margin-bottom: 30px;
+    }
+
+    .deekshaAddressform-house-street-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      width: 100%;
+      margin-bottom: 30px;
+    }
+
+    .deekshaAddressform-input-wrapper {
+      width: 100%;
+
+      label {
+        display: block;
+        margin-bottom: 10px;
+      }
+
+      input {
+        width: 100%;
+        margin-top: 5px;
+      }
+    }
+  }
+
+  .deekshaAddressform-label {
+    font-size: 20px;
+    font-weight: bold;
+  }
+
+  /* Buttons */
+  .deekshaAddressform-button-group {
+    display: flex;
+    justify-content: flex-end;
+    gap: 20px;
+    margin-top: 40px;
+
+    button,
+    .link-button {
+      padding: 13px 35px;
+      border-radius: 5px;
+      border: none;
+      cursor: pointer;
+      font-size: 18px;
+      text-decoration: none;
+    }
+
+    .deekshaAddressform-back-button {
+      background: #e0e0e0;
+
+      &:hover {
+        background: #9a4efc;
+        color: white;
+      }
+    }
+
+    .deekshaAddressform-next-button {
+      background: #9a4efc;
+      color: #fff;
+      text-decoration: none;
+      padding: 13px 35px;
+      font-size: 18px;
+      border-radius: 5px;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+}
+
+/* Media Queries for Responsiveness */
+@media (max-width: 1024px) {
+  .deekshaAddressform-container {
+    width: 85%;
+  }
+
+  .deekshaAddressform-address-group,
+  .deekshaAddressform-house-street {
+    width: 100%;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .deekshaAddressform-house-number input,
+  .deekshaAddressform-street-name input,
+  .deekshaAddressform-input-wrapper input {
+    width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .deekshaAddressform-container {
+    width: 90%;
+    padding: 20px;
+
+    h2 {
+      font-size: 24px;
+      margin-top: 20px;
+    }
+
+    form {
+      margin-top: 4%;
+      
+      .deekshaAddressform-label {
+        font-size: 18px;
+      }
+
+      input {
+        padding: 10px;
+        font-size: 16px;
+      }
+    }
+
+    .deekshaAddressform-button-group {
+      margin-top: 30px;
+      
+      button,
+      .deekshaAddressform-next-button {
+        padding: 10px 25px;
+        font-size: 16px;
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .deekshaAddressform-container {
+    width: 100%;
+    padding: 15px;
+
+    h2 {
+      font-size: 20px;
+    }
+
+    .deekshaAddressform-button-group {
+      flex-direction: column;
+      gap: 15px;
+
+      button,
+      .deekshaAddressform-next-button {
+        width: 100%;
+        text-align: center;
+      }
+    }
+  }
+}
+
+.error-message {
+  color: #dc3545;
+  font-size: 0.8rem;
+  margin-top: 4px;
+  display: block;
+}
+
+.deekshaAddressform-input.error {
+  border-color: #dc3545;
+  &:focus {
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+  }
+}
+
+.required {
+  color: #dc3545;
+  margin-left: 2px;
+}
+
+.deekshaAddressform-input {
+  &:focus {
+    caret-color: black;
+  }
+}
+
+.deekshaAddressform-next-button {
+  text-decoration: none;
+}

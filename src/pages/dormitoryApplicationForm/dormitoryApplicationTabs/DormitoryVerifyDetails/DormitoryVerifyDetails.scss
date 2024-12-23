@@ -1,0 +1,126 @@
+.verify-details {
+  padding: 2rem;
+  // max-width: 1200px;
+  margin: 0 auto;
+
+  .verify-title {
+    color: #8b5cf6;
+    font-size: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .details-section,
+  .address-section,
+  .accommodation-section {
+    background: #fff2ea;
+    border-radius: 8px;
+    padding: 1.5rem 1.5rem 0;
+    // margin-bottom: 2rem;
+  }
+
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+
+    h2 {
+      font-size: 1.2rem;
+      color: #333;
+    }
+
+    .edit-button {
+      background: #ea7704;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+  }
+
+  .detail-row {
+    display: flex;
+    margin-bottom: 1rem;
+    align-items: baseline;
+
+    .detail-label {
+      min-width: 200px;
+      color: #666;
+      font-weight: 500;
+    }
+
+    .detail-value {
+      color: #333;
+      flex: 1;
+    }
+
+    &.age-gender {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+    }
+
+    &.location-details {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+    }
+  }
+
+  .document-section {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+
+    .file-name {
+      color: #333;
+    }
+
+    .change-button {
+      color: #8b5cf6;
+      background: none;
+      border: none;
+      cursor: pointer;
+      text-decoration: underline;
+
+      &:hover {
+        color: #7c3aed;
+      }
+    }
+  }
+
+  .button-container {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 2rem;
+
+    button {
+      padding: 0.75rem 1.5rem;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 500;
+    }
+
+    .save-button {
+      background: white;
+      border: 1px solid #ea7704;
+      color: #ea7704;
+
+      &:hover {
+        background: #f3f4f6;
+      }
+    }
+
+    .submit-button {
+      background: #8b5cf6;
+      border: none;
+      color: white;
+
+      &:hover {
+        background: #7c3aed;
+      }
+    }
+  }
+}
