@@ -23,7 +23,10 @@ const NewDonation = () => {
           <DonorDetails activeTab={activeTab} />
         </div>
         <div style={{ width: "30%" }}>
-          <Details activeTab={activeTab} />
+          <Details
+            activeTab={activeTab}
+            onTransactionTypeChange={setTransactionType}
+          />
         </div>
       </div>
       <div style={{ width: "70%" }}>
@@ -34,8 +37,10 @@ const NewDonation = () => {
           <DonationHistory />
         </div>
         <div style={{ width: "30%" }}>
-          {transactionType !== "Cash" && transactionType !== "M.O" && (
-            <TransactionDetails />
+          {(transactionType === "Cheque" ||
+            transactionType === "Bank Transfer" ||
+            transactionType === "DD") && (
+            <TransactionDetails transactionType={transactionType} />
           )}
         </div>
       </div>

@@ -1,7 +1,7 @@
 import React from "react";
 import "./Details.scss";
 
-const Details = ({ activeTab }) => {
+const Details = ({ activeTab, onTransactionTypeChange }) => {
   const mathOptions = [
     "Thakur Seva",
     "Sadhu Seva",
@@ -27,6 +27,11 @@ const Details = ({ activeTab }) => {
   const [selectedPurpose, setSelectedPurpose] = React.useState("");
   const [donationAmount, setDonationAmount] = React.useState("");
   const [transactionType, setTransactionType] = React.useState("Cash");
+
+  const handleTransactionTypeChange = (e) => {
+    setTransactionType(e.target.value);
+    onTransactionTypeChange(e.target.value);
+  };
 
   return (
     <div
@@ -111,7 +116,7 @@ const Details = ({ activeTab }) => {
           <select
             className="donation-form__select"
             value={transactionType}
-            onChange={(e) => setTransactionType(e.target.value)}
+            onChange={handleTransactionTypeChange}
           >
             <option value="Cash">Cash</option>
             <option value="M.O">M.O</option>
