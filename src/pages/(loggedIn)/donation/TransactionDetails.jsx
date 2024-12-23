@@ -3,40 +3,36 @@ import "./TransactionDetails.scss";
 
 const TransactionDetails = () => {
   return (
-    <div className="donation-form">
-      <h2 className="donation-form__title">Transaction details</h2>
+    <div className="transaction-container">
+      <h2 className="transaction-title">Transaction details</h2>
 
-      <form className="donation-form__container" style={{ marginTop: "10px" }}>
-        <div className="donation-form__group">
-          <label className="donation-form__label">
+      <div className="transaction-form">
+        <div className="form-group">
+          <label>
             Transaction Date
-            <span className="donation-form__required">*</span>
+            <span className="required">*</span>
           </label>
-          <input
-            type="date"
-            className="donation-form__input"
-            placeholder="dd-mm-yyyy"
-          />
+          <input type="date" className="form-input" placeholder="dd-mm-yyyy" />
         </div>
 
-        <div className="donation-form__group">
-          <label className="donation-form__label">Transaction ID</label>
-          <input type="text" className="donation-form__input" />
+        <div className="form-group">
+          <label>Transaction ID</label>
+          <input type="text" className="form-input" />
         </div>
 
-        <div className="donation-form__group">
-          <label className="donation-form__label">
+        <div className="form-group">
+          <label>
             Bank Name
-            <span className="donation-form__required">*</span>
+            <span className="required">*</span>
           </label>
-          <input type="text" className="donation-form__input" />
+          <input type="text" className="form-input" />
         </div>
 
-        <div className="donation-form__group">
-          <label className="donation-form__label">Branch Name</label>
-          <input type="text" className="donation-form__input" />
+        <div className="form-group">
+          <label>Branch Name</label>
+          <input type="text" className="form-input" />
         </div>
-      </form>
+      </div>
     </div>
   );
 };

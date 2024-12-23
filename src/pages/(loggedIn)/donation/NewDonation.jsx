@@ -8,6 +8,7 @@ import TransactionDetails from "./TransactionDetails";
 
 const NewDonation = () => {
   const [activeTab, setActiveTab] = useState("Math");
+  const [transactionType, setTransactionType] = useState("Cash");
 
   return (
     <div>
@@ -33,7 +34,9 @@ const NewDonation = () => {
           <DonationHistory />
         </div>
         <div style={{ width: "30%" }}>
-          <TransactionDetails />
+          {transactionType !== "Cash" && transactionType !== "M.O" && (
+            <TransactionDetails />
+          )}
         </div>
       </div>
     </div>

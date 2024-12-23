@@ -26,6 +26,7 @@ const Details = ({ activeTab }) => {
 
   const [selectedPurpose, setSelectedPurpose] = React.useState("");
   const [donationAmount, setDonationAmount] = React.useState("");
+  const [transactionType, setTransactionType] = React.useState("Cash");
 
   return (
     <div
@@ -107,7 +108,11 @@ const Details = ({ activeTab }) => {
 
         <div className="donation-form__group">
           <label className="donation-form__label">Transaction Type</label>
-          <select className="donation-form__select" defaultValue="Cash">
+          <select
+            className="donation-form__select"
+            value={transactionType}
+            onChange={(e) => setTransactionType(e.target.value)}
+          >
             <option value="Cash">Cash</option>
             <option value="M.O">M.O</option>
             <option value="Cheque">Cheque</option>
