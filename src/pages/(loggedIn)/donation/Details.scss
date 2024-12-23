@@ -4,6 +4,13 @@
   border-radius: 8px;
   max-width: 500px;
   margin: 0 auto;
+  font-family: "Poppins", sans-serif;
+
+  h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 300;
+  }
 
   &__title {
     margin-bottom: 1.5rem;
@@ -46,4 +53,15 @@
     background-position: right 1rem center;
     background-size: 1em;
   }
+}
+.donation-form__label {
+  font-weight: 300 !important;
+  font-size: clamp(14px, 2vw, 15px);
+}
+.donation-form__input {
+  height: 40px;
+  font-weight: bold;
+}
+input::placeholder {
+  font-weight: 300;
 }

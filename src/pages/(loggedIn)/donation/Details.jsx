@@ -5,7 +5,7 @@ const Details = () => {
   return (
     <div className="donation-form">
       <h2 className="donation-form__title">Donations Details</h2>
-      <form className="donation-form__container">
+      <form className="donation-form__container" style={{ marginTop: "10px" }}>
         <div className="donation-form__group">
           <label className="donation-form__label">
             Purpose <span className="donation-form__required">*</span>
