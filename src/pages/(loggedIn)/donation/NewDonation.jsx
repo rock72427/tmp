@@ -16,7 +16,7 @@ const NewDonation = () => {
         }}
       >
         <div style={{ width: "75%" }}>
-          <DonorDetails />
+          <DonorDetails activeTab={activeTab} />
         </div>
         <div style={{ width: "30%" }}>
           <Details activeTab={activeTab} />

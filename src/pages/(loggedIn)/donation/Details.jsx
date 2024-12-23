@@ -28,7 +28,9 @@ const Details = ({ activeTab }) => {
   const [donationAmount, setDonationAmount] = React.useState("");
 
   return (
-    <div className="donation-form">
+    <div
+      className={`donation-form ${activeTab === "Mission" ? "mission-bg" : ""}`}
+    >
       <h2 className="donation-form__title">Donations Details</h2>
       <form className="donation-form__container" style={{ marginTop: "10px" }}>
         <div className="donation-form__group">

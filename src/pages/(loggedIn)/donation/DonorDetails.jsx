@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import "./DonorDetails.scss";
 
-const DonorDetails = () => {
+const DonorDetails = ({ activeTab }) => {
   const deekshaOptions = [
     "Srimat Swami Atmasthanandaji Maharaj",
     "Srimat Swami Bhuteshanandaji Maharaj",
@@ -76,7 +76,9 @@ const DonorDetails = () => {
   };
 
   return (
-    <div className="donor-details">
+    <div
+      className={`donor-details ${activeTab === "Mission" ? "mission-bg" : ""}`}
+    >
       <div className="donor-details__header">
         <h2>Donor Details</h2>
         <span className="language-switch">CS</span>
