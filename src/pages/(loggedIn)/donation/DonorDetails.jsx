@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import "./DonorDetails.scss";
 
 const DonorDetails = () => {
@@ -29,6 +29,43 @@ const DonorDetails = () => {
     "Others",
     "none",
   ];
+
+  const [formData, setFormData] = useState({
+    pincode: "",
+    state: "",
+    district: "",
+    postOffice: "",
+  });
+  const [loading, setLoading] = useState(false);
+
+  const handlePincodeChange = async (e) => {
+    const pincode = e.target.value;
+    setFormData((prev) => ({ ...prev, pincode }));
+
+    if (pincode.length === 6) {
+      setLoading(true);
+      try {
+        const response = await fetch(
+          `https://api.postalpincode.in/pincode/${pincode}`
+        );
+        const [data] = await response.json();
+
+        if (data.Status === "Success") {
+          const postOfficeData = data.PostOffice[0];
+          setFormData((prev) => ({
+            ...prev,
+            state: postOfficeData.State,
+            district: postOfficeData.District,
+            postOffice: postOfficeData.Name,
+          }));
+        }
+      } catch (error) {
+        console.error("Error fetching pincode data:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+  };
 
   return (
     <div className="donor-details">
@@ -126,21 +163,40 @@ const DonorDetails = () => {
             <label className="donor-label">
               Pincode <span className="required">*</span>
             </label>
-            <input className="donor-input" type="text" />
+            <div className="pincode-input-wrapper">
+              <input
+                className="donor-input"
+                type="text"
+                value={formData.pincode}
+                onChange={handlePincodeChange}
+                maxLength={6}
+              />
+              {loading && <span className="loading-spinner">🔄</span>}
+            </div>
           </div>
 
           <div className="donor-details__field">
             <label className="donor-label">
               State <span className="required">*</span>
             </label>
-            <input className="donor-input" type="text" />
+            <input
+              className="donor-input"
+              type="text"
+              value={formData.state}
+              readOnly
+            />
           </div>
 
           <div className="donor-details__field">
             <label className="donor-label">
               District <span className="required">*</span>
             </label>
-            <input className="donor-input" type="text" />
+            <input
+              className="donor-input"
+              type="text"
+              value={formData.district}
+              readOnly
+            />
           </div>
         </div>
 
@@ -157,7 +213,12 @@ const DonorDetails = () => {
 
           <div className="donor-details__field">
             <label className="donor-label">Post Office</label>
-            <input className="donor-input" type="text" />
+            <input
+              className="donor-input"
+              type="text"
+              value={formData.postOffice}
+              readOnly
+            />
           </div>
         </div>
       </form>
