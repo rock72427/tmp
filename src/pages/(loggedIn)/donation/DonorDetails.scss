@@ -96,6 +96,23 @@
   &__select {
     cursor: pointer;
   }
+
+  &__identity-input {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+
+    .identity-select {
+      min-width: 150px;
+      width: auto;
+      flex-shrink: 0;
+    }
+
+    .identity-input {
+      flex: 1;
+      min-width: 0;
+    }
+  }
 }
 .donor-details__header {
   margin-bottom: clamp(5px, 2vw, 10px);

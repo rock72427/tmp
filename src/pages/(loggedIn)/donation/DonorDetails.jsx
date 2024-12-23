@@ -68,12 +68,12 @@ const DonorDetails = () => {
               Identity Proof <span className="required">*</span>
             </label>
             <div className="donor-details__identity-input">
-              <select className="donor-select">
+              <select className="identity-select">
                 <option>Aadhaar</option>
                 {/* Add other ID types */}
               </select>
               <input
-                className="donor-input"
+                className="identity-input"
                 type="text"
                 placeholder="Enter Aadhaar number"
               />
