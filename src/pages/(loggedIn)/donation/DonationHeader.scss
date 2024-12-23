@@ -6,7 +6,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem 0 0.5rem 0;
+  padding: 1rem 0 0 0;
 
   @media screen and (max-width: 992px) {
     flex-direction: column;
@@ -48,6 +48,7 @@
         padding: 8px 16px;
         border-radius: 4px;
         cursor: pointer;
+        margin-top: 5px;
 
         &:hover {
           background-color: #f3f4f6;

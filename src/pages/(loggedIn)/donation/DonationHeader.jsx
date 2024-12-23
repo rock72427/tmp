@@ -4,7 +4,7 @@ import "./DonationHeader.scss";
 const DonationHeader = () => {
   const [activeTab, setActiveTab] = useState("Math");
   const [currentDateTime, setCurrentDateTime] = useState(new Date());
-  const [donorTabs, setDonorTabs] = useState([{ id: 1, label: "New Donor" }]);
+  const [donorTabs, setDonorTabs] = useState([{ id: 1, label: "New Donor 1" }]);
   const [activeDonorTab, setActiveDonorTab] = useState(1);
 
   useEffect(() => {
@@ -40,14 +40,21 @@ const DonationHeader = () => {
         <div className="atth-header-left">
           <h2 className="atth-header-title">New Donation</h2>
           <div className="atth-header-actions">
-            <div className="atth-donor-tabs">
+            <div
+              className="atth-donor-tabs"
+              style={{ flexWrap: "wrap", maxHeight: "80px", overflowY: "auto" }}
+            >
               {donorTabs.map((tab) => (
                 <button
                   key={tab.id}
                   className={`atth-btn-donor ${
                     activeDonorTab === tab.id ? "active" : ""
                   }`}
-                  style={{ fontSize: "0.95rem", margin: "0 4px" }}
+                  style={{
+                    fontSize: "0.95rem",
+                    margin: "4px",
+                    whiteSpace: "nowrap",
+                  }}
                   onClick={() => setActiveDonorTab(tab.id)}
                 >
                   {tab.label} ×
@@ -56,7 +63,11 @@ const DonationHeader = () => {
             </div>
             <button
               className="atth-btn-add"
-              style={{ fontSize: "0.95rem", marginLeft: "12px" }}
+              style={{
+                fontSize: "0.95rem",
+                marginLeft: "12px",
+                alignSelf: "flex-start",
+              }}
               onClick={handleAddDonation}
             >
               + Add Donation
