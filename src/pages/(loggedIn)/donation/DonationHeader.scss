@@ -6,7 +6,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem 0;
+  padding: 1rem 0 0.5rem 0;
 
   @media screen and (max-width: 992px) {
     flex-direction: column;
@@ -99,7 +99,7 @@
   .atth-tab-group {
     display: flex;
     gap: 0.5rem;
-    background-color: #e9ecef;
+    background-color: #e4e4e4;
     padding: 0.3rem;
     border-radius: 8px;
 
@@ -109,7 +109,7 @@
       border-radius: 4px;
       cursor: pointer;
       font-size: 0.9rem;
-      background-color: #e9ecef;
+      background-color: #e4e4e4;
       color: #495057;
 
       &.atth-active {
