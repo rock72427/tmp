@@ -1,0 +1,70 @@
+.donation-action-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 20px;
+  background-color: #fff1f0;
+  margin-top: -42px;
+}
+
+.donation-total-amount {
+  display: flex;
+  gap: 8px;
+  font-size: 16px;
+  font-weight: 500;
+
+  span:first-child {
+    color: #333;
+  }
+
+  span:last-child {
+    font-weight: 600;
+  }
+}
+
+.donation-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.donation-action-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: opacity 0.2s;
+
+  &:hover {
+    opacity: 0.9;
+  }
+
+  i {
+    font-size: 16px;
+  }
+
+  &.consent-letter {
+    background-color: #e6e9ff;
+    color: #6366f1;
+  }
+
+  &.thank-letter {
+    background-color: #dcfce7;
+    color: #22c55e;
+  }
+
+  &.pending {
+    background-color: #fef9c3;
+    color: #ca8a04;
+  }
+
+  &.print-receipt {
+    background-color: #8b5cf6;
+    color: white;
+  }
+
+  border: 1px solid #ccc;
+}
