@@ -1,7 +1,7 @@
 import React from "react";
 import "./TransactionDetails.scss";
 
-const TransactionDetails = ({ transactionType }) => {
+const TransactionDetails = ({ transactionType, activeTab }) => {
   const getLabels = () => {
     if (transactionType === "DD") {
       return {
@@ -24,7 +24,12 @@ const TransactionDetails = ({ transactionType }) => {
   const { dateLabel, idLabel } = getLabels();
 
   return (
-    <div className="transaction-container">
+    <div
+      className="transaction-container"
+      style={{
+        backgroundColor: activeTab === "Mission" ? "#99fb98" : "ffb888",
+      }}
+    >
       <h2 className="transaction-title">Transaction details</h2>
 
       <div className="transaction-form">

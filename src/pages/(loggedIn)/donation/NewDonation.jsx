@@ -37,7 +37,9 @@ const NewDonation = () => {
         <div style={{ width: "30%" }}>
           {(transactionType === "Cheque" ||
             transactionType === "Bank Transfer" ||
-            transactionType === "DD") && <TransactionDetails />}
+            transactionType === "DD") && (
+            <TransactionDetails activeTab={activeTab} />
+          )}
         </div>
       </div>
     </div>
