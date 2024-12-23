@@ -67,6 +67,14 @@ const DonorDetails = () => {
     }
   };
 
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
   return (
     <div className="donor-details">
       <div className="donor-details__header">
@@ -182,8 +190,9 @@ const DonorDetails = () => {
             <input
               className="donor-input"
               type="text"
+              name="state"
               value={formData.state}
-              readOnly
+              onChange={handleInputChange}
             />
           </div>
 
@@ -194,8 +203,9 @@ const DonorDetails = () => {
             <input
               className="donor-input"
               type="text"
+              name="district"
               value={formData.district}
-              readOnly
+              onChange={handleInputChange}
             />
           </div>
         </div>
@@ -216,8 +226,9 @@ const DonorDetails = () => {
             <input
               className="donor-input"
               type="text"
+              name="postOffice"
               value={formData.postOffice}
-              readOnly
+              onChange={handleInputChange}
             />
           </div>
         </div>
