@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./DonationHeader.scss";
 import useDonationStore from "../../../../donationStore";
+import { useAuthStore } from "../../../../store/authStore";
 
 const DonationHeader = ({ onTabChange }) => {
   const [currentDateTime, setCurrentDateTime] = useState(new Date());
@@ -13,6 +14,9 @@ const DonationHeader = ({ onTabChange }) => {
     setActiveSection,
     removeDonorTab,
   } = useDonationStore();
+
+  // Add auth store
+  const { user } = useAuthStore();
 
   // Convert donorTabs object to array for rendering
   const donorTabsArray = Object.keys(donorTabs).map((id) => ({
@@ -110,11 +114,15 @@ const DonationHeader = ({ onTabChange }) => {
         <div className="atth-header-right">
           <div className="atth-info-group">
             <span className="atth-label">COUNTER NO.</span>
-            <span className="atth-value">admin</span>
+            <span className="atth-value">
+              {user?.counter?.replace("Counter ", "") === "3"
+                ? "admin"
+                : user?.counter?.replace("Counter ", "") || "N/A"}
+            </span>
           </div>
           <div className="atth-info-group">
             <span className="atth-label">USER</span>
-            <span className="atth-value">sagarmajhi</span>
+            <span className="atth-value">{user?.username || "N/A"}</span>
           </div>
           <div className="atth-info-group">
             <span className="atth-label">DATE & TIME</span>
