@@ -29,30 +29,22 @@
       display: flex;
 
       .atth-btn-donor {
-        background-color: #7c3aed;
-        color: white;
+        background-color: #e4e4e4;
+        color: #eb831c;
         border: none;
         padding: 8px 16px;
         border-radius: 30px;
         cursor: pointer;
-
-        &:hover {
-          background-color: #6d28d9;
-        }
       }
 
       .atth-btn-add {
-        background-color: transparent;
-        color: #7c3aed;
-        border: 1px solid #7c3aed;
+        background-color: #fff;
+        color: #eb831c;
+        border: 1px solid #eb831c;
         padding: 8px 16px;
         border-radius: 4px;
         cursor: pointer;
         margin-top: 5px;
-
-        &:hover {
-          background-color: #f3f4f6;
-        }
       }
     }
 

@@ -75,6 +75,8 @@ const DonationHeader = ({ onTabChange }) => {
                     fontSize: "0.95rem",
                     margin: "4px",
                     whiteSpace: "nowrap",
+                    backgroundColor: activeTabId === tab.id ? "#eb831c" : "",
+                    color: activeTabId === tab.id ? "#fff" : "",
                   }}
                   onClick={() => setActiveTab(tab.id)}
                 >
