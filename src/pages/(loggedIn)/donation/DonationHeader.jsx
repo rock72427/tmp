@@ -1,24 +1,36 @@
 import React, { useState, useEffect } from "react";
 import "./DonationHeader.scss";
+import useDonationStore from "../../../../donationStore";
 
 const DonationHeader = ({ onTabChange }) => {
-  const [activeTab, setActiveTab] = useState("Math");
   const [currentDateTime, setCurrentDateTime] = useState(new Date());
-  const [donorTabs, setDonorTabs] = useState([{ id: 1, label: "New Donor 1" }]);
-  const [activeDonorTab, setActiveDonorTab] = useState(1);
+
+  const {
+    donorTabs,
+    activeTabId,
+    addNewDonorTab,
+    setActiveTab,
+    setActiveSection,
+    removeDonorTab,
+  } = useDonationStore();
+
+  // Convert donorTabs object to array for rendering
+  const donorTabsArray = Object.keys(donorTabs).map((id) => ({
+    id: Number(id),
+    label: `New Donor ${id}`,
+  }));
 
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentDateTime(new Date());
     }, 1000);
-
-    // Cleanup interval on component unmount
     return () => clearInterval(timer);
   }, []);
 
-  useEffect(() => {
-    onTabChange(activeTab);
-  }, [activeTab]);
+  const handleTabChange = (section) => {
+    setActiveSection(activeTabId, section.toLowerCase());
+    onTabChange(section);
+  };
 
   const formatDateTime = (date) => {
     return date.toLocaleString("en-IN", {
@@ -33,9 +45,14 @@ const DonationHeader = ({ onTabChange }) => {
   };
 
   const handleAddDonation = () => {
-    const newId = donorTabs.length + 1;
-    setDonorTabs([...donorTabs, { id: newId, label: `New Donor ${newId}` }]);
-    setActiveDonorTab(newId);
+    addNewDonorTab();
+  };
+
+  const handleRemoveDonor = (id) => {
+    if (Object.keys(donorTabs).length > 1) {
+      // Prevent removing last tab
+      removeDonorTab(id);
+    }
   };
 
   return (
@@ -48,20 +65,29 @@ const DonationHeader = ({ onTabChange }) => {
               className="atth-donor-tabs"
               style={{ flexWrap: "wrap", maxHeight: "80px", overflowY: "auto" }}
             >
-              {donorTabs.map((tab) => (
+              {donorTabsArray.map((tab) => (
                 <button
                   key={tab.id}
                   className={`atth-btn-donor ${
-                    activeDonorTab === tab.id ? "active" : ""
+                    activeTabId === tab.id ? "active" : ""
                   }`}
                   style={{
                     fontSize: "0.95rem",
                     margin: "4px",
                     whiteSpace: "nowrap",
                   }}
-                  onClick={() => setActiveDonorTab(tab.id)}
+                  onClick={() => setActiveTab(tab.id)}
                 >
-                  {tab.label} ×
+                  {tab.label}
+                  <span
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleRemoveDonor(tab.id);
+                    }}
+                    style={{ marginLeft: "8px" }}
+                  >
+                    ×
+                  </span>
                 </button>
               ))}
             </div>
@@ -102,18 +128,22 @@ const DonationHeader = ({ onTabChange }) => {
           <div className="atth-tab-group">
             <button
               className={`atth-tab ${
-                activeTab === "Math" ? "atth-active" : ""
+                donorTabs[activeTabId].activeSection === "math"
+                  ? "atth-active"
+                  : ""
               }`}
-              onClick={() => setActiveTab("Math")}
+              onClick={() => handleTabChange("Math")}
               data-tab="math"
             >
               Math
             </button>
             <button
               className={`atth-tab ${
-                activeTab === "Mission" ? "atth-active" : ""
+                donorTabs[activeTabId].activeSection === "mission"
+                  ? "atth-active"
+                  : ""
               }`}
-              onClick={() => setActiveTab("Mission")}
+              onClick={() => handleTabChange("Mission")}
               data-tab="mission"
             >
               Mission

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import "./DonorDetails.scss";
+import useDonationStore from "../../../../donationStore";
 
 const DonorDetails = ({ activeTab }) => {
   const deekshaOptions = [
@@ -30,17 +31,24 @@ const DonorDetails = ({ activeTab }) => {
     "none",
   ];
 
-  const [formData, setFormData] = useState({
-    pincode: "",
-    state: "",
-    district: "",
-    postOffice: "",
-  });
+  const { donorTabs, activeTabId, updateDonorDetails, copyDonorDetails } =
+    useDonationStore();
+
+  const currentSection = activeTab.toLowerCase();
+  const currentDonorDetails =
+    donorTabs[activeTabId][currentSection].donorDetails;
+
   const [loading, setLoading] = useState(false);
+
+  const updateAndSyncDonorDetails = (details) => {
+    updateDonorDetails(activeTabId, currentSection, details);
+    const otherSection = currentSection === "math" ? "mission" : "math";
+    copyDonorDetails(activeTabId, currentSection, otherSection);
+  };
 
   const handlePincodeChange = async (e) => {
     const pincode = e.target.value;
-    setFormData((prev) => ({ ...prev, pincode }));
+    updateAndSyncDonorDetails({ pincode });
 
     if (pincode.length === 6) {
       setLoading(true);
@@ -52,12 +60,11 @@ const DonorDetails = ({ activeTab }) => {
 
         if (data.Status === "Success") {
           const postOfficeData = data.PostOffice[0];
-          setFormData((prev) => ({
-            ...prev,
+          updateAndSyncDonorDetails({
             state: postOfficeData.State,
             district: postOfficeData.District,
             postOffice: postOfficeData.Name,
-          }));
+          });
         }
       } catch (error) {
         console.error("Error fetching pincode data:", error);
@@ -69,10 +76,19 @@ const DonorDetails = ({ activeTab }) => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    updateAndSyncDonorDetails({ [name]: value });
+  };
+
+  const handleTitleChange = (e) => {
+    updateAndSyncDonorDetails({ title: e.target.value });
+  };
+
+  const handleNameChange = (e) => {
+    updateAndSyncDonorDetails({ name: e.target.value });
+  };
+
+  const handleDeekshaChange = (e) => {
+    updateAndSyncDonorDetails({ deeksha: e.target.value });
   };
 
   return (
@@ -91,7 +107,11 @@ const DonorDetails = ({ activeTab }) => {
               Name of Donor <span className="required">*</span>
             </label>
             <div className="donor-details__name-input">
-              <select className="donor-select">
+              <select
+                className="donor-select"
+                value={currentDonorDetails.title}
+                onChange={handleTitleChange}
+              >
                 <option>Sri</option>
                 <option>Smt</option>
                 <option>Mr</option>
@@ -100,7 +120,12 @@ const DonorDetails = ({ activeTab }) => {
                 <option>Dr</option>
                 <option>Prof</option>
               </select>
-              <input className="donor-input" type="text" placeholder="" />
+              <input
+                className="donor-input"
+                type="text"
+                value={currentDonorDetails.name}
+                onChange={handleNameChange}
+              />
             </div>
           </div>
 
@@ -108,7 +133,13 @@ const DonorDetails = ({ activeTab }) => {
             <label className="donor-label">
               Phone No. <span className="required">*</span>
             </label>
-            <input className="donor-input" type="tel" />
+            <input
+              className="donor-input"
+              type="tel"
+              name="phone"
+              value={currentDonorDetails.phone}
+              onChange={handleInputChange}
+            />
           </div>
         </div>
 
@@ -117,7 +148,11 @@ const DonorDetails = ({ activeTab }) => {
             <label className="donor-label">
               Initiation / Mantra Diksha from
             </label>
-            <select className="donor-select">
+            <select
+              className="donor-select"
+              value={currentDonorDetails.deeksha}
+              onChange={handleDeekshaChange}
+            >
               <option value="">Select Deeksha</option>
               {deekshaOptions.map((option, index) => (
                 <option key={index} value={option}>
@@ -129,14 +164,26 @@ const DonorDetails = ({ activeTab }) => {
 
           <div className="donor-details__field">
             <label className="donor-label">Guest House Room No.</label>
-            <input className="donor-input" type="text" />
+            <input
+              className="donor-input"
+              type="text"
+              name="roomNo"
+              value={currentDonorDetails.roomNo}
+              onChange={handleInputChange}
+            />
           </div>
         </div>
 
         <div className="donor-details__row">
           <div className="donor-details__field">
             <label className="donor-label">Email</label>
-            <input className="donor-input" type="email" placeholder="" />
+            <input
+              className="donor-input"
+              type="email"
+              name="email"
+              value={currentDonorDetails.email}
+              onChange={handleInputChange}
+            />
           </div>
 
           <div className="donor-details__field">
@@ -144,7 +191,15 @@ const DonorDetails = ({ activeTab }) => {
               Identity Proof <span className="required">*</span>
             </label>
             <div className="donor-details__identity-input">
-              <select className="identity-select">
+              <select
+                className="identity-select"
+                value={currentDonorDetails.identityType}
+                onChange={(e) =>
+                  updateAndSyncDonorDetails({
+                    identityType: e.target.value,
+                  })
+                }
+              >
                 <option>Aadhaar</option>
                 <option>PAN Card</option>
                 <option>Voter ID</option>
@@ -155,6 +210,12 @@ const DonorDetails = ({ activeTab }) => {
                 className="identity-input"
                 type="text"
                 placeholder="Enter Aadhaar number"
+                value={currentDonorDetails.identityNumber}
+                onChange={(e) =>
+                  updateAndSyncDonorDetails({
+                    identityNumber: e.target.value,
+                  })
+                }
               />
             </div>
           </div>
@@ -169,7 +230,7 @@ const DonorDetails = ({ activeTab }) => {
               <input
                 className="donor-input"
                 type="text"
-                value={formData.pincode}
+                value={currentDonorDetails.pincode}
                 onChange={handlePincodeChange}
                 maxLength={6}
               />
@@ -185,7 +246,7 @@ const DonorDetails = ({ activeTab }) => {
               className="donor-input"
               type="text"
               name="state"
-              value={formData.state}
+              value={currentDonorDetails.state}
               onChange={handleInputChange}
             />
           </div>
@@ -198,7 +259,7 @@ const DonorDetails = ({ activeTab }) => {
               className="donor-input"
               type="text"
               name="district"
-              value={formData.district}
+              value={currentDonorDetails.district}
               onChange={handleInputChange}
             />
           </div>
@@ -207,12 +268,24 @@ const DonorDetails = ({ activeTab }) => {
         <div className="donor-details__row">
           <div className="donor-details__field">
             <label className="donor-label">Flat / House / Apartment No</label>
-            <input className="donor-input" type="text" />
+            <input
+              className="donor-input"
+              type="text"
+              name="flatNo"
+              value={currentDonorDetails.flatNo}
+              onChange={handleInputChange}
+            />
           </div>
 
           <div className="donor-details__field">
             <label className="donor-label">Street Name / Landmark</label>
-            <input className="donor-input" type="text" />
+            <input
+              className="donor-input"
+              type="text"
+              name="streetName"
+              value={currentDonorDetails.streetName}
+              onChange={handleInputChange}
+            />
           </div>
 
           <div className="donor-details__field">
@@ -221,7 +294,7 @@ const DonorDetails = ({ activeTab }) => {
               className="donor-input"
               type="text"
               name="postOffice"
-              value={formData.postOffice}
+              value={currentDonorDetails.postOffice}
               onChange={handleInputChange}
             />
           </div>

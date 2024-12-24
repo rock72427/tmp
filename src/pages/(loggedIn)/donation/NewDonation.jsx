@@ -5,8 +5,15 @@ import Details from "./Details";
 import DonationAction from "./DonationAction";
 import DonationHistory from "./DonationHistory";
 import TransactionDetails from "./TransactionDetails";
+import useDonationStore from "../../../../donationStore";
 
 const NewDonation = () => {
+  const donationStore = useDonationStore();
+  const { activeTabId, setActiveSection } = donationStore;
+  console.log("Full Donation Store State:", donationStore);
+  console.log("Active Tab ID:", activeTabId);
+  console.log("Donor Tabs:", donationStore.donorTabs);
+
   const [activeTab, setActiveTab] = useState("Math");
   const [transactionType, setTransactionType] = useState("Cash");
 
