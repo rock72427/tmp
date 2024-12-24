@@ -93,7 +93,9 @@ const DonorDetails = ({ activeTab }) => {
 
   return (
     <div
-      className={`donor-details ${activeTab === "Mission" ? "mission-bg" : ""}`}
+      className={`donor-details ${
+        donorTabs[activeTabId].activeSection === "mission" ? "mission-bg" : ""
+      }`}
     >
       <div className="donor-details__header">
         <h2>Donor Details</h2>

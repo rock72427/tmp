@@ -83,7 +83,9 @@ const Details = ({ activeTab, onTransactionTypeChange }) => {
 
   return (
     <div
-      className={`donation-form ${activeTab === "Mission" ? "mission-bg" : ""}`}
+      className={`donation-form ${
+        donorTabs[activeTabId].activeSection === "mission" ? "mission-bg" : ""
+      }`}
     >
       <h2 className="donation-form__title">Donations Details</h2>
       <form className="donation-form__container" style={{ marginTop: "10px" }}>

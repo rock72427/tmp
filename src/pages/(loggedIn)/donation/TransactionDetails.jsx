@@ -62,7 +62,10 @@ const TransactionDetails = ({ activeTab }) => {
     <div
       className="transaction-container"
       style={{
-        backgroundColor: activeTab === "Mission" ? "#99fb98" : "#ffb888",
+        backgroundColor:
+          donorTabs[activeTabId].activeSection === "mission"
+            ? "#99fb98"
+            : "#ffb888",
       }}
     >
       <h2 className="transaction-title">Transaction details</h2>
