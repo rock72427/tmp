@@ -1,5 +1,6 @@
 import React from "react";
 import "./Details.scss";
+import useDonationStore from "../../../../donationStore";
 
 const Details = ({ activeTab, onTransactionTypeChange }) => {
   const mathOptions = [
@@ -24,13 +25,60 @@ const Details = ({ activeTab, onTransactionTypeChange }) => {
     "Other",
   ];
 
-  const [selectedPurpose, setSelectedPurpose] = React.useState("");
-  const [donationAmount, setDonationAmount] = React.useState("");
-  const [transactionType, setTransactionType] = React.useState("Cash");
+  const { donorTabs, activeTabId, updateDonationDetails } = useDonationStore();
+
+  const currentSection = activeTab.toLowerCase();
+  const currentDonationDetails =
+    donorTabs[activeTabId][currentSection].donationDetails;
+
+  const handlePurposeChange = (e) => {
+    updateDonationDetails(activeTabId, currentSection, {
+      purpose: e.target.value,
+      specifiedPurpose:
+        e.target.value === "Other"
+          ? ""
+          : currentDonationDetails.specifiedPurpose,
+    });
+  };
+
+  const handleSpecifiedPurposeChange = (e) => {
+    updateDonationDetails(activeTabId, currentSection, {
+      specifiedPurpose: e.target.value,
+    });
+  };
+
+  const handleDonationTypeChange = (e) => {
+    updateDonationDetails(activeTabId, currentSection, {
+      donationType: e.target.value,
+    });
+  };
+
+  const handleAmountChange = (e) => {
+    const amount = e.target.value;
+    updateDonationDetails(activeTabId, currentSection, {
+      amount,
+      panNumber: amount > 9999 ? currentDonationDetails.panNumber : "",
+    });
+  };
+
+  const handlePanNumberChange = (e) => {
+    updateDonationDetails(activeTabId, currentSection, {
+      panNumber: e.target.value,
+    });
+  };
 
   const handleTransactionTypeChange = (e) => {
-    setTransactionType(e.target.value);
-    onTransactionTypeChange(e.target.value);
+    const transactionType = e.target.value;
+    updateDonationDetails(activeTabId, currentSection, {
+      transactionType,
+    });
+    onTransactionTypeChange(transactionType);
+  };
+
+  const handleInMemoryOfChange = (e) => {
+    updateDonationDetails(activeTabId, currentSection, {
+      inMemoryOf: e.target.value,
+    });
   };
 
   return (
@@ -45,8 +93,8 @@ const Details = ({ activeTab, onTransactionTypeChange }) => {
           </label>
           <select
             className="donation-form__select"
-            value={selectedPurpose}
-            onChange={(e) => setSelectedPurpose(e.target.value)}
+            value={currentDonationDetails.purpose}
+            onChange={handlePurposeChange}
           >
             <option value="" disabled>
               Select Purpose
@@ -61,7 +109,7 @@ const Details = ({ activeTab, onTransactionTypeChange }) => {
           </select>
         </div>
 
-        {selectedPurpose === "Other" && (
+        {currentDonationDetails.purpose === "Other" && (
           <div className="donation-form__group">
             <label className="donation-form__label">
               Specify Purpose <span className="donation-form__required">*</span>
@@ -70,6 +118,8 @@ const Details = ({ activeTab, onTransactionTypeChange }) => {
               className="donation-form__input"
               type="text"
               placeholder="Please specify the purpose"
+              value={currentDonationDetails.specifiedPurpose}
+              onChange={handleSpecifiedPurposeChange}
             />
           </div>
         )}
@@ -78,7 +128,8 @@ const Details = ({ activeTab, onTransactionTypeChange }) => {
           <label className="donation-form__label">Donations Type</label>
           <select
             className="donation-form__select"
-            defaultValue="Others (Revenue)"
+            value={currentDonationDetails.donationType}
+            onChange={handleDonationTypeChange}
           >
             <option value="Others (Revenue)">Others (Revenue)</option>
             <option value="CORPUS">CORPUS</option>
@@ -93,12 +144,12 @@ const Details = ({ activeTab, onTransactionTypeChange }) => {
             className="donation-form__input"
             type="number"
             placeholder=""
-            value={donationAmount}
-            onChange={(e) => setDonationAmount(e.target.value)}
+            value={currentDonationDetails.amount}
+            onChange={handleAmountChange}
           />
         </div>
 
-        {Number(donationAmount) > 9999 && (
+        {Number(currentDonationDetails.amount) > 9999 && (
           <div className="donation-form__group">
             <label className="donation-form__label">
               PAN Number <span className="donation-form__required">*</span>
@@ -107,6 +158,8 @@ const Details = ({ activeTab, onTransactionTypeChange }) => {
               className="donation-form__input"
               type="text"
               placeholder="Enter PAN Number"
+              value={currentDonationDetails.panNumber}
+              onChange={handlePanNumberChange}
             />
           </div>
         )}
@@ -115,7 +168,7 @@ const Details = ({ activeTab, onTransactionTypeChange }) => {
           <label className="donation-form__label">Transaction Type</label>
           <select
             className="donation-form__select"
-            value={transactionType}
+            value={currentDonationDetails.transactionType}
             onChange={handleTransactionTypeChange}
           >
             <option value="Cash">Cash</option>
@@ -128,7 +181,13 @@ const Details = ({ activeTab, onTransactionTypeChange }) => {
 
         <div className="donation-form__group">
           <label className="donation-form__label">In Memory of</label>
-          <input className="donation-form__input" type="text" placeholder="" />
+          <input
+            className="donation-form__input"
+            type="text"
+            placeholder=""
+            value={currentDonationDetails.inMemoryOf}
+            onChange={handleInMemoryOfChange}
+          />
         </div>
       </form>
     </div>
