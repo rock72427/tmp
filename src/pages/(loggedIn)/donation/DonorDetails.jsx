@@ -31,14 +31,22 @@ const DonorDetails = ({ activeTab }) => {
     "none",
   ];
 
-  const { donorTabs, activeTabId, updateDonorDetails, copyDonorDetails } =
-    useDonationStore();
+  const {
+    donorTabs,
+    activeTabId,
+    updateDonorDetails,
+    copyDonorDetails,
+    updateDonationDetails,
+  } = useDonationStore();
 
   const currentSection = activeTab.toLowerCase();
   const currentDonorDetails =
     donorTabs[activeTabId][currentSection].donorDetails;
 
   const [loading, setLoading] = useState(false);
+  const [phoneError, setPhoneError] = useState("");
+  const [emailError, setEmailError] = useState("");
+  const [identityError, setIdentityError] = useState("");
 
   const updateAndSyncDonorDetails = (details) => {
     updateDonorDetails(activeTabId, currentSection, details);
@@ -76,6 +84,38 @@ const DonorDetails = ({ activeTab }) => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+
+    // Special handling for phone number
+    if (name === "phone") {
+      // Only allow numbers and limit to 10 digits
+      if (/^\d*$/.test(value) && value.length <= 10) {
+        updateAndSyncDonorDetails({ [name]: value });
+
+        // Show error if number is less than 10 digits and not empty
+        if (value.length > 0 && value.length < 10) {
+          setPhoneError("Phone number must be 10 digits");
+        } else {
+          setPhoneError("");
+        }
+      }
+      return;
+    }
+
+    // Special handling for email
+    if (name === "email") {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      updateAndSyncDonorDetails({ [name]: value });
+
+      // Only show error if there's a value and it's invalid
+      if (value && !emailRegex.test(value)) {
+        setEmailError("Please enter a valid email address");
+      } else {
+        setEmailError("");
+      }
+      return;
+    }
+
+    // Handle other inputs normally
     updateAndSyncDonorDetails({ [name]: value });
   };
 
@@ -84,7 +124,11 @@ const DonorDetails = ({ activeTab }) => {
   };
 
   const handleNameChange = (e) => {
-    updateAndSyncDonorDetails({ name: e.target.value });
+    const value = e.target.value;
+    // Only allow letters, spaces, and dots
+    if (/^[A-Za-z\s.]*$/.test(value)) {
+      updateAndSyncDonorDetails({ name: value });
+    }
   };
 
   const handleDeekshaChange = (e) => {
@@ -97,6 +141,111 @@ const DonorDetails = ({ activeTab }) => {
 
   const handleOtherDeekshaChange = (e) => {
     updateAndSyncDonorDetails({ otherDeeksha: e.target.value });
+  };
+
+  const validateIdentityNumber = (type, value) => {
+    switch (type) {
+      case "Aadhaar":
+        // 12 digits only
+        if (!/^\d*$/.test(value))
+          return "Aadhaar number should only contain digits";
+        if (value.length > 0 && value.length < 12)
+          return "Aadhaar number must be 12 digits";
+        return "";
+
+      case "PAN Card":
+        // 10 characters, first 5 letters, next 4 numbers, last letter
+        const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
+        if (value.length > 0 && !panRegex.test(value))
+          return "Invalid PAN format (e.g., ABCDE1234F)";
+        return "";
+
+      case "Voter ID":
+        // Typically 10 characters, alphanumeric
+        const voterRegex = /^[A-Z]{3}[0-9]{7}$/;
+        if (value.length > 0 && !voterRegex.test(value))
+          return "Invalid Voter ID format (e.g., ABC1234567)";
+        return "";
+
+      case "Passport":
+        // 8 characters, letter followed by 7 numbers
+        const passportRegex = /^[A-Z]{1}[0-9]{7}$/;
+        if (value.length > 0 && !passportRegex.test(value))
+          return "Invalid Passport format (e.g., A1234567)";
+        return "";
+
+      case "Driving License":
+        // 15 characters, alphanumeric
+        const dlRegex = /^[A-Z]{2}[0-9]{13}$/;
+        if (value.length > 0 && !dlRegex.test(value))
+          return "Invalid Driving License format (e.g., DL0420160000000)";
+        return "";
+
+      default:
+        return "";
+    }
+  };
+
+  const handleIdentityInputChange = (e) => {
+    const value = e.target.value;
+    const identityType = currentDonorDetails.identityType;
+
+    // Convert to uppercase for PAN, Voter ID, Passport
+    const formattedValue = [
+      "PAN Card",
+      "Voter ID",
+      "Passport",
+      "Driving License",
+    ].includes(identityType)
+      ? value.toUpperCase()
+      : value;
+
+    // Validate based on identity type
+    let isValid = true;
+
+    switch (identityType) {
+      case "Aadhaar":
+        isValid = /^\d*$/.test(formattedValue) && formattedValue.length <= 12;
+        break;
+      case "PAN Card":
+        isValid =
+          /^[A-Z0-9]*$/.test(formattedValue) && formattedValue.length <= 10;
+        break;
+      case "Voter ID":
+        isValid =
+          /^[A-Z0-9]*$/.test(formattedValue) && formattedValue.length <= 10;
+        break;
+      case "Passport":
+        isValid =
+          /^[A-Z0-9]*$/.test(formattedValue) && formattedValue.length <= 8;
+        break;
+      case "Driving License":
+        isValid =
+          /^[A-Z0-9]*$/.test(formattedValue) && formattedValue.length <= 15;
+        break;
+      default:
+        isValid = true;
+    }
+
+    if (isValid) {
+      updateAndSyncDonorDetails({
+        identityNumber: formattedValue,
+      });
+
+      // Set error message based on validation
+      setIdentityError(validateIdentityNumber(identityType, formattedValue));
+
+      // Update PAN number in donation details if identity type is PAN Card
+      if (identityType === "PAN Card") {
+        updateDonationDetails(activeTabId, currentSection, {
+          panNumber: formattedValue,
+        });
+        const otherSection = currentSection === "math" ? "mission" : "math";
+        updateDonationDetails(activeTabId, otherSection, {
+          panNumber: formattedValue,
+        });
+      }
+    }
   };
 
   return (
@@ -137,6 +286,8 @@ const DonorDetails = ({ activeTab }) => {
                 type="text"
                 value={currentDonorDetails.name}
                 onChange={handleNameChange}
+                pattern="[A-Za-z\s.]+"
+                title="Please enter only letters, spaces, and dots"
               />
             </div>
           </div>
@@ -151,7 +302,23 @@ const DonorDetails = ({ activeTab }) => {
               name="phone"
               value={currentDonorDetails.phone}
               onChange={handleInputChange}
+              pattern="[0-9]{10}"
+              maxLength={10}
+              title="Please enter a valid 10-digit phone number"
             />
+            {phoneError && (
+              <span
+                className="error-message"
+                style={{
+                  color: "red",
+                  fontSize: "12px",
+                  marginTop: "4px",
+                  display: "block",
+                }}
+              >
+                {phoneError}
+              </span>
+            )}
           </div>
         </div>
 
@@ -206,6 +373,19 @@ const DonorDetails = ({ activeTab }) => {
               value={currentDonorDetails.email}
               onChange={handleInputChange}
             />
+            {emailError && (
+              <span
+                className="error-message"
+                style={{
+                  color: "red",
+                  fontSize: "12px",
+                  marginTop: "4px",
+                  display: "block",
+                }}
+              >
+                {emailError}
+              </span>
+            )}
           </div>
 
           <div className="donor-details__field">
@@ -216,11 +396,23 @@ const DonorDetails = ({ activeTab }) => {
               <select
                 className="identity-select"
                 value={currentDonorDetails.identityType}
-                onChange={(e) =>
+                onChange={(e) => {
+                  const newIdentityType = e.target.value;
                   updateAndSyncDonorDetails({
-                    identityType: e.target.value,
-                  })
-                }
+                    identityType: newIdentityType,
+                    identityNumber: "",
+                  });
+                  setIdentityError("");
+
+                  if (currentDonorDetails.identityType === "PAN Card") {
+                    updateDonationDetails(activeTabId, "math", {
+                      panNumber: "",
+                    });
+                    updateDonationDetails(activeTabId, "mission", {
+                      panNumber: "",
+                    });
+                  }
+                }}
               >
                 <option>Aadhaar</option>
                 <option>PAN Card</option>
@@ -231,15 +423,37 @@ const DonorDetails = ({ activeTab }) => {
               <input
                 className="identity-input"
                 type="text"
-                placeholder="Enter Aadhaar number"
+                placeholder={`Enter ${currentDonorDetails.identityType} number`}
                 value={currentDonorDetails.identityNumber}
-                onChange={(e) =>
-                  updateAndSyncDonorDetails({
-                    identityNumber: e.target.value,
-                  })
+                onChange={handleIdentityInputChange}
+                maxLength={
+                  currentDonorDetails.identityType === "Aadhaar"
+                    ? 12
+                    : currentDonorDetails.identityType === "PAN Card"
+                    ? 10
+                    : currentDonorDetails.identityType === "Voter ID"
+                    ? 10
+                    : currentDonorDetails.identityType === "Passport"
+                    ? 8
+                    : currentDonorDetails.identityType === "Driving License"
+                    ? 15
+                    : undefined
                 }
               />
             </div>
+            {identityError && (
+              <span
+                className="error-message"
+                style={{
+                  color: "red",
+                  fontSize: "12px",
+                  marginTop: "4px",
+                  display: "block",
+                }}
+              >
+                {identityError}
+              </span>
+            )}
           </div>
         </div>
 

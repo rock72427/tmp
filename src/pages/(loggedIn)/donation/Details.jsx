@@ -25,7 +25,12 @@ const Details = ({ activeTab, onTransactionTypeChange }) => {
     "Other",
   ];
 
-  const { donorTabs, activeTabId, updateDonationDetails } = useDonationStore();
+  const {
+    donorTabs,
+    activeTabId,
+    updateDonationDetails,
+    updateAndSyncDonorDetails,
+  } = useDonationStore();
 
   const currentSection = activeTab.toLowerCase();
   const currentDonationDetails =
@@ -55,16 +60,38 @@ const Details = ({ activeTab, onTransactionTypeChange }) => {
 
   const handleAmountChange = (e) => {
     const amount = e.target.value;
+    const donorDetails = donorTabs[activeTabId][currentSection].donorDetails;
+
+    // Get PAN number from donor details if identity type is PAN Card
+    const panFromDonorDetails =
+      donorDetails.identityType === "PAN Card"
+        ? donorDetails.identityNumber
+        : "";
+
     updateDonationDetails(activeTabId, currentSection, {
       amount,
-      panNumber: amount > 9999 ? currentDonationDetails.panNumber : "",
+      // Use existing PAN from donor details if available, otherwise keep current or empty
+      panNumber:
+        amount > 9999
+          ? panFromDonorDetails || currentDonationDetails.panNumber
+          : "",
     });
   };
 
   const handlePanNumberChange = (e) => {
+    const value = e.target.value;
     updateDonationDetails(activeTabId, currentSection, {
-      panNumber: e.target.value,
+      panNumber: value,
     });
+
+    if (
+      donorTabs[activeTabId][currentSection].donorDetails.identityType ===
+      "PAN Card"
+    ) {
+      updateAndSyncDonorDetails({
+        identityNumber: value,
+      });
+    }
   };
 
   const handleTransactionTypeChange = (e) => {
