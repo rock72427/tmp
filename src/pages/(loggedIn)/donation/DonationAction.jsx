@@ -116,7 +116,7 @@ const DonationAction = ({ totalAmount = 0, activeTab, transactionType }) => {
     const receiptData = {
       Receipt_number: currentTab.receiptNumbers[currentSection],
       donation_date: new Date().toISOString().split("T")[0],
-      created_by: user?.id,
+      createdby: user?.id,
       unique_no: currentTab.uniqueNo,
       counter: user?.counter,
       status: status,
