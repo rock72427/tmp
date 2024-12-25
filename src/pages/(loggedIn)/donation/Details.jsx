@@ -31,20 +31,27 @@ const Details = ({ activeTab, onTransactionTypeChange }) => {
     updateDonationDetails,
     updateAndSyncDonorDetails,
     fieldErrors,
+    setFieldErrors,
   } = useDonationStore();
 
   const currentSection = activeTab.toLowerCase();
   const currentDonationDetails =
     donorTabs[activeTabId][currentSection].donationDetails;
 
-  const handlePurposeChange = (e) => {
-    updateDonationDetails(activeTabId, currentSection, {
-      purpose: e.target.value,
-      specifiedPurpose:
-        e.target.value === "Other"
-          ? ""
-          : currentDonationDetails.specifiedPurpose,
+  const clearFieldError = (fieldName) => {
+    setFieldErrors({
+      ...fieldErrors,
+      donation: {
+        ...fieldErrors.donation,
+        [fieldName]: undefined,
+      },
     });
+  };
+
+  const handlePurposeChange = (e) => {
+    const value = e.target.value;
+    updateDonationDetails(activeTabId, currentSection, { purpose: value });
+    clearFieldError("purpose");
   };
 
   const handleSpecifiedPurposeChange = (e) => {
@@ -54,29 +61,15 @@ const Details = ({ activeTab, onTransactionTypeChange }) => {
   };
 
   const handleDonationTypeChange = (e) => {
-    updateDonationDetails(activeTabId, currentSection, {
-      donationType: e.target.value,
-    });
+    const value = e.target.value;
+    updateDonationDetails(activeTabId, currentSection, { donationType: value });
+    clearFieldError("donationType");
   };
 
   const handleAmountChange = (e) => {
-    const amount = e.target.value;
-    const donorDetails = donorTabs[activeTabId][currentSection].donorDetails;
-
-    // Get PAN number from donor details if identity type is PAN Card
-    const panFromDonorDetails =
-      donorDetails.identityType === "PAN Card"
-        ? donorDetails.identityNumber
-        : "";
-
-    updateDonationDetails(activeTabId, currentSection, {
-      amount,
-      // Use existing PAN from donor details if available, otherwise keep current or empty
-      panNumber:
-        amount > 9999
-          ? panFromDonorDetails || currentDonationDetails.panNumber
-          : "",
-    });
+    const value = e.target.value;
+    updateDonationDetails(activeTabId, currentSection, { amount: value });
+    clearFieldError("amount");
   };
 
   const handlePanNumberChange = (e) => {
@@ -104,9 +97,9 @@ const Details = ({ activeTab, onTransactionTypeChange }) => {
   };
 
   const handleInMemoryOfChange = (e) => {
-    updateDonationDetails(activeTabId, currentSection, {
-      inMemoryOf: e.target.value,
-    });
+    const value = e.target.value;
+    updateDonationDetails(activeTabId, currentSection, { inMemoryOf: value });
+    clearFieldError("inMemoryOf");
   };
 
   return (

@@ -38,6 +38,7 @@ const DonorDetails = ({ activeTab }) => {
     copyDonorDetails,
     updateDonationDetails,
     fieldErrors,
+    setFieldErrors,
   } = useDonationStore();
 
   const currentSection = activeTab.toLowerCase();
@@ -55,9 +56,20 @@ const DonorDetails = ({ activeTab }) => {
     copyDonorDetails(activeTabId, currentSection, otherSection);
   };
 
+  const clearFieldError = (fieldName) => {
+    setFieldErrors({
+      ...fieldErrors,
+      donor: {
+        ...fieldErrors.donor,
+        [fieldName]: undefined,
+      },
+    });
+  };
+
   const handlePincodeChange = async (e) => {
     const pincode = e.target.value;
     updateAndSyncDonorDetails({ pincode });
+    clearFieldError("pincode");
 
     if (pincode.length === 6) {
       setLoading(true);
@@ -86,19 +98,7 @@ const DonorDetails = ({ activeTab }) => {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     updateAndSyncDonorDetails({ [name]: value });
-
-    // Clear error for this field when it's filled
-    if (value) {
-      const { clearFieldErrors, fieldErrors } = useDonationStore.getState();
-      const newErrors = {
-        ...fieldErrors,
-        donor: {
-          ...fieldErrors.donor,
-          [name]: undefined,
-        },
-      };
-      clearFieldErrors(newErrors);
-    }
+    clearFieldError(name);
   };
 
   const handleTitleChange = (e) => {
@@ -115,10 +115,8 @@ const DonorDetails = ({ activeTab }) => {
 
   const handleDeekshaChange = (e) => {
     const value = e.target.value;
-    updateAndSyncDonorDetails({
-      deeksha: value,
-      otherDeeksha: value !== "Others" ? "" : currentDonorDetails.otherDeeksha,
-    });
+    updateAndSyncDonorDetails({ deeksha: value });
+    clearFieldError("deeksha");
   };
 
   const handleOtherDeekshaChange = (e) => {
@@ -170,64 +168,8 @@ const DonorDetails = ({ activeTab }) => {
 
   const handleIdentityInputChange = (e) => {
     const value = e.target.value;
-    const identityType = currentDonorDetails.identityType;
-
-    // Convert to uppercase for PAN, Voter ID, Passport
-    const formattedValue = [
-      "PAN Card",
-      "Voter ID",
-      "Passport",
-      "Driving License",
-    ].includes(identityType)
-      ? value.toUpperCase()
-      : value;
-
-    // Validate based on identity type
-    let isValid = true;
-
-    switch (identityType) {
-      case "Aadhaar":
-        isValid = /^\d*$/.test(formattedValue) && formattedValue.length <= 12;
-        break;
-      case "PAN Card":
-        isValid =
-          /^[A-Z0-9]*$/.test(formattedValue) && formattedValue.length <= 10;
-        break;
-      case "Voter ID":
-        isValid =
-          /^[A-Z0-9]*$/.test(formattedValue) && formattedValue.length <= 10;
-        break;
-      case "Passport":
-        isValid =
-          /^[A-Z0-9]*$/.test(formattedValue) && formattedValue.length <= 8;
-        break;
-      case "Driving License":
-        isValid =
-          /^[A-Z0-9]*$/.test(formattedValue) && formattedValue.length <= 15;
-        break;
-      default:
-        isValid = true;
-    }
-
-    if (isValid) {
-      updateAndSyncDonorDetails({
-        identityNumber: formattedValue,
-      });
-
-      // Set error message based on validation
-      setIdentityError(validateIdentityNumber(identityType, formattedValue));
-
-      // Update PAN number in donation details if identity type is PAN Card
-      if (identityType === "PAN Card") {
-        updateDonationDetails(activeTabId, currentSection, {
-          panNumber: formattedValue,
-        });
-        const otherSection = currentSection === "math" ? "mission" : "math";
-        updateDonationDetails(activeTabId, otherSection, {
-          panNumber: formattedValue,
-        });
-      }
-    }
+    updateAndSyncDonorDetails({ identityNumber: value });
+    clearFieldError("identityNumber");
   };
 
   const handleIdentityTypeChange = (e) => {
@@ -246,6 +188,24 @@ const DonorDetails = ({ activeTab }) => {
       updateDonationDetails(activeTabId, currentSection, {
         panNumber: "",
       });
+    }
+  };
+
+  const handlePhoneChange = (e) => {
+    const value = e.target.value;
+
+    // Allow only numbers
+    if (/^\d*$/.test(value)) {
+      // Update the value even if less than 10 digits
+      updateAndSyncDonorDetails({ phone: value });
+      clearFieldError("phone");
+
+      // Show error only if user has entered something and it's not 10 digits
+      if (value.length > 0 && value.length !== 10) {
+        setPhoneError("Phone number must be 10 digits");
+      } else {
+        setPhoneError("");
+      }
     }
   };
 
@@ -315,10 +275,10 @@ const DonorDetails = ({ activeTab }) => {
               type="tel"
               name="phone"
               value={currentDonorDetails.phone}
-              onChange={handleInputChange}
+              onChange={handlePhoneChange}
               maxLength={10}
             />
-            {fieldErrors.donor.phone && (
+            {(phoneError || fieldErrors.donor?.phone) && (
               <span
                 className="error-message"
                 style={{
@@ -328,7 +288,7 @@ const DonorDetails = ({ activeTab }) => {
                   display: "block",
                 }}
               >
-                {fieldErrors.donor.phone}
+                {phoneError || fieldErrors.donor.phone}
               </span>
             )}
           </div>

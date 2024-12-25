@@ -3,8 +3,13 @@ import "./TransactionDetails.scss";
 import useDonationStore from "../../../../donationStore";
 
 const TransactionDetails = ({ activeTab }) => {
-  const { donorTabs, activeTabId, updateTransactionDetails, fieldErrors } =
-    useDonationStore();
+  const {
+    donorTabs,
+    activeTabId,
+    updateTransactionDetails,
+    fieldErrors,
+    setFieldErrors,
+  } = useDonationStore();
 
   const currentSection = activeTab.toLowerCase();
   const currentDonationDetails =
@@ -38,21 +43,30 @@ const TransactionDetails = ({ activeTab }) => {
 
   const { dateLabel, idLabel } = getLabels();
 
-  const handleDateChange = (e) => {
-    updateTransactionDetails(activeTabId, currentSection, {
-      date: e.target.value,
+  const clearFieldError = (fieldName) => {
+    setFieldErrors({
+      ...fieldErrors,
+      transaction: {
+        ...fieldErrors.transaction,
+        [fieldName]: undefined,
+      },
     });
+  };
+
+  const handleDateChange = (e) => {
+    const value = e.target.value;
+    updateTransactionDetails(activeTabId, currentSection, { date: value });
+    clearFieldError("date");
   };
 
   const handleTransactionIdChange = (e) => {
     const value = e.target.value;
-
-    // Only allow numbers
     if (/^\d*$/.test(value)) {
       updateTransactionDetails(activeTabId, currentSection, {
         transactionId: value,
       });
       setTransactionIdError("");
+      clearFieldError("transactionId");
     } else {
       setTransactionIdError("Only numbers are allowed");
     }
@@ -60,12 +74,12 @@ const TransactionDetails = ({ activeTab }) => {
 
   const handleBankNameChange = (e) => {
     const value = e.target.value;
-    // Allow only letters, spaces, and basic punctuation
     if (/^[A-Za-z\s.&-]*$/.test(value)) {
       updateTransactionDetails(activeTabId, currentSection, {
         bankName: value,
       });
       setBankNameError("");
+      clearFieldError("bankName");
     } else {
       setBankNameError("Only letters and basic punctuation allowed");
     }
@@ -73,12 +87,12 @@ const TransactionDetails = ({ activeTab }) => {
 
   const handleBranchNameChange = (e) => {
     const value = e.target.value;
-    // Allow only letters, spaces, and basic punctuation
     if (/^[A-Za-z\s.&-]*$/.test(value)) {
       updateTransactionDetails(activeTabId, currentSection, {
         branchName: value,
       });
       setBranchNameError("");
+      clearFieldError("branchName");
     } else {
       setBranchNameError("Only letters and basic punctuation allowed");
     }
@@ -94,9 +108,7 @@ const TransactionDetails = ({ activeTab }) => {
             : "#ffb888",
       }}
     >
-      <h2 className="transaction-title" style={{ fontWeight: "bold" }}>
-        Transaction details
-      </h2>
+      <h2 className="transaction-title">Transaction details</h2>
 
       <div className="transaction-form">
         <div className="form-group">
