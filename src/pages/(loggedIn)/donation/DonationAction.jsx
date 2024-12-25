@@ -2,6 +2,7 @@ import "./DonationAction.scss";
 import useDonationStore from "../../../../donationStore";
 import { useAuthStore } from "../../../../store/authStore";
 import { createNewReceiptDetail } from "../../../../services/src/services/receiptDetailsService";
+import { createNewGuestDetails } from "../../../../services/src/services/guestDetailsService";
 
 const DonationAction = ({ totalAmount = 0, activeTab, transactionType }) => {
   const { donorTabs, activeTabId, setFieldErrors } = useDonationStore();
@@ -113,26 +114,56 @@ const DonationAction = ({ totalAmount = 0, activeTab, transactionType }) => {
     if (!validateFields()) return;
 
     const currentTab = donorTabs[activeTabId];
+    const currentDonorDetails = currentTab[currentSection].donorDetails;
+
+    // First create the receipt
     const receiptData = {
       Receipt_number: currentTab.receiptNumbers[currentSection],
       donation_date: new Date().toISOString().split("T")[0],
-      createdby: user?.id,
+      created_by: user?.id,
       unique_no: currentTab.uniqueNo,
       counter: user?.counter,
       status: status,
     };
 
     try {
-      const response = await createNewReceiptDetail(receiptData);
+      // Create receipt first
+      const receiptResponse = await createNewReceiptDetail(receiptData);
+
+      // Then create guest details
+      const guestData = {
+        name: `${currentDonorDetails.title} ${currentDonorDetails.name}`,
+        phone_number: currentDonorDetails.phone,
+        deeksha:
+          currentDonorDetails.deeksha === "Others"
+            ? currentDonorDetails.otherDeeksha
+            : currentDonorDetails.deeksha,
+        email: currentDonorDetails.email,
+        identity_proof: currentDonorDetails.identityType,
+        identity_number: currentDonorDetails.identityNumber,
+        address: [
+          currentDonorDetails.flatNo,
+          currentDonorDetails.streetName,
+          currentDonorDetails.postOffice,
+          currentDonorDetails.district,
+          currentDonorDetails.state,
+          currentDonorDetails.pincode,
+        ]
+          .filter(Boolean)
+          .join(", "), // Combines all address parts, filtering out empty values
+      };
+
+      await createNewGuestDetails(guestData);
+
       alert(
         `Receipt ${
           status === "pending" ? "saved as pending" : "created"
         } successfully!`
       );
-      return response;
+      return receiptResponse;
     } catch (error) {
-      console.error("Error creating receipt:", error);
-      alert("Failed to create receipt. Please try again.");
+      console.error("Error creating receipt and guest details:", error);
+      alert("Failed to create receipt and guest details. Please try again.");
       throw error;
     }
   };
