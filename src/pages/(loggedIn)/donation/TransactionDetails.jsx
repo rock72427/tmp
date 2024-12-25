@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import "./TransactionDetails.scss";
 import useDonationStore from "../../../../donationStore";
 
@@ -11,6 +11,10 @@ const TransactionDetails = ({ activeTab }) => {
     donorTabs[activeTabId][currentSection].donationDetails;
   const currentTransactionDetails =
     donorTabs[activeTabId][currentSection].transactionDetails;
+
+  const [transactionIdError, setTransactionIdError] = useState("");
+  const [bankNameError, setBankNameError] = useState("");
+  const [branchNameError, setBranchNameError] = useState("");
 
   const getLabels = () => {
     const transactionType = currentDonationDetails.transactionType;
@@ -41,21 +45,43 @@ const TransactionDetails = ({ activeTab }) => {
   };
 
   const handleTransactionIdChange = (e) => {
-    updateTransactionDetails(activeTabId, currentSection, {
-      transactionId: e.target.value,
-    });
+    const value = e.target.value;
+
+    // Only allow numbers
+    if (/^\d*$/.test(value)) {
+      updateTransactionDetails(activeTabId, currentSection, {
+        transactionId: value,
+      });
+      setTransactionIdError("");
+    } else {
+      setTransactionIdError("Only numbers are allowed");
+    }
   };
 
   const handleBankNameChange = (e) => {
-    updateTransactionDetails(activeTabId, currentSection, {
-      bankName: e.target.value,
-    });
+    const value = e.target.value;
+    // Allow only letters, spaces, and basic punctuation
+    if (/^[A-Za-z\s.&-]*$/.test(value)) {
+      updateTransactionDetails(activeTabId, currentSection, {
+        bankName: value,
+      });
+      setBankNameError("");
+    } else {
+      setBankNameError("Only letters and basic punctuation allowed");
+    }
   };
 
   const handleBranchNameChange = (e) => {
-    updateTransactionDetails(activeTabId, currentSection, {
-      branchName: e.target.value,
-    });
+    const value = e.target.value;
+    // Allow only letters, spaces, and basic punctuation
+    if (/^[A-Za-z\s.&-]*$/.test(value)) {
+      updateTransactionDetails(activeTabId, currentSection, {
+        branchName: value,
+      });
+      setBranchNameError("");
+    } else {
+      setBranchNameError("Only letters and basic punctuation allowed");
+    }
   };
 
   return (
@@ -93,10 +119,23 @@ const TransactionDetails = ({ activeTab }) => {
             value={currentTransactionDetails.transactionId}
             onChange={handleTransactionIdChange}
           />
+          {transactionIdError && (
+            <span
+              className="error-message"
+              style={{
+                color: "red",
+                fontSize: "12px",
+                marginTop: "4px",
+                display: "block",
+              }}
+            >
+              {transactionIdError}
+            </span>
+          )}
         </div>
 
         <div className="form-group">
-          <label>
+          <label style={{ fontWeight: "bold" }}>
             Bank Name
             <span className="required">*</span>
           </label>
@@ -106,16 +145,42 @@ const TransactionDetails = ({ activeTab }) => {
             value={currentTransactionDetails.bankName}
             onChange={handleBankNameChange}
           />
+          {bankNameError && (
+            <span
+              className="error-message"
+              style={{
+                color: "red",
+                fontSize: "12px",
+                marginTop: "4px",
+                display: "block",
+              }}
+            >
+              {bankNameError}
+            </span>
+          )}
         </div>
 
         <div className="form-group">
-          <label>Branch Name</label>
+          <label style={{ fontWeight: "bold" }}>Branch Name</label>
           <input
             type="text"
             className="form-input"
             value={currentTransactionDetails.branchName}
             onChange={handleBranchNameChange}
           />
+          {branchNameError && (
+            <span
+              className="error-message"
+              style={{
+                color: "red",
+                fontSize: "12px",
+                marginTop: "4px",
+                display: "block",
+              }}
+            >
+              {branchNameError}
+            </span>
+          )}
         </div>
       </div>
     </div>
