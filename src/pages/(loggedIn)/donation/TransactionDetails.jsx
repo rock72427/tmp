@@ -3,7 +3,7 @@ import "./TransactionDetails.scss";
 import useDonationStore from "../../../../donationStore";
 
 const TransactionDetails = ({ activeTab }) => {
-  const { donorTabs, activeTabId, updateTransactionDetails } =
+  const { donorTabs, activeTabId, updateTransactionDetails, fieldErrors } =
     useDonationStore();
 
   const currentSection = activeTab.toLowerCase();
@@ -94,13 +94,14 @@ const TransactionDetails = ({ activeTab }) => {
             : "#ffb888",
       }}
     >
-      <h2 className="transaction-title">Transaction details</h2>
+      <h2 className="transaction-title" style={{ fontWeight: "bold" }}>
+        Transaction details
+      </h2>
 
       <div className="transaction-form">
         <div className="form-group">
-          <label>
-            {dateLabel}
-            <span className="required">*</span>
+          <label style={{ fontWeight: "bold" }}>
+            {dateLabel} <span className="required">*</span>
           </label>
           <input
             type="date"
@@ -109,17 +110,7 @@ const TransactionDetails = ({ activeTab }) => {
             value={currentTransactionDetails.date}
             onChange={handleDateChange}
           />
-        </div>
-
-        <div className="form-group">
-          <label>{idLabel}</label>
-          <input
-            type="text"
-            className="form-input"
-            value={currentTransactionDetails.transactionId}
-            onChange={handleTransactionIdChange}
-          />
-          {transactionIdError && (
+          {fieldErrors.transaction?.date && (
             <span
               className="error-message"
               style={{
@@ -129,23 +120,49 @@ const TransactionDetails = ({ activeTab }) => {
                 display: "block",
               }}
             >
-              {transactionIdError}
+              {fieldErrors.transaction.date}
             </span>
           )}
         </div>
 
         <div className="form-group">
           <label style={{ fontWeight: "bold" }}>
-            Bank Name
-            <span className="required">*</span>
+            {idLabel} <span className="required">*</span>
+          </label>
+          <input
+            type="text"
+            className="form-input"
+            value={currentTransactionDetails.transactionId}
+            onChange={handleTransactionIdChange}
+            placeholder="Enter numbers only"
+          />
+          {(transactionIdError || fieldErrors.transaction?.transactionId) && (
+            <span
+              className="error-message"
+              style={{
+                color: "red",
+                fontSize: "12px",
+                marginTop: "4px",
+                display: "block",
+              }}
+            >
+              {transactionIdError || fieldErrors.transaction.transactionId}
+            </span>
+          )}
+        </div>
+
+        <div className="form-group">
+          <label style={{ fontWeight: "bold" }}>
+            Bank Name <span className="required">*</span>
           </label>
           <input
             type="text"
             className="form-input"
             value={currentTransactionDetails.bankName}
             onChange={handleBankNameChange}
+            placeholder="Enter bank name"
           />
-          {bankNameError && (
+          {(bankNameError || fieldErrors.transaction?.bankName) && (
             <span
               className="error-message"
               style={{
@@ -155,20 +172,23 @@ const TransactionDetails = ({ activeTab }) => {
                 display: "block",
               }}
             >
-              {bankNameError}
+              {bankNameError || fieldErrors.transaction.bankName}
             </span>
           )}
         </div>
 
         <div className="form-group">
-          <label style={{ fontWeight: "bold" }}>Branch Name</label>
+          <label style={{ fontWeight: "bold" }}>
+            Branch Name <span className="required">*</span>
+          </label>
           <input
             type="text"
             className="form-input"
             value={currentTransactionDetails.branchName}
             onChange={handleBranchNameChange}
+            placeholder="Enter branch name"
           />
-          {branchNameError && (
+          {(branchNameError || fieldErrors.transaction?.branchName) && (
             <span
               className="error-message"
               style={{
@@ -178,7 +198,7 @@ const TransactionDetails = ({ activeTab }) => {
                 display: "block",
               }}
             >
-              {branchNameError}
+              {branchNameError || fieldErrors.transaction.branchName}
             </span>
           )}
         </div>

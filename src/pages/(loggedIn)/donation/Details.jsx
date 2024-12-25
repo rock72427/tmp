@@ -30,6 +30,7 @@ const Details = ({ activeTab, onTransactionTypeChange }) => {
     activeTabId,
     updateDonationDetails,
     updateAndSyncDonorDetails,
+    fieldErrors,
   } = useDonationStore();
 
   const currentSection = activeTab.toLowerCase();
@@ -118,7 +119,7 @@ const Details = ({ activeTab, onTransactionTypeChange }) => {
       <form className="donation-form__container" style={{ marginTop: "10px" }}>
         <div className="donation-form__group">
           <label className="donation-form__label">
-            Purpose <span className="donation-form__required">*</span>
+            Purpose <span className="required">*</span>
           </label>
           <select
             className="donation-form__select"
@@ -136,6 +137,19 @@ const Details = ({ activeTab, onTransactionTypeChange }) => {
               )
             )}
           </select>
+          {fieldErrors.donation.purpose && (
+            <span
+              className="error-message"
+              style={{
+                color: "red",
+                fontSize: "12px",
+                marginTop: "4px",
+                display: "block",
+              }}
+            >
+              {fieldErrors.donation.purpose}
+            </span>
+          )}
         </div>
 
         {currentDonationDetails.purpose === "Other" && (
@@ -154,7 +168,9 @@ const Details = ({ activeTab, onTransactionTypeChange }) => {
         )}
 
         <div className="donation-form__group">
-          <label className="donation-form__label">Donations Type</label>
+          <label className="donation-form__label">
+            Donation Type <span className="required">*</span>
+          </label>
           <select
             className="donation-form__select"
             value={currentDonationDetails.donationType}
@@ -167,7 +183,7 @@ const Details = ({ activeTab, onTransactionTypeChange }) => {
 
         <div className="donation-form__group">
           <label className="donation-form__label">
-            Donation Amount <span className="donation-form__required">*</span>
+            Donation Amount <span className="required">*</span>
           </label>
           <input
             className="donation-form__input"
@@ -176,6 +192,19 @@ const Details = ({ activeTab, onTransactionTypeChange }) => {
             value={currentDonationDetails.amount}
             onChange={handleAmountChange}
           />
+          {fieldErrors.donation.amount && (
+            <span
+              className="error-message"
+              style={{
+                color: "red",
+                fontSize: "12px",
+                marginTop: "4px",
+                display: "block",
+              }}
+            >
+              {fieldErrors.donation.amount}
+            </span>
+          )}
         </div>
 
         {Number(currentDonationDetails.amount) > 9999 && (
@@ -217,6 +246,19 @@ const Details = ({ activeTab, onTransactionTypeChange }) => {
             value={currentDonationDetails.inMemoryOf}
             onChange={handleInMemoryOfChange}
           />
+          {fieldErrors.donation.inMemoryOf && (
+            <span
+              className="error-message"
+              style={{
+                color: "red",
+                fontSize: "12px",
+                marginTop: "4px",
+                display: "block",
+              }}
+            >
+              {fieldErrors.donation.inMemoryOf}
+            </span>
+          )}
         </div>
       </form>
     </div>

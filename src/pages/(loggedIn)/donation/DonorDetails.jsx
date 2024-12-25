@@ -37,6 +37,7 @@ const DonorDetails = ({ activeTab }) => {
     updateDonorDetails,
     copyDonorDetails,
     updateDonationDetails,
+    fieldErrors,
   } = useDonationStore();
 
   const currentSection = activeTab.toLowerCase();
@@ -84,39 +85,20 @@ const DonorDetails = ({ activeTab }) => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-
-    // Special handling for phone number
-    if (name === "phone") {
-      // Only allow numbers and limit to 10 digits
-      if (/^\d*$/.test(value) && value.length <= 10) {
-        updateAndSyncDonorDetails({ [name]: value });
-
-        // Show error if number is less than 10 digits and not empty
-        if (value.length > 0 && value.length < 10) {
-          setPhoneError("Phone number must be 10 digits");
-        } else {
-          setPhoneError("");
-        }
-      }
-      return;
-    }
-
-    // Special handling for email
-    if (name === "email") {
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      updateAndSyncDonorDetails({ [name]: value });
-
-      // Only show error if there's a value and it's invalid
-      if (value && !emailRegex.test(value)) {
-        setEmailError("Please enter a valid email address");
-      } else {
-        setEmailError("");
-      }
-      return;
-    }
-
-    // Handle other inputs normally
     updateAndSyncDonorDetails({ [name]: value });
+
+    // Clear error for this field when it's filled
+    if (value) {
+      const { clearFieldErrors, fieldErrors } = useDonationStore.getState();
+      const newErrors = {
+        ...fieldErrors,
+        donor: {
+          ...fieldErrors.donor,
+          [name]: undefined,
+        },
+      };
+      clearFieldErrors(newErrors);
+    }
   };
 
   const handleTitleChange = (e) => {
@@ -248,6 +230,25 @@ const DonorDetails = ({ activeTab }) => {
     }
   };
 
+  const handleIdentityTypeChange = (e) => {
+    const newIdentityType = e.target.value;
+    updateAndSyncDonorDetails({
+      identityType: newIdentityType,
+      identityNumber: "", // Reset the number when type changes
+    });
+
+    // If changing from PAN Card, clear PAN number from other sections
+    if (currentDonorDetails.identityType === "PAN Card") {
+      const otherSection = currentSection === "math" ? "mission" : "math";
+      updateDonationDetails(activeTabId, otherSection, {
+        panNumber: "",
+      });
+      updateDonationDetails(activeTabId, currentSection, {
+        panNumber: "",
+      });
+    }
+  };
+
   return (
     <div
       className={`donor-details ${
@@ -290,6 +291,19 @@ const DonorDetails = ({ activeTab }) => {
                 title="Please enter only letters, spaces, and dots"
               />
             </div>
+            {fieldErrors.donor.name && (
+              <span
+                className="error-message"
+                style={{
+                  color: "red",
+                  fontSize: "12px",
+                  marginTop: "4px",
+                  display: "block",
+                }}
+              >
+                {fieldErrors.donor.name}
+              </span>
+            )}
           </div>
 
           <div className="donor-details__field">
@@ -302,11 +316,9 @@ const DonorDetails = ({ activeTab }) => {
               name="phone"
               value={currentDonorDetails.phone}
               onChange={handleInputChange}
-              pattern="[0-9]{10}"
               maxLength={10}
-              title="Please enter a valid 10-digit phone number"
             />
-            {phoneError && (
+            {fieldErrors.donor.phone && (
               <span
                 className="error-message"
                 style={{
@@ -316,7 +328,7 @@ const DonorDetails = ({ activeTab }) => {
                   display: "block",
                 }}
               >
-                {phoneError}
+                {fieldErrors.donor.phone}
               </span>
             )}
           </div>
@@ -339,15 +351,18 @@ const DonorDetails = ({ activeTab }) => {
                 </option>
               ))}
             </select>
-            {currentDonorDetails.deeksha === "Others" && (
-              <input
-                className="donor-input"
-                type="text"
-                placeholder="Specify Mantra Diksha"
-                value={currentDonorDetails.otherDeeksha || ""}
-                onChange={handleOtherDeekshaChange}
-                style={{ marginTop: "10px" }}
-              />
+            {fieldErrors.donor.deeksha && (
+              <span
+                className="error-message"
+                style={{
+                  color: "red",
+                  fontSize: "12px",
+                  marginTop: "4px",
+                  display: "block",
+                }}
+              >
+                {fieldErrors.donor.deeksha}
+              </span>
             )}
           </div>
 
@@ -396,23 +411,7 @@ const DonorDetails = ({ activeTab }) => {
               <select
                 className="identity-select"
                 value={currentDonorDetails.identityType}
-                onChange={(e) => {
-                  const newIdentityType = e.target.value;
-                  updateAndSyncDonorDetails({
-                    identityType: newIdentityType,
-                    identityNumber: "",
-                  });
-                  setIdentityError("");
-
-                  if (currentDonorDetails.identityType === "PAN Card") {
-                    updateDonationDetails(activeTabId, "math", {
-                      panNumber: "",
-                    });
-                    updateDonationDetails(activeTabId, "mission", {
-                      panNumber: "",
-                    });
-                  }
-                }}
+                onChange={handleIdentityTypeChange}
               >
                 <option>Aadhaar</option>
                 <option>PAN Card</option>
@@ -423,25 +422,11 @@ const DonorDetails = ({ activeTab }) => {
               <input
                 className="identity-input"
                 type="text"
-                placeholder={`Enter ${currentDonorDetails.identityType} number`}
                 value={currentDonorDetails.identityNumber}
                 onChange={handleIdentityInputChange}
-                maxLength={
-                  currentDonorDetails.identityType === "Aadhaar"
-                    ? 12
-                    : currentDonorDetails.identityType === "PAN Card"
-                    ? 10
-                    : currentDonorDetails.identityType === "Voter ID"
-                    ? 10
-                    : currentDonorDetails.identityType === "Passport"
-                    ? 8
-                    : currentDonorDetails.identityType === "Driving License"
-                    ? 15
-                    : undefined
-                }
               />
             </div>
-            {identityError && (
+            {fieldErrors.donor.identityNumber && (
               <span
                 className="error-message"
                 style={{
@@ -451,7 +436,7 @@ const DonorDetails = ({ activeTab }) => {
                   display: "block",
                 }}
               >
-                {identityError}
+                {fieldErrors.donor.identityNumber}
               </span>
             )}
           </div>
@@ -472,6 +457,19 @@ const DonorDetails = ({ activeTab }) => {
               />
               {loading && <span className="loading-spinner">🔄</span>}
             </div>
+            {fieldErrors.donor.pincode && (
+              <span
+                className="error-message"
+                style={{
+                  color: "red",
+                  fontSize: "12px",
+                  marginTop: "4px",
+                  display: "block",
+                }}
+              >
+                {fieldErrors.donor.pincode}
+              </span>
+            )}
           </div>
 
           <div className="donor-details__field">

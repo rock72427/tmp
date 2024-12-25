@@ -67,6 +67,11 @@ const useDonationStore = create((set) => ({
     msnNumber: 1,
     uniqueNumber: 1,
   },
+  fieldErrors: {
+    donor: {},
+    donation: {},
+    transaction: {},
+  },
 
   // Reset store to initial state
   resetStore: () =>
@@ -306,6 +311,22 @@ const useDonationStore = create((set) => ({
       console.error("Failed to fetch receipt details:", error);
     }
   },
+
+  setFieldErrors: (errors) =>
+    set((state) => ({
+      fieldErrors: {
+        ...state.fieldErrors,
+        ...errors,
+      },
+    })),
+  clearFieldErrors: () =>
+    set({
+      fieldErrors: {
+        donor: {},
+        donation: {},
+        transaction: {},
+      },
+    }),
 }));
 
 export default useDonationStore;
