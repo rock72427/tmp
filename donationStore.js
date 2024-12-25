@@ -269,9 +269,9 @@ const useDonationStore = create((set) => ({
         .filter((item) => item.attributes.Receipt_number?.startsWith("MSN"))
         .map((item) => parseInt(item.attributes.Receipt_number.split(" ")[1]));
 
-      const uniqueNumbers = details.data.map((item) =>
-        parseInt(item.attributes.unique_no.substring(1))
-      );
+      const uniqueNumbers = details.data
+        .filter((item) => item.attributes.unique_no)
+        .map((item) => parseInt(item.attributes.unique_no.substring(1)));
 
       const highestMT = (Math.max(...mtNumbers) || 0) + 1;
       const highestMSN = (Math.max(...msnNumbers) || 0) + 1;

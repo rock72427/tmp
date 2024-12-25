@@ -1,8 +1,11 @@
 import "./DonationAction.scss";
 import useDonationStore from "../../../../donationStore";
+import { useAuthStore } from "../../../../store/authStore";
+import { createNewReceiptDetail } from "../../../../services/src/services/receiptDetailsService";
 
 const DonationAction = ({ totalAmount = 0, activeTab, transactionType }) => {
   const { donorTabs, activeTabId, setFieldErrors } = useDonationStore();
+  const { user } = useAuthStore();
   const currentSection = activeTab.toLowerCase();
 
   const validateFields = () => {
@@ -106,12 +109,40 @@ const DonationAction = ({ totalAmount = 0, activeTab, transactionType }) => {
     return true;
   };
 
+  const createReceipt = async (status) => {
+    if (!validateFields()) return;
+
+    const currentTab = donorTabs[activeTabId];
+    const receiptData = {
+      Receipt_number: currentTab.receiptNumbers[currentSection],
+      donation_date: new Date().toISOString().split("T")[0],
+      created_by: user?.id,
+      unique_no: currentTab.uniqueNo,
+      counter: user?.counter,
+      status: status,
+    };
+
+    try {
+      const response = await createNewReceiptDetail(receiptData);
+      alert(
+        `Receipt ${
+          status === "pending" ? "saved as pending" : "created"
+        } successfully!`
+      );
+      return response;
+    } catch (error) {
+      console.error("Error creating receipt:", error);
+      alert("Failed to create receipt. Please try again.");
+      throw error;
+    }
+  };
+
   const handlePrintReceipt = () => {
-    validateFields();
+    createReceipt("completed");
   };
 
   const handlePending = () => {
-    validateFields();
+    createReceipt("pending");
   };
 
   return (
