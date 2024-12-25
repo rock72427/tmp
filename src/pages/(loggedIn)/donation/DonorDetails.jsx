@@ -88,7 +88,15 @@ const DonorDetails = ({ activeTab }) => {
   };
 
   const handleDeekshaChange = (e) => {
-    updateAndSyncDonorDetails({ deeksha: e.target.value });
+    const value = e.target.value;
+    updateAndSyncDonorDetails({
+      deeksha: value,
+      otherDeeksha: value !== "Others" ? "" : currentDonorDetails.otherDeeksha,
+    });
+  };
+
+  const handleOtherDeekshaChange = (e) => {
+    updateAndSyncDonorDetails({ otherDeeksha: e.target.value });
   };
 
   return (
@@ -99,7 +107,9 @@ const DonorDetails = ({ activeTab }) => {
     >
       <div className="donor-details__header">
         <h2>Donor Details</h2>
-        <span className="language-switch">CS</span>
+        <span className="language-switch">
+          {donorTabs[activeTabId].uniqueNo}
+        </span>
       </div>
 
       <form className="donor-details__form">
@@ -162,6 +172,16 @@ const DonorDetails = ({ activeTab }) => {
                 </option>
               ))}
             </select>
+            {currentDonorDetails.deeksha === "Others" && (
+              <input
+                className="donor-input"
+                type="text"
+                placeholder="Specify Mantra Diksha"
+                value={currentDonorDetails.otherDeeksha || ""}
+                onChange={handleOtherDeekshaChange}
+                style={{ marginTop: "10px" }}
+              />
+            )}
           </div>
 
           <div className="donor-details__field">

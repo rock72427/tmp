@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import "./DonationHeader.scss";
 import useDonationStore from "../../../../donationStore";
 import { useAuthStore } from "../../../../store/authStore";
+import { fetchReceiptDetails } from "../../../../services/src/services/receiptDetailsService";
 
 const DonationHeader = ({ onTabChange }) => {
   const [currentDateTime, setCurrentDateTime] = useState(new Date());
@@ -13,6 +14,8 @@ const DonationHeader = ({ onTabChange }) => {
     setActiveTab,
     setActiveSection,
     removeDonorTab,
+    nextReceiptNumbers,
+    fetchLatestReceiptNumbers,
   } = useDonationStore();
 
   // Add auth store
@@ -30,6 +33,15 @@ const DonationHeader = ({ onTabChange }) => {
     }, 1000);
     return () => clearInterval(timer);
   }, []);
+
+  useEffect(() => {
+    fetchLatestReceiptNumbers();
+  }, []);
+
+  useEffect(() => {
+    console.log("Next Available MT Number: MT", nextReceiptNumbers.mtNumber);
+    console.log("Next Available MSN Number: MSN", nextReceiptNumbers.msnNumber);
+  }, [nextReceiptNumbers]);
 
   const handleTabChange = (section) => {
     setActiveSection(activeTabId, section.toLowerCase());
@@ -58,6 +70,10 @@ const DonationHeader = ({ onTabChange }) => {
       removeDonorTab(id);
     }
   };
+
+  const activeTab = donorTabs[activeTabId];
+  const currentReceiptNumber =
+    activeTab.receiptNumbers?.[activeTab.activeSection] || "";
 
   return (
     <div className="atth-donation-wrapper">
@@ -161,7 +177,7 @@ const DonationHeader = ({ onTabChange }) => {
           </div>
           <div className="atth-receipt-info">
             <span>Receipt Number: </span>
-            <span className="atth-receipt-number">MT5</span>
+            <span className="atth-receipt-number">{currentReceiptNumber}</span>
           </div>
         </div>
         <button className="atth-btn-reset">↻ Reset</button>
