@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import DonationHeader from "./DonationHeader";
 import DonorDetails from "./DonorDetails";
 import Details from "./Details";
@@ -6,6 +6,7 @@ import DonationAction from "./DonationAction";
 import DonationHistory from "./DonationHistory";
 import TransactionDetails from "./TransactionDetails";
 import useDonationStore from "../../../../donationStore";
+import { useAuthStore } from "../../../../store/authStore";
 
 const NewDonation = () => {
   const donationStore = useDonationStore();

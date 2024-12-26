@@ -6,10 +6,12 @@ import * as XLSX from "xlsx";
 import { useLocation } from "react-router-dom";
 import ExportDonations from "./ExportDonations";
 import DDFExport from "./DDFExport";
+import { useAuthStore } from "../../../../store/authStore";
 
 const AllDonationDetails = () => {
   const location = useLocation();
   const donationData = location.state?.donationData;
+  const { user } = useAuthStore();
 
   const [searchTerm, setSearchTerm] = useState("");
   const [dateRange, setDateRange] = useState({
@@ -129,7 +131,7 @@ const AllDonationDetails = () => {
           {timeFilter === "today" ? "Today Donations" : "All Donations"}
         </h1>
         <div className="export-buttons">
-          <DDFExport />
+          {user?.user_role === "superadmin" && <DDFExport />}
           <ExportDonations timeFilter={timeFilter} />
         </div>
       </div>

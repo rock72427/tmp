@@ -4,11 +4,16 @@ import { useAuthStore } from "../../../../store/authStore";
 import { createNewReceiptDetail } from "../../../../services/src/services/receiptDetailsService";
 import { createNewGuestDetails } from "../../../../services/src/services/guestDetailsService";
 import { createNewDonation } from "../../../../services/src/services/donationsService";
+import { useEffect } from "react";
 
 const DonationAction = ({ totalAmount = 0, activeTab, transactionType }) => {
   const { donorTabs, activeTabId, setFieldErrors } = useDonationStore();
   const { user } = useAuthStore();
   const currentSection = activeTab.toLowerCase();
+
+  useEffect(() => {
+    console.log("user", user);
+  }, [user]);
 
   const validateFields = () => {
     const currentTab = donorTabs[activeTabId][currentSection];
@@ -124,11 +129,12 @@ const DonationAction = ({ totalAmount = 0, activeTab, transactionType }) => {
     const receiptData = {
       Receipt_number: currentTab.receiptNumbers[currentSection],
       donation_date: new Date().toISOString().split("T")[0],
-      created_by: user?.id,
+      createdby: user?.id,
       unique_no: currentTab.uniqueNo,
       counter: user?.counter,
       status: status,
     };
+    // console.log("receiptData", receiptData);
 
     try {
       // Create receipt first
@@ -158,10 +164,10 @@ const DonationAction = ({ totalAmount = 0, activeTab, transactionType }) => {
       };
 
       const guestResponse = await createNewGuestDetails(guestData);
-
-      // Create donation after guest is created
+      // Create donation with explicit guest and receipt IDs
       const donationData = {
-        guest: guestResponse.id, // Use the newly created guest's ID
+        guest_id: guestResponse.data.id,
+        receipt_detail: receiptResponse.data.id,
         donationAmount: currentDonationDetails.amount,
         transactionType: transactionType,
         donationFor: currentSection, // 'math' or 'mission'
@@ -169,12 +175,12 @@ const DonationAction = ({ totalAmount = 0, activeTab, transactionType }) => {
         ddch_date: currentTransactionDetails.date,
         InMemoryOf: currentDonationDetails.inMemoryOf,
         bankName: currentTransactionDetails.bankName,
-        receipt_detail: receiptResponse.id,
         status: status,
         purpose: currentDonationDetails.purpose,
         type: currentDonationDetails.donationType,
       };
 
+      console.log("Donation data with IDs:", donationData);
       await createNewDonation(donationData);
 
       alert(
