@@ -3,6 +3,7 @@ import useDonationStore from "../../../../donationStore";
 import { useAuthStore } from "../../../../store/authStore";
 import { createNewReceiptDetail } from "../../../../services/src/services/receiptDetailsService";
 import { createNewGuestDetails } from "../../../../services/src/services/guestDetailsService";
+import { createNewDonation } from "../../../../services/src/services/donationsService";
 
 const DonationAction = ({ totalAmount = 0, activeTab, transactionType }) => {
   const { donorTabs, activeTabId, setFieldErrors } = useDonationStore();
@@ -115,6 +116,9 @@ const DonationAction = ({ totalAmount = 0, activeTab, transactionType }) => {
 
     const currentTab = donorTabs[activeTabId];
     const currentDonorDetails = currentTab[currentSection].donorDetails;
+    const currentDonationDetails = currentTab[currentSection].donationDetails;
+    const currentTransactionDetails =
+      currentTab[currentSection].transactionDetails;
 
     // First create the receipt
     const receiptData = {
@@ -150,10 +154,28 @@ const DonationAction = ({ totalAmount = 0, activeTab, transactionType }) => {
           currentDonorDetails.pincode,
         ]
           .filter(Boolean)
-          .join(", "), // Combines all address parts, filtering out empty values
+          .join(", "),
       };
 
-      await createNewGuestDetails(guestData);
+      const guestResponse = await createNewGuestDetails(guestData);
+
+      // Create donation after guest is created
+      const donationData = {
+        guest: guestResponse.id, // Use the newly created guest's ID
+        donationAmount: currentDonationDetails.amount,
+        transactionType: transactionType,
+        donationFor: currentSection, // 'math' or 'mission'
+        ddch_number: currentTransactionDetails.transactionId,
+        ddch_date: currentTransactionDetails.date,
+        InMemoryOf: currentDonationDetails.inMemoryOf,
+        bankName: currentTransactionDetails.bankName,
+        receipt_detail: receiptResponse.id,
+        status: status,
+        purpose: currentDonationDetails.purpose,
+        type: currentDonationDetails.donationType,
+      };
+
+      await createNewDonation(donationData);
 
       alert(
         `Receipt ${
@@ -162,8 +184,11 @@ const DonationAction = ({ totalAmount = 0, activeTab, transactionType }) => {
       );
       return receiptResponse;
     } catch (error) {
-      console.error("Error creating receipt and guest details:", error);
-      alert("Failed to create receipt and guest details. Please try again.");
+      console.error(
+        "Error creating receipt, guest details, or donation:",
+        error
+      );
+      alert("Failed to create receipt. Please try again.");
       throw error;
     }
   };
