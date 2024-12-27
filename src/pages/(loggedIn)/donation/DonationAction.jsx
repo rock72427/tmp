@@ -14,6 +14,7 @@ const DonationAction = ({ totalAmount = 0, activeTab, transactionType }) => {
   const [showReceiptPreview, setShowReceiptPreview] = useState(false);
   const [receiptData, setReceiptData] = useState(null);
   const [uniqueNumbers, setUniqueNumbers] = useState([]);
+  const [showPendingConfirmation, setShowPendingConfirmation] = useState(false);
 
   useEffect(() => {
     console.log("user", user);
@@ -271,7 +272,15 @@ const DonationAction = ({ totalAmount = 0, activeTab, transactionType }) => {
   };
 
   const handlePending = () => {
-    createReceipt("pending");
+    setShowPendingConfirmation(true);
+  };
+
+  const handleConfirmPending = async () => {
+    setShowPendingConfirmation(false);
+    await createReceipt("pending");
+    // Remove the current tab after successful pending operation
+    const { removeDonorTab, activeTabId } = useDonationStore.getState();
+    removeDonorTab(activeTabId);
   };
 
   return (
@@ -325,6 +334,59 @@ const DonationAction = ({ totalAmount = 0, activeTab, transactionType }) => {
         receiptData={receiptData}
         onConfirmPrint={handleConfirmPrint}
       />
+
+      {/* Add Pending Confirmation Modal */}
+      {showPendingConfirmation && (
+        <div className="modal-overlay">
+          <div className="confirmation-modal">
+            <div className="warning-icon">
+              <svg
+                width="48"
+                height="48"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M12 9V14"
+                  stroke="#FFB020"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                />
+                <path
+                  d="M12 17.5V18"
+                  stroke="#FFB020"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                />
+                <path
+                  d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"
+                  stroke="#FFB020"
+                  strokeWidth="2"
+                  fill="none"
+                />
+              </svg>
+            </div>
+            <h2 style={{ fontWeight: 500, fontSize: "1.2rem" }}>
+              Are you sure you want to keep this Donation in pending?
+            </h2>
+            <p>
+              Once confirmed, the action will be final and cannot be undone.
+            </p>
+            <div className="modal-actions">
+              <button
+                className="cancel-btn"
+                onClick={() => setShowPendingConfirmation(false)}
+              >
+                Cancel
+              </button>
+              <button className="confirm-btn" onClick={handleConfirmPending}>
+                Confirm
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };
