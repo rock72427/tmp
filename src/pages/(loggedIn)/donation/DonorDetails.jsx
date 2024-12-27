@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import "./DonorDetails.scss";
 import useDonationStore from "../../../../donationStore";
 import { fetchGuestDetails } from "../../../../services/src/services/guestDetailsService";
+import { fetchReceiptDetails } from "../../../../services/src/services/receiptDetailsService";
 
 const DonorDetails = ({ activeTab }) => {
   const deekshaOptions = [
@@ -229,9 +230,15 @@ const DonorDetails = ({ activeTab }) => {
   const handleFetchGuests = async () => {
     try {
       const guests = await fetchGuestDetails();
+      console.log("Guests:", guests);
+
+      // Fetch and log receipt details
+      const receipts = await fetchReceiptDetails();
+      console.log("All Receipts:", receipts);
+
       setGuestList(guests.data);
     } catch (error) {
-      console.error("Error fetching guests:", error);
+      console.error("Error fetching data:", error);
     }
   };
 
