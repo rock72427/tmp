@@ -129,55 +129,55 @@ const DonationAction = ({ totalAmount = 0, activeTab, transactionType }) => {
     const currentTransactionDetails =
       currentTab[currentSection].transactionDetails;
 
-    // First create the receipt
-    const receiptData = {
-      Receipt_number: currentTab.receiptNumbers[currentSection],
-      donation_date: new Date().toISOString().split("T")[0],
-      createdby: user?.id,
-      unique_no: currentTab.uniqueNo,
-      counter: user?.counter,
-      status: status,
-    };
-    // console.log("receiptData", receiptData);
-
     try {
       // Create receipt first
-      const receiptResponse = await createNewReceiptDetail(receiptData);
+      const receiptResponse = await createNewReceiptDetail({
+        Receipt_number: currentTab.receiptNumbers[currentSection],
+        donation_date: new Date().toISOString().split("T")[0],
+        createdby: user?.id,
+        unique_no: currentTab.uniqueNo,
+        counter: user?.counter,
+        status: status,
+      });
 
-      // Then create guest details
-      const guestData = {
-        name: `${currentDonorDetails.title} ${currentDonorDetails.name}`,
-        phone_number: currentDonorDetails.phone,
-        deeksha:
-          currentDonorDetails.deeksha === "Others"
-            ? currentDonorDetails.otherDeeksha
-            : currentDonorDetails.deeksha,
-        email: currentDonorDetails.email,
-        identity_proof: currentDonorDetails.identityType,
-        identity_number: currentDonorDetails.identityNumber,
-        address: [
-          currentDonorDetails.flatNo,
-          currentDonorDetails.streetName,
-          currentDonorDetails.postOffice,
-          currentDonorDetails.district,
-          currentDonorDetails.state,
-          currentDonorDetails.pincode,
-        ]
-          .filter(Boolean)
-          .join(", "),
-      };
+      // Only create guest details if no guestId exists
+      let guestId = currentDonorDetails.guestId;
 
-      const guestResponse = await createNewGuestDetails(guestData);
+      if (!guestId) {
+        const guestResponse = await createNewGuestDetails({
+          name: `${currentDonorDetails.title} ${currentDonorDetails.name}`,
+          phone_number: currentDonorDetails.phone,
+          deeksha:
+            currentDonorDetails.deeksha === "Others"
+              ? currentDonorDetails.otherDeeksha
+              : currentDonorDetails.deeksha,
+          email: currentDonorDetails.email,
+          identity_proof: currentDonorDetails.identityType,
+          identity_number: currentDonorDetails.identityNumber,
+          address: [
+            currentDonorDetails.flatNo,
+            currentDonorDetails.streetName,
+            currentDonorDetails.postOffice,
+            currentDonorDetails.district,
+            currentDonorDetails.state,
+            currentDonorDetails.pincode,
+          ]
+            .filter(Boolean)
+            .join(", "),
+        });
+        guestId = guestResponse.data.id;
+      }
+
       // Map the currentSection to accepted donationFor values
       const donationForMapping = {
         math: "Math",
         mission: "Mission",
       };
 
-      // Base donation data
+      // Create donation with the appropriate guestId
       const donationData = {
         data: {
-          guest: guestResponse.data.id,
+          guest: guestId,
           receipt_detail: receiptResponse.data.id,
           donationAmount: currentDonationDetails.amount,
           transactionType: transactionType,
@@ -202,11 +202,11 @@ const DonationAction = ({ totalAmount = 0, activeTab, transactionType }) => {
       console.log("Donation data with IDs:", donationData);
       await createNewDonation(donationData);
 
-      alert(
-        `Receipt ${
-          status === "pending" ? "saved as pending" : "created"
-        } successfully!`
-      );
+      // alert(
+      //   `Receipt ${
+      //     status === "pending" ? "saved as pending" : "created"
+      //   } successfully!`
+      // );
       return receiptResponse;
     } catch (error) {
       console.error(
