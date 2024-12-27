@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { fetchReceiptDetails } from "./services/src/services/receiptDetailsService";
 
 const initialDonorDetails = {
+  guestId: "",
   title: "",
   name: "",
   phone: "",

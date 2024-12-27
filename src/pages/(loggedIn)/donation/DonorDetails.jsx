@@ -272,8 +272,9 @@ const DonorDetails = ({ activeTab }) => {
         ? rawAddressParts[1]
         : "";
 
-    // Update donor details
+    // Update donor details with guest ID
     updateAndSyncDonorDetails({
+      guestId: guest.id,
       name: name.replace(/^(Sri|Smt|Mr|Mrs|Ms|Dr|Prof)\s+/, ""),
       phone: phone_number.replace("+91", ""),
       email,
