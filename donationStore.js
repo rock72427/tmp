@@ -273,9 +273,21 @@ const useDonationStore = create((set) => ({
         .filter((item) => item.attributes.unique_no)
         .map((item) => parseInt(item.attributes.unique_no.substring(1)));
 
-      const highestMT = (Math.max(...mtNumbers) || 0) + 1;
-      const highestMSN = (Math.max(...msnNumbers) || 0) + 1;
-      const highestUniqueNo = (Math.max(...uniqueNumbers) || 0) + 1;
+      // Add debug logs
+      console.log("MT Numbers:", mtNumbers);
+      console.log("MSN Numbers:", msnNumbers);
+      console.log("Unique Numbers:", uniqueNumbers);
+
+      const highestMT = mtNumbers.length > 0 ? Math.max(...mtNumbers) + 1 : 1;
+      const highestMSN =
+        msnNumbers.length > 0 ? Math.max(...msnNumbers) + 1 : 1;
+      const highestUniqueNo =
+        uniqueNumbers.length > 0 ? Math.max(...uniqueNumbers) + 1 : 1;
+
+      // Add debug logs for final values
+      console.log("Highest MT:", highestMT);
+      console.log("Highest MSN:", highestMSN);
+      console.log("Highest Unique Number:", highestUniqueNo);
 
       set((state) => {
         // Update next receipt numbers

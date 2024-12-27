@@ -4,12 +4,15 @@ import { useAuthStore } from "../../../../store/authStore";
 import { createNewReceiptDetail } from "../../../../services/src/services/receiptDetailsService";
 import { createNewGuestDetails } from "../../../../services/src/services/guestDetailsService";
 import { createNewDonation } from "../../../../services/src/services/donationsService";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import ReceiptPreviewModal from "./ReceiptPreviewModal";
 
 const DonationAction = ({ totalAmount = 0, activeTab, transactionType }) => {
   const { donorTabs, activeTabId, setFieldErrors } = useDonationStore();
   const { user } = useAuthStore();
   const currentSection = activeTab.toLowerCase();
+  const [showReceiptPreview, setShowReceiptPreview] = useState(false);
+  const [receiptData, setReceiptData] = useState(null);
 
   useEffect(() => {
     console.log("user", user);
@@ -164,21 +167,36 @@ const DonationAction = ({ totalAmount = 0, activeTab, transactionType }) => {
       };
 
       const guestResponse = await createNewGuestDetails(guestData);
-      // Fixed donation data structure
-      const donationData = {
-        guest_id: guestResponse.data.id,
-        receipt_detail: receiptResponse.data.id,
-        donationAmount: currentDonationDetails.amount,
-        transactionType: transactionType,
-        donationFor: currentSection,
-        ddch_number: currentTransactionDetails?.transactionId || "",
-        ddch_date: currentTransactionDetails?.date || "",
-        InMemoryOf: currentDonationDetails.inMemoryOf,
-        bankName: currentTransactionDetails?.bankName || "",
-        status: status,
-        purpose: currentDonationDetails.purpose,
-        type: currentDonationDetails.donationType,
+      // Map the currentSection to accepted donationFor values
+      const donationForMapping = {
+        math: "Math",
+        mission: "Mission",
       };
+
+      // Base donation data
+      const donationData = {
+        data: {
+          guest: guestResponse.data.id,
+          receipt_detail: receiptResponse.data.id,
+          donationAmount: currentDonationDetails.amount,
+          transactionType: transactionType,
+          donationFor: donationForMapping[currentSection],
+          InMemoryOf: currentDonationDetails.inMemoryOf,
+          status: status,
+          purpose: currentDonationDetails.purpose,
+          type: currentDonationDetails.donationType,
+        },
+      };
+
+      // Add bank-related fields only for Cheque, Bank Transfer, or DD
+      if (["Cheque", "Bank Transfer", "DD"].includes(transactionType)) {
+        donationData.data = {
+          ...donationData.data,
+          bankName: currentTransactionDetails?.bankName || "",
+          ddch_date: currentTransactionDetails?.date || "",
+          ddch_number: currentTransactionDetails?.transactionId || "",
+        };
+      }
 
       console.log("Donation data with IDs:", donationData);
       await createNewDonation(donationData);
@@ -199,8 +217,40 @@ const DonationAction = ({ totalAmount = 0, activeTab, transactionType }) => {
     }
   };
 
-  const handlePrintReceipt = () => {
-    createReceipt("completed");
+  const handlePrintReceipt = async () => {
+    try {
+      const receiptResponse = await createReceipt("completed");
+
+      // Prepare receipt data
+      const currentTab = donorTabs[activeTabId];
+      const currentDonorDetails = currentTab[currentSection].donorDetails;
+      const currentDonationDetails = currentTab[currentSection].donationDetails;
+
+      setReceiptData({
+        receiptNumber: currentTab.receiptNumbers[currentSection],
+        date: new Date().toLocaleDateString(),
+        donorName: `${currentDonorDetails.title} ${currentDonorDetails.name}`,
+        address: {
+          flatNo: currentDonorDetails.flatNo,
+          postOffice: currentDonorDetails.postOffice,
+          district: currentDonorDetails.district,
+          state: currentDonorDetails.state,
+          pincode: currentDonorDetails.pincode,
+        },
+        transactionType: transactionType,
+        amount: totalAmount.toFixed(2),
+        purpose: currentDonationDetails.purpose,
+      });
+
+      setShowReceiptPreview(true);
+    } catch (error) {
+      // Error is already handled in createReceipt
+    }
+  };
+
+  const handleConfirmPrint = () => {
+    window.print();
+    setShowReceiptPreview(false);
   };
 
   const handlePending = () => {
@@ -208,48 +258,57 @@ const DonationAction = ({ totalAmount = 0, activeTab, transactionType }) => {
   };
 
   return (
-    <div className="donation-action-bar">
-      <div className="donation-total-amount">
-        <span>Total Donation Amount</span>
-        <span>₹ {totalAmount.toFixed(2)}</span>
+    <>
+      <div className="donation-action-bar">
+        <div className="donation-total-amount">
+          <span>Total Donation Amount</span>
+          <span>₹ {totalAmount.toFixed(2)}</span>
+        </div>
+
+        <div className="donation-actions">
+          <button
+            className="donation-action-btn consent-letter"
+            style={{ border: "1px solid #ccc" }}
+          >
+            <i className="far fa-file-alt"></i>
+            Consent Letter
+          </button>
+
+          <button
+            className="donation-action-btn thank-letter"
+            style={{ border: "1px solid #ccc" }}
+          >
+            <i className="far fa-envelope"></i>
+            Thank Letter
+          </button>
+
+          <button
+            className="donation-action-btn pending"
+            style={{ border: "1px solid #ccc" }}
+            onClick={handlePending}
+          >
+            <i className="far fa-clock"></i>
+            Pending
+          </button>
+
+          <button
+            className="donation-action-btn print-receipt"
+            style={{ border: "1px solid #ccc" }}
+            onClick={handlePrintReceipt}
+          >
+            <i className="fas fa-print"></i>
+            Print Receipt
+          </button>
+        </div>
       </div>
 
-      <div className="donation-actions">
-        <button
-          className="donation-action-btn consent-letter"
-          style={{ border: "1px solid #ccc" }}
-        >
-          <i className="far fa-file-alt"></i>
-          Consent Letter
-        </button>
-
-        <button
-          className="donation-action-btn thank-letter"
-          style={{ border: "1px solid #ccc" }}
-        >
-          <i className="far fa-envelope"></i>
-          Thank Letter
-        </button>
-
-        <button
-          className="donation-action-btn pending"
-          style={{ border: "1px solid #ccc" }}
-          onClick={handlePending}
-        >
-          <i className="far fa-clock"></i>
-          Pending
-        </button>
-
-        <button
-          className="donation-action-btn print-receipt"
-          style={{ border: "1px solid #ccc" }}
-          onClick={handlePrintReceipt}
-        >
-          <i className="fas fa-print"></i>
-          Print Receipt
-        </button>
-      </div>
-    </div>
+      <ReceiptPreviewModal
+        isOpen={showReceiptPreview}
+        onClose={() => setShowReceiptPreview(false)}
+        receiptData={receiptData}
+        onConfirmPrint={handleConfirmPrint}
+      />
+    </>
   );
 };
 
