@@ -305,7 +305,19 @@ const DonorDetails = ({ activeTab }) => {
   };
 
   useEffect(() => {
+    // Add event listener for refresh
+    const handleRefresh = () => {
+      handleFetchGuests();
+    };
+    window.addEventListener("refreshDonorDetails", handleRefresh);
+
+    // Initial fetch
     handleFetchGuests();
+
+    // Cleanup
+    return () => {
+      window.removeEventListener("refreshDonorDetails", handleRefresh);
+    };
   }, []);
 
   return (

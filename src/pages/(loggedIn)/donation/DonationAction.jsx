@@ -140,7 +140,8 @@ const DonationAction = ({ totalAmount = 0, activeTab, transactionType }) => {
         status: status,
       });
 
-      // Only create guest details if no guestId exists
+      // Track if a new guest was created
+      let isNewGuest = false;
       let guestId = currentDonorDetails.guestId;
 
       if (!guestId) {
@@ -166,6 +167,7 @@ const DonationAction = ({ totalAmount = 0, activeTab, transactionType }) => {
             .join(", "),
         });
         guestId = guestResponse.data.id;
+        isNewGuest = true;
       }
 
       // Map the currentSection to accepted donationFor values
@@ -207,6 +209,14 @@ const DonationAction = ({ totalAmount = 0, activeTab, transactionType }) => {
       //     status === "pending" ? "saved as pending" : "created"
       //   } successfully!`
       // );
+
+      // If this was a new guest, trigger a refresh of the donor details
+      if (isNewGuest) {
+        // You can either emit an event or call a refresh function directly
+        const event = new CustomEvent("refreshDonorDetails");
+        window.dispatchEvent(event);
+      }
+
       return receiptResponse;
     } catch (error) {
       console.error(
