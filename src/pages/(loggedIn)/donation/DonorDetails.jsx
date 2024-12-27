@@ -235,6 +235,8 @@ const DonorDetails = ({ activeTab }) => {
   };
 
   const handleSuggestionClick = (guest) => {
+    console.log("Selected Guest Data:", guest);
+
     const {
       name,
       phone_number,
@@ -242,15 +244,43 @@ const DonorDetails = ({ activeTab }) => {
       deeksha,
       identity_proof,
       identity_number,
+      address,
     } = guest.attributes;
 
+    // Extract address components
+    const addressParts = address
+      .split(", ")
+      .filter((part) => part.trim() !== "");
+    const pincode = addressParts[addressParts.length - 1];
+    const state = addressParts[addressParts.length - 2];
+    const district = addressParts[addressParts.length - 3];
+    const postOffice = addressParts[addressParts.length - 4] || "";
+
+    // Only set flat and street if they're not empty in the original address
+    const rawAddressParts = address.split(", ");
+    const flatNo =
+      rawAddressParts[0] && rawAddressParts[0].trim() !== ""
+        ? rawAddressParts[0]
+        : "";
+    const streetName =
+      rawAddressParts[1] && rawAddressParts[1].trim() !== ""
+        ? rawAddressParts[1]
+        : "";
+
+    // Update all donor details including address
     updateAndSyncDonorDetails({
-      name: name.replace(/^(Sri|Smt|Mr|Mrs|Ms|Dr|Prof)\s+/, ""), // Remove title prefix
+      name: name.replace(/^(Sri|Smt|Mr|Mrs|Ms|Dr|Prof)\s+/, ""),
       phone: phone_number.replace("+91", ""),
       email,
       deeksha,
       identityType: identity_proof,
       identityNumber: identity_number,
+      pincode,
+      state,
+      district,
+      postOffice,
+      flatNo,
+      streetName,
     });
 
     // Extract and set title if present
