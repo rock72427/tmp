@@ -237,8 +237,12 @@ const DonationAction = ({ totalAmount = 0, activeTab, transactionType }) => {
     const currentDonorDetails = currentTab[currentSection].donorDetails;
     const currentDonationDetails = currentTab[currentSection].donationDetails;
 
+    // Convert amount to number before using toFixed
+    const amount = parseFloat(currentDonationDetails.amount) || 0;
+
     setReceiptData({
       receiptNumber: currentTab.receiptNumbers[currentSection],
+      uniqueNo: currentTab.uniqueNo,
       date: new Date().toLocaleDateString(),
       donorName: `${currentDonorDetails.title} ${currentDonorDetails.name}`,
       address: {
@@ -249,7 +253,7 @@ const DonationAction = ({ totalAmount = 0, activeTab, transactionType }) => {
         pincode: currentDonorDetails.pincode,
       },
       transactionType: transactionType,
-      amount: totalAmount.toFixed(2),
+      amount: amount.toFixed(2),
       purpose: currentDonationDetails.purpose,
     });
 

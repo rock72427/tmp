@@ -1,4 +1,5 @@
 import React from "react";
+import ReceiptTemplate from "./ReceiptTemplate";
 
 const ReceiptPreviewModal = ({
   isOpen,
@@ -7,6 +8,132 @@ const ReceiptPreviewModal = ({
   onConfirmPrint,
 }) => {
   if (!isOpen) return null;
+
+  // Helper function to convert number to words
+  const numberToWords = (num) => {
+    const single = [
+      "Zero",
+      "One",
+      "Two",
+      "Three",
+      "Four",
+      "Five",
+      "Six",
+      "Seven",
+      "Eight",
+      "Nine",
+    ];
+    const double = [
+      "Ten",
+      "Eleven",
+      "Twelve",
+      "Thirteen",
+      "Fourteen",
+      "Fifteen",
+      "Sixteen",
+      "Seventeen",
+      "Eighteen",
+      "Nineteen",
+    ];
+    const tens = [
+      "",
+      "Ten",
+      "Twenty",
+      "Thirty",
+      "Forty",
+      "Fifty",
+      "Sixty",
+      "Seventy",
+      "Eighty",
+      "Ninety",
+    ];
+    const formatTens = (num) => {
+      if (num < 10) return single[num];
+      if (num < 20) return double[num - 10];
+      return (
+        tens[Math.floor(num / 10)] + (num % 10 ? " " + single[num % 10] : "")
+      );
+    };
+
+    if (num === 0) return "Zero";
+
+    const convert = (num) => {
+      if (num < 100) return formatTens(num);
+      if (num < 1000)
+        return (
+          single[Math.floor(num / 100)] +
+          " Hundred" +
+          (num % 100 ? " " + formatTens(num % 100) : "")
+        );
+      if (num < 100000)
+        return (
+          convert(Math.floor(num / 1000)) +
+          " Thousand" +
+          (num % 1000 ? " " + convert(num % 1000) : "")
+        );
+      if (num < 10000000)
+        return (
+          convert(Math.floor(num / 100000)) +
+          " Lakh" +
+          (num % 100000 ? " " + convert(num % 100000) : "")
+        );
+      return (
+        convert(Math.floor(num / 10000000)) +
+        " Crore" +
+        (num % 10000000 ? " " + convert(num % 10000000) : "")
+      );
+    };
+
+    const rupees = Math.floor(num);
+    const paise = Math.round((num % 1) * 100);
+    let result = convert(rupees) + " Rupees";
+    if (paise) {
+      result += " and " + convert(paise) + " Paise";
+    }
+    return result;
+  };
+
+  const handlePrint = () => {
+    // Create a new window and write the receipt template
+    const printWindow = window.open("", "_blank");
+    const receiptContent = ReceiptTemplate({
+      uniqueDonorId: receiptData.uniqueNo,
+      receiptNumber: receiptData.receiptNumber,
+      formattedDate: receiptData.date,
+      donorDetails: {
+        title: receiptData.title || "",
+        name: receiptData.donorName,
+        houseNumber: receiptData.address?.flatNo,
+        streetName: receiptData.address?.streetName,
+        postOffice: receiptData.address?.postOffice,
+        district: receiptData.address?.district,
+        state: receiptData.address?.state,
+        pincode: receiptData.address?.pincode,
+        identityType: receiptData.identityType,
+        identityNumber: receiptData.identityNumber,
+      },
+      currentReceipt: {
+        donationDetails: {
+          amount: receiptData.amount,
+          transactionType: receiptData.transactionType,
+          donationType: receiptData.donationType,
+          purpose: receiptData.purpose,
+          otherPurpose: receiptData.otherPurpose,
+          inMemoryOf: receiptData.inMemoryOf,
+          transactionDetails: {
+            ddDate: receiptData.transactionDetails?.date,
+            bankName: receiptData.transactionDetails?.bankName,
+          },
+        },
+      },
+      numberToWords,
+      user: receiptData.user,
+    });
+
+    printWindow.document.write(receiptContent);
+    printWindow.document.close();
+    onConfirmPrint();
+  };
 
   return (
     <div
@@ -29,10 +156,10 @@ const ReceiptPreviewModal = ({
           borderRadius: "8px",
           width: "90%",
           maxWidth: "900px",
-          height: "60vh",
+          height: "68vh",
           paddingTop: "30px",
-          paddingLeft: "30px",
-          paddingRight: "30px",
+          paddingLeft: "40px",
+          paddingRight: "40px",
           paddingBottom: "0px",
           boxShadow: "0 2px 10px rgba(0, 0, 0, 0.1)",
         }}
@@ -45,7 +172,9 @@ const ReceiptPreviewModal = ({
             marginBottom: "20px",
           }}
         >
-          <h2 style={{ margin: 0, fontSize: "20px", fontWeight: 400 }}>
+          <h2
+            style={{ marginBottom: "10px", fontSize: "18px", fontWeight: 400 }}
+          >
             Receipt Preview
           </h2>
           <button
@@ -66,13 +195,13 @@ const ReceiptPreviewModal = ({
             style={{
               display: "flex",
               justifyContent: "space-between",
-              marginBottom: "20px",
+              marginBottom: "40px",
             }}
           >
             <span>
               Receipt No:{" "}
               <span style={{ fontWeight: 500 }}>
-                {receiptData.receiptNumber}
+                {receiptData.uniqueNo} / {receiptData.receiptNumber}
               </span>
             </span>
             <span>Date: {receiptData.date}</span>
@@ -85,7 +214,13 @@ const ReceiptPreviewModal = ({
                 marginBottom: "10px",
               }}
             >
-              <span style={{ marginRight: "10px", color: "#696969" }}>
+              <span
+                style={{
+                  fontWeight: 300,
+                  marginRight: "10px",
+                  color: "#696969",
+                }}
+              >
                 Received With Thanks From
               </span>
               <span style={{ fontWeight: 500, color: "#666" }}>
@@ -134,6 +269,7 @@ const ReceiptPreviewModal = ({
             >
               <span
                 style={{
+                  fontWeight: 300,
                   marginRight: "10px",
                   color: "#696969",
                 }}
@@ -151,11 +287,17 @@ const ReceiptPreviewModal = ({
                 marginBottom: "10px",
               }}
             >
-              <span style={{ marginRight: "10px", color: "#696969" }}>
+              <span
+                style={{
+                  fontWeight: 300,
+                  marginRight: "10px",
+                  color: "#696969",
+                }}
+              >
                 The Sum of Rupees:
               </span>
               <span style={{ color: "#666", fontWeight: 500 }}>
-                {receiptData.amount}
+                {numberToWords(parseFloat(receiptData.amount))}
               </span>
             </div>
 
@@ -165,7 +307,13 @@ const ReceiptPreviewModal = ({
                 marginBottom: "10px",
               }}
             >
-              <span style={{ marginRight: "10px", color: "#696969" }}>
+              <span
+                style={{
+                  fontWeight: 300,
+                  marginRight: "10px",
+                  color: "#696969",
+                }}
+              >
                 As Donation for:
               </span>
               <span style={{ color: "#666", fontWeight: 500 }}>
@@ -175,8 +323,8 @@ const ReceiptPreviewModal = ({
 
             <div
               style={{
-                fontSize: "20px",
-                fontWeight: "500",
+                fontSize: "18px",
+                fontWeight: "400",
                 textAlign: "left",
                 marginTop: "20px",
               }}
@@ -214,7 +362,7 @@ const ReceiptPreviewModal = ({
                 color: "white",
                 cursor: "pointer",
               }}
-              onClick={onConfirmPrint}
+              onClick={handlePrint}
             >
               Confirm Print
             </button>
