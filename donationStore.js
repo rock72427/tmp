@@ -132,10 +132,25 @@ const useDonationStore = create((set) => ({
   // Remove donor tab
   removeDonorTab: (tabId) =>
     set((state) => {
+      // If it's the last tab, create a new empty tab instead of removing
       if (Object.keys(state.donorTabs).length <= 1) {
-        return state; // Don't remove if it's the last tab
+        return {
+          donorTabs: {
+            1: {
+              // Reset to tab ID 1
+              ...initialTabState,
+              receiptNumbers: {
+                math: `MT ${state.nextReceiptNumbers.mtNumber}`,
+                mission: `MSN ${state.nextReceiptNumbers.msnNumber}`,
+              },
+              uniqueNo: `C${state.nextReceiptNumbers.uniqueNumber}`,
+            },
+          },
+          activeTabId: 1,
+        };
       }
 
+      // Normal removal logic for non-last tabs
       const newDonorTabs = { ...state.donorTabs };
       delete newDonorTabs[tabId];
 
