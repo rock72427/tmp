@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./DonorDetails.scss";
 import useDonationStore from "../../../../donationStore";
+import { fetchGuestDetails } from "../../../../services/src/services/guestDetailsService";
 
 const DonorDetails = ({ activeTab }) => {
   const deekshaOptions = [
@@ -49,6 +50,9 @@ const DonorDetails = ({ activeTab }) => {
   const [phoneError, setPhoneError] = useState("");
   const [emailError, setEmailError] = useState("");
   const [identityError, setIdentityError] = useState("");
+  const [suggestions, setSuggestions] = useState([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [guestList, setGuestList] = useState([]);
 
   const updateAndSyncDonorDetails = (details) => {
     updateDonorDetails(activeTabId, currentSection, details);
@@ -110,6 +114,18 @@ const DonorDetails = ({ activeTab }) => {
     // Only allow letters, spaces, and dots
     if (/^[A-Za-z\s.]*$/.test(value)) {
       updateAndSyncDonorDetails({ name: value });
+
+      // Filter suggestions based on input
+      if (value.length > 0) {
+        const filtered = guestList.filter((guest) =>
+          guest.attributes.name.toLowerCase().includes(value.toLowerCase())
+        );
+        setSuggestions(filtered);
+        setShowSuggestions(true);
+      } else {
+        setSuggestions([]);
+        setShowSuggestions(false);
+      }
     }
   };
 
@@ -209,6 +225,47 @@ const DonorDetails = ({ activeTab }) => {
     }
   };
 
+  const handleFetchGuests = async () => {
+    try {
+      const guests = await fetchGuestDetails();
+      setGuestList(guests.data);
+    } catch (error) {
+      console.error("Error fetching guests:", error);
+    }
+  };
+
+  const handleSuggestionClick = (guest) => {
+    const {
+      name,
+      phone_number,
+      email,
+      deeksha,
+      identity_proof,
+      identity_number,
+    } = guest.attributes;
+
+    updateAndSyncDonorDetails({
+      name: name.replace(/^(Sri|Smt|Mr|Mrs|Ms|Dr|Prof)\s+/, ""), // Remove title prefix
+      phone: phone_number.replace("+91", ""),
+      email,
+      deeksha,
+      identityType: identity_proof,
+      identityNumber: identity_number,
+    });
+
+    // Extract and set title if present
+    const titleMatch = name.match(/^(Sri|Smt|Mr|Mrs|Ms|Dr|Prof)/);
+    if (titleMatch) {
+      updateAndSyncDonorDetails({ title: titleMatch[0] });
+    }
+
+    setShowSuggestions(false);
+  };
+
+  useEffect(() => {
+    handleFetchGuests();
+  }, []);
+
   return (
     <div
       className={`donor-details ${
@@ -242,14 +299,59 @@ const DonorDetails = ({ activeTab }) => {
                 <option>Dr</option>
                 <option>Prof</option>
               </select>
-              <input
-                className="donor-input"
-                type="text"
-                value={currentDonorDetails.name}
-                onChange={handleNameChange}
-                pattern="[A-Za-z\s.]+"
-                title="Please enter only letters, spaces, and dots"
-              />
+              <div
+                className="autocomplete-container"
+                style={{ position: "relative", flex: 1 }}
+              >
+                <input
+                  className="donor-input"
+                  type="text"
+                  value={currentDonorDetails.name}
+                  onChange={handleNameChange}
+                  pattern="[A-Za-z\s.]+"
+                  title="Please enter only letters, spaces, and dots"
+                />
+                {showSuggestions && suggestions.length > 0 && (
+                  <ul
+                    className="suggestions-list"
+                    style={{
+                      position: "absolute",
+                      top: "100%",
+                      left: 0,
+                      right: 0,
+                      zIndex: 1000,
+                      backgroundColor: "white",
+                      border: "1px solid #ccc",
+                      borderRadius: "4px",
+                      maxHeight: "200px",
+                      overflowY: "auto",
+                      listStyle: "none",
+                      padding: 0,
+                      margin: 0,
+                    }}
+                  >
+                    {suggestions.map((guest) => (
+                      <li
+                        key={guest.id}
+                        onClick={() => handleSuggestionClick(guest)}
+                        style={{
+                          padding: "8px 12px",
+                          cursor: "pointer",
+                          borderBottom: "1px solid #eee",
+                        }}
+                        onMouseEnter={(e) =>
+                          (e.target.style.backgroundColor = "#f0f0f0")
+                        }
+                        onMouseLeave={(e) =>
+                          (e.target.style.backgroundColor = "white")
+                        }
+                      >
+                        {guest.attributes.name}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
             </div>
             {fieldErrors.donor.name && (
               <span
