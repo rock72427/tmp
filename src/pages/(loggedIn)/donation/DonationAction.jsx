@@ -217,40 +217,42 @@ const DonationAction = ({ totalAmount = 0, activeTab, transactionType }) => {
     }
   };
 
-  const handlePrintReceipt = async () => {
-    try {
-      const receiptResponse = await createReceipt("completed");
+  const handlePrintReceipt = () => {
+    if (!validateFields()) return;
 
-      // Prepare receipt data
-      const currentTab = donorTabs[activeTabId];
-      const currentDonorDetails = currentTab[currentSection].donorDetails;
-      const currentDonationDetails = currentTab[currentSection].donationDetails;
+    // Prepare receipt data for preview
+    const currentTab = donorTabs[activeTabId];
+    const currentDonorDetails = currentTab[currentSection].donorDetails;
+    const currentDonationDetails = currentTab[currentSection].donationDetails;
 
-      setReceiptData({
-        receiptNumber: currentTab.receiptNumbers[currentSection],
-        date: new Date().toLocaleDateString(),
-        donorName: `${currentDonorDetails.title} ${currentDonorDetails.name}`,
-        address: {
-          flatNo: currentDonorDetails.flatNo,
-          postOffice: currentDonorDetails.postOffice,
-          district: currentDonorDetails.district,
-          state: currentDonorDetails.state,
-          pincode: currentDonorDetails.pincode,
-        },
-        transactionType: transactionType,
-        amount: totalAmount.toFixed(2),
-        purpose: currentDonationDetails.purpose,
-      });
+    setReceiptData({
+      receiptNumber: currentTab.receiptNumbers[currentSection],
+      date: new Date().toLocaleDateString(),
+      donorName: `${currentDonorDetails.title} ${currentDonorDetails.name}`,
+      address: {
+        flatNo: currentDonorDetails.flatNo,
+        postOffice: currentDonorDetails.postOffice,
+        district: currentDonorDetails.district,
+        state: currentDonorDetails.state,
+        pincode: currentDonorDetails.pincode,
+      },
+      transactionType: transactionType,
+      amount: totalAmount.toFixed(2),
+      purpose: currentDonationDetails.purpose,
+    });
 
-      setShowReceiptPreview(true);
-    } catch (error) {
-      // Error is already handled in createReceipt
-    }
+    setShowReceiptPreview(true);
   };
 
-  const handleConfirmPrint = () => {
-    window.print();
-    setShowReceiptPreview(false);
+  const handleConfirmPrint = async () => {
+    try {
+      // Create receipt, guest, and donation here
+      await createReceipt("completed");
+      window.print();
+      setShowReceiptPreview(false);
+    } catch (error) {
+      // Error handling is done in createReceipt
+    }
   };
 
   const handlePending = () => {
