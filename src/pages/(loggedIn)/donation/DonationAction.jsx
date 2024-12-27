@@ -1,7 +1,10 @@
 import "./DonationAction.scss";
 import useDonationStore from "../../../../donationStore";
 import { useAuthStore } from "../../../../store/authStore";
-import { createNewReceiptDetail } from "../../../../services/src/services/receiptDetailsService";
+import {
+  createNewReceiptDetail,
+  fetchUniqueNumbers,
+} from "../../../../services/src/services/receiptDetailsService";
 import { createNewGuestDetails } from "../../../../services/src/services/guestDetailsService";
 import { createNewDonation } from "../../../../services/src/services/donationsService";
 import { useEffect, useState } from "react";
@@ -13,10 +16,27 @@ const DonationAction = ({ totalAmount = 0, activeTab, transactionType }) => {
   const currentSection = activeTab.toLowerCase();
   const [showReceiptPreview, setShowReceiptPreview] = useState(false);
   const [receiptData, setReceiptData] = useState(null);
+  const [uniqueNumbers, setUniqueNumbers] = useState([]);
 
   useEffect(() => {
     console.log("user", user);
   }, [user]);
+
+  useEffect(() => {
+    const getUniqueNumbers = async () => {
+      try {
+        const response = await fetchUniqueNumbers();
+        response.data.map((item) => {
+          console.log(item.attributes.unique_no);
+        });
+        setUniqueNumbers(response);
+      } catch (error) {
+        console.error("Error fetching unique numbers:", error);
+      }
+    };
+
+    getUniqueNumbers();
+  }, []);
 
   const validateFields = () => {
     const currentTab = donorTabs[activeTabId][currentSection];
