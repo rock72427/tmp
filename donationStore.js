@@ -56,10 +56,10 @@ const useDonationStore = create((set) => ({
     1: {
       ...initialTabState,
       receiptNumbers: {
-        math: "MT 1",
-        mission: "MSN 1",
+        math: "",
+        mission: "",
       },
-      uniqueNo: "C1",
+      uniqueNo: "",
     },
   },
   activeTabId: 1,
@@ -95,25 +95,23 @@ const useDonationStore = create((set) => ({
   // Add new donor tab
   addNewDonorTab: () =>
     set((state) => {
+      const existingTabIds = Object.keys(state.donorTabs).map(Number);
       const newTabId =
-        Math.max(...Object.keys(state.donorTabs).map(Number)) + 1;
-      const lastTabId = Math.max(...Object.keys(state.donorTabs).map(Number));
+        existingTabIds.length > 0 ? Math.max(...existingTabIds) + 1 : 1;
+      const lastTabId =
+        existingTabIds.length > 0 ? Math.max(...existingTabIds) : 0;
       const lastTab = state.donorTabs[lastTabId];
 
-      // Handle initial case when no receipt numbers exist
-      let nextMT, nextMSN, nextUniqueNo;
-
-      if (!lastTab.receiptNumbers?.math || !lastTab.receiptNumbers?.mission) {
-        // Use the base numbers from nextReceiptNumbers if no previous numbers exist
-        nextMT = state.nextReceiptNumbers.mtNumber;
-        nextMSN = state.nextReceiptNumbers.msnNumber;
-        nextUniqueNo = state.nextReceiptNumbers.uniqueNumber;
-      } else {
-        // Get the next MT and MSN numbers from last tab
-        nextMT = parseInt(lastTab.receiptNumbers.math.split(" ")[1]) + 1;
-        nextMSN = parseInt(lastTab.receiptNumbers.mission.split(" ")[1]) + 1;
-        nextUniqueNo = parseInt(lastTab.uniqueNo.substring(1)) + 1;
-      }
+      // Safe default values
+      const nextMT = lastTab?.receiptNumbers?.math
+        ? parseInt(lastTab.receiptNumbers.math.split(" ")[1]) + 1
+        : state.nextReceiptNumbers.mtNumber;
+      const nextMSN = lastTab?.receiptNumbers?.mission
+        ? parseInt(lastTab.receiptNumbers.mission.split(" ")[1]) + 1
+        : state.nextReceiptNumbers.msnNumber;
+      const nextUniqueNo = lastTab?.uniqueNo
+        ? parseInt(lastTab.uniqueNo.substring(1)) + 1
+        : state.nextReceiptNumbers.uniqueNumber;
 
       return {
         donorTabs: {
@@ -134,6 +132,10 @@ const useDonationStore = create((set) => ({
   // Remove donor tab
   removeDonorTab: (tabId) =>
     set((state) => {
+      if (Object.keys(state.donorTabs).length <= 1) {
+        return state; // Don't remove if it's the last tab
+      }
+
       const newDonorTabs = { ...state.donorTabs };
       delete newDonorTabs[tabId];
 

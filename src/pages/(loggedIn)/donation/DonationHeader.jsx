@@ -71,9 +71,9 @@ const DonationHeader = ({ onTabChange }) => {
     }
   };
 
-  const activeTab = donorTabs[activeTabId];
+  const activeTab = donorTabs[activeTabId] || initialTabState;
   const currentReceiptNumber =
-    activeTab.receiptNumbers?.[activeTab.activeSection] || "";
+    activeTab?.receiptNumbers?.[activeTab?.activeSection] || "";
 
   return (
     <div className="atth-donation-wrapper">
