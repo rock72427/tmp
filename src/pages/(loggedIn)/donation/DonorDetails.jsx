@@ -40,6 +40,7 @@ const DonorDetails = ({ activeTab }) => {
     updateDonationDetails,
     fieldErrors,
     setFieldErrors,
+    updateUniqueNo,
   } = useDonationStore();
 
   const currentSection = activeTab.toLowerCase();
@@ -245,18 +246,15 @@ const DonorDetails = ({ activeTab }) => {
       identity_proof,
       identity_number,
       address,
+      donations,
     } = guest.attributes;
 
-    // Extract address components
-    const addressParts = address
-      .split(", ")
-      .filter((part) => part.trim() !== "");
-    const pincode = addressParts[addressParts.length - 1];
-    const state = addressParts[addressParts.length - 2];
-    const district = addressParts[addressParts.length - 3];
-    const postOffice = addressParts[addressParts.length - 4] || "";
+    // Check if there's a unique_no in the receipt details
+    const uniqueNo =
+      donations?.data[0]?.attributes?.receipt_detail?.data?.attributes
+        ?.unique_no;
 
-    // Only set flat and street if they're not empty in the original address
+    // Extract address components
     const rawAddressParts = address.split(", ");
     const flatNo =
       rawAddressParts[0] && rawAddressParts[0].trim() !== ""
@@ -267,7 +265,7 @@ const DonorDetails = ({ activeTab }) => {
         ? rawAddressParts[1]
         : "";
 
-    // Update all donor details including address
+    // Update donor details
     updateAndSyncDonorDetails({
       name: name.replace(/^(Sri|Smt|Mr|Mrs|Ms|Dr|Prof)\s+/, ""),
       phone: phone_number.replace("+91", ""),
@@ -275,13 +273,19 @@ const DonorDetails = ({ activeTab }) => {
       deeksha,
       identityType: identity_proof,
       identityNumber: identity_number,
-      pincode,
-      state,
-      district,
-      postOffice,
+      pincode: rawAddressParts[rawAddressParts.length - 1] || "",
+      state: rawAddressParts[rawAddressParts.length - 2] || "",
+      district: rawAddressParts[rawAddressParts.length - 3] || "",
+      postOffice: rawAddressParts[rawAddressParts.length - 4] || "",
       flatNo,
       streetName,
     });
+
+    // If unique_no exists, update it in the store
+    if (uniqueNo) {
+      // You'll need to add a new action in your store to update the uniqueNo
+      updateUniqueNo(activeTabId, uniqueNo);
+    }
 
     // Extract and set title if present
     const titleMatch = name.match(/^(Sri|Smt|Mr|Mrs|Ms|Dr|Prof)/);

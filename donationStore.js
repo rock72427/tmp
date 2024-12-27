@@ -339,6 +339,18 @@ const useDonationStore = create((set) => ({
         transaction: {},
       },
     }),
+
+  // Add this to your store actions
+  updateUniqueNo: (tabId, uniqueNo) =>
+    set((state) => ({
+      donorTabs: {
+        ...state.donorTabs,
+        [tabId]: {
+          ...state.donorTabs[tabId],
+          uniqueNo: uniqueNo,
+        },
+      },
+    })),
 }));
 
 export default useDonationStore;
