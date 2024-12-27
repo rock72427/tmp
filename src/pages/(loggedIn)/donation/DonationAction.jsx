@@ -264,10 +264,9 @@ const DonationAction = ({ totalAmount = 0, activeTab, transactionType }) => {
     try {
       // Create receipt, guest, and donation here
       await createReceipt("completed");
-      window.print();
       setShowReceiptPreview(false);
 
-      // Add this: Remove the current tab after successful printing
+      // Remove the current tab after successful printing
       const { removeDonorTab, activeTabId } = useDonationStore.getState();
       removeDonorTab(activeTabId);
     } catch (error) {
