@@ -32,34 +32,9 @@ export const fetchDonationById = async (id) => {
 };
 
 // Create a new donation
-export const createNewDonation = async ({
-  guest,
-  purpose,
-  donationAmount,
-  transactionType,
-  inMemoryOf,
-  ddch_date,
-  ddch_number,
-  bankName,
-  branchName,
-}) => {
+export const createNewDonation = async (data) => {
   try {
-    const donationData = {
-      guestId: guest,
-      purpose,
-      donationType: transactionType,
-      amount: donationAmount,
-      transactionType,
-      inMemoryOf,
-      transactionDetails: {
-        date: ddch_date,
-        number: ddch_number,
-        bankName,
-        branchName,
-      },
-    };
-
-    const response = await createDonation(donationData);
+    const response = await createDonation(data);
     return response.data;
   } catch (error) {
     console.error("Error creating donation:", error);

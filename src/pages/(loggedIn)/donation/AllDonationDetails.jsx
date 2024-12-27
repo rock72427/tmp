@@ -172,8 +172,8 @@ const AllDonationDetails = () => {
             onChange={handleDonatedForChange}
           >
             <option value="ALL">All</option>
-            <option value="MATH">Math Donation</option>
-            <option value="MISSION">Ramakrishna Mission</option>
+            <option value="MATH">Math</option>
+            <option value="MISSION">Mission</option>
           </select>
         </div>
 

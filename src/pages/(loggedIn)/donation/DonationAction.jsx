@@ -164,17 +164,17 @@ const DonationAction = ({ totalAmount = 0, activeTab, transactionType }) => {
       };
 
       const guestResponse = await createNewGuestDetails(guestData);
-      // Create donation with explicit guest and receipt IDs
+      // Fixed donation data structure
       const donationData = {
         guest_id: guestResponse.data.id,
         receipt_detail: receiptResponse.data.id,
         donationAmount: currentDonationDetails.amount,
         transactionType: transactionType,
-        donationFor: currentSection, // 'math' or 'mission'
-        ddch_number: currentTransactionDetails.transactionId,
-        ddch_date: currentTransactionDetails.date,
+        donationFor: currentSection,
+        ddch_number: currentTransactionDetails?.transactionId || "",
+        ddch_date: currentTransactionDetails?.date || "",
         InMemoryOf: currentDonationDetails.inMemoryOf,
-        bankName: currentTransactionDetails.bankName,
+        bankName: currentTransactionDetails?.bankName || "",
         status: status,
         purpose: currentDonationDetails.purpose,
         type: currentDonationDetails.donationType,

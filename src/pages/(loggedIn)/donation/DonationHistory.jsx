@@ -2,7 +2,7 @@ import "./DonationHistory.scss";
 
 const DonationHistory = () => {
   return (
-    <div className="donation-container">
+    <div className="donation-container" style={{ backgroundColor: "#fff" }}>
       <h2>Donation History</h2>
 
       <div className="table-wrapper">
