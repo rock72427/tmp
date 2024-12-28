@@ -220,6 +220,7 @@ const AllDonation = ({
   };
 
   const handleViewDonation = (donation) => {
+    console.log("Submitting donation:", donation);
     navigate("/newDonation", {
       state: {
         donationData: {
