@@ -197,6 +197,7 @@ const DonationAction = ({ totalAmount = 0, activeTab, transactionType }) => {
         donationData.data = {
           ...donationData.data,
           bankName: currentTransactionDetails?.bankName || "",
+          branchName: currentTransactionDetails?.branchName || "",
           ddch_date: currentTransactionDetails?.date || "",
           ddch_number: currentTransactionDetails?.transactionId || "",
         };

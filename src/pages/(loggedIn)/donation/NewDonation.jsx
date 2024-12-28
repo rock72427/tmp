@@ -42,6 +42,10 @@ const NewDonation = () => {
     console.log("NewDonation - Received donation data:", donationData);
     if (donationData) {
       initializeFromDonationData(donationData);
+      // Set the transaction type from the donation data
+      if (donationData.donationDetails?.transactionType) {
+        setTransactionType(donationData.donationDetails.transactionType);
+      }
     }
   }, [location.state, initializeFromDonationData]);
 

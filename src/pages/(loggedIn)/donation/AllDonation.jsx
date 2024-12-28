@@ -231,6 +231,9 @@ const AllDonation = ({
     const address = guestData.address || "";
     const addressParts = address.split(", ");
 
+    // Determine transaction type
+    const transactionType = donation.attributes.transactionType || "Cash";
+
     const donationData = {
       donorDetails: {
         title: guestData.name?.split(" ")[0] || "",
@@ -251,7 +254,7 @@ const AllDonation = ({
         purpose: donation.attributes.purpose || "",
         donationType: donation.attributes.type || "",
         amount: donation.attributes.donationAmount || "",
-        transactionType: donation.attributes.transactionType || "",
+        transactionType: transactionType,
         inMemoryOf: donation.attributes.InMemoryOf || "",
         donationFor: donation.attributes.donationFor || "Math",
       },
@@ -261,6 +264,9 @@ const AllDonation = ({
         bankName: donation.attributes.bankName || "",
         branchName: donation.attributes.branchName || "",
       },
+      showTransactionDetails: ["Cheque", "DD", "Bank Transfer"].includes(
+        transactionType
+      ),
     };
 
     console.log("AllDonation - Prepared donation data:", donationData);
