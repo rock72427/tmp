@@ -298,6 +298,7 @@ const DonationAction = ({ totalAmount = 0, activeTab, transactionType }) => {
           <button
             className="donation-action-btn consent-letter"
             style={{ border: "1px solid #ccc" }}
+            disabled={true}
           >
             <i className="far fa-file-alt"></i>
             Consent Letter
@@ -306,6 +307,7 @@ const DonationAction = ({ totalAmount = 0, activeTab, transactionType }) => {
           <button
             className="donation-action-btn thank-letter"
             style={{ border: "1px solid #ccc" }}
+            disabled={true}
           >
             <i className="far fa-envelope"></i>
             Thank Letter
