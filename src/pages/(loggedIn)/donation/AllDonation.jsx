@@ -130,21 +130,43 @@ const AllDonation = ({
   const getCurrentPageData = () => {
     // Sort donations by date in descending order (newest first)
     const sortedDonations = [...filteredDonations].sort((a, b) => {
-      const dateA = new Date(
-        a.attributes.receipt_detail?.data?.attributes?.donation_date ||
-          a.attributes.updatedAt
+      // Get all possible dates for debugging
+      const aCreatedAt = new Date(a.attributes.createdAt);
+      const bCreatedAt = new Date(b.attributes.createdAt);
+      const aUpdatedAt = new Date(a.attributes.updatedAt);
+      const bUpdatedAt = new Date(b.attributes.updatedAt);
+      const aDonationDate = new Date(
+        a.attributes.receipt_detail?.data?.attributes?.donation_date || ""
       );
-      const dateB = new Date(
-        b.attributes.receipt_detail?.data?.attributes?.donation_date ||
-          b.attributes.updatedAt
+      const bDonationDate = new Date(
+        b.attributes.receipt_detail?.data?.attributes?.donation_date || ""
       );
+
+      // Use the most recent date for each donation
+      const dateA = new Date(Math.max(aCreatedAt, aUpdatedAt, aDonationDate));
+      const dateB = new Date(Math.max(bCreatedAt, bUpdatedAt, bDonationDate));
+
+      console.log("Comparing dates:", {
+        a: { id: a.id, date: dateA },
+        b: { id: b.id, date: dateB },
+      });
+
       return dateB - dateA;
     });
 
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
     const currentData = sortedDonations.slice(startIndex, endIndex);
-    console.log("Current Page Data:", currentData);
+    console.log(
+      "Sorted Donations:",
+      sortedDonations.map((d) => ({
+        id: d.id,
+        createdAt: d.attributes.createdAt,
+        updatedAt: d.attributes.updatedAt,
+        donationDate:
+          d.attributes.receipt_detail?.data?.attributes?.donation_date,
+      }))
+    );
     return currentData;
   };
 
