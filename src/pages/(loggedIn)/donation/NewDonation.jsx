@@ -8,8 +8,11 @@ import TransactionDetails from "./TransactionDetails";
 import useDonationStore from "../../../../donationStore";
 import { useAuthStore } from "../../../../store/authStore";
 import { BiBorderAll } from "react-icons/bi";
+import { useLocation } from "react-router-dom";
 
 const NewDonation = () => {
+  const { initializeFromDonationData } = useDonationStore();
+  const location = useLocation();
   const donationStore = useDonationStore();
   const { activeTabId, setActiveSection } = donationStore;
   console.log("Full Donation Store State:", donationStore);
@@ -33,6 +36,14 @@ const NewDonation = () => {
 
     return () => mediaQuery.removeEventListener("change", handleMediaChange);
   }, []);
+
+  useEffect(() => {
+    const donationData = location.state?.donationData;
+    console.log("NewDonation - Received donation data:", donationData);
+    if (donationData) {
+      initializeFromDonationData(donationData);
+    }
+  }, [location.state, initializeFromDonationData]);
 
   const containerStyle = {
     display: "flex",

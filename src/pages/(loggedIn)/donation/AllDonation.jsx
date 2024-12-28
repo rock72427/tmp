@@ -220,53 +220,53 @@ const AllDonation = ({
   };
 
   const handleViewDonation = (donation) => {
-    console.log("Submitting donation:", donation);
-    navigate("/newDonation", {
-      state: {
-        donationData: {
-          id: donation.id,
-          receiptNumber:
-            donation.attributes.receipt_detail?.data?.attributes
-              ?.Receipt_number,
-          donorName: donation.attributes.guest?.data?.attributes?.name,
-          donationDate:
-            donation.attributes.receipt_detail?.data?.attributes?.donation_date,
-          phoneNumber:
-            donation.attributes.guest?.data?.attributes?.phone_number,
-          donatedFor: donation.attributes.donationFor,
-          status: donation.attributes.status,
-          amount: donation.attributes.donationAmount,
-          createdBy:
-            donation.attributes.receipt_detail?.data?.attributes?.createdBy
-              ?.data?.id || donation.attributes.createdBy?.data?.id,
-          // Additional fields
-          inMemoryOf: donation.attributes.InMemoryOf,
-          bankName: donation.attributes.bankName,
-          ddchDate: donation.attributes.ddch_date,
-          ddchNumber: donation.attributes.ddch_number,
-          purpose: donation.attributes.purpose,
-          transactionType: donation.attributes.transactionType,
-          type: donation.attributes.type,
-          // Guest details
-          guestDetails: {
-            aadhaarNumber:
-              donation.attributes.guest?.data?.attributes?.aadhaar_number,
-            address: donation.attributes.guest?.data?.attributes?.address,
-            age: donation.attributes.guest?.data?.attributes?.age,
-            arrivalDate:
-              donation.attributes.guest?.data?.attributes?.arrival_date,
-            departureDate:
-              donation.attributes.guest?.data?.attributes?.departure_date,
-            deeksha: donation.attributes.guest?.data?.attributes?.deeksha,
-            email: donation.attributes.guest?.data?.attributes?.email,
-            gender: donation.attributes.guest?.data?.attributes?.gender,
-            occupation: donation.attributes.guest?.data?.attributes?.occupation,
-            relationship:
-              donation.attributes.guest?.data?.attributes?.relationship,
-            guestStatus: donation.attributes.guest?.data?.attributes?.status,
-          },
-        },
+    console.log("AllDonation - Processing donation:", donation);
+
+    // Extract guest data for easier access
+    const guestData = donation.attributes.guest?.data?.attributes || {};
+    const receiptData =
+      donation.attributes.receipt_detail?.data?.attributes || {};
+
+    // Format the address components
+    const address = guestData.address || "";
+    const addressParts = address.split(", ");
+
+    const donationData = {
+      donorDetails: {
+        title: guestData.name?.split(" ")[0] || "",
+        name: guestData.name?.split(" ").slice(1).join(" ") || "",
+        phone: guestData.phone_number?.replace("+91", "") || "",
+        email: guestData.email || "",
+        deeksha: guestData.deeksha || "",
+        identityType: guestData.identity_proof || "",
+        identityNumber: guestData.identity_number || "",
+        flatNo: addressParts[0] || "",
+        streetName: addressParts[1] || "",
+        postOffice: addressParts[2] || "",
+        district: addressParts[3] || "",
+        state: addressParts[4] || "",
+        pincode: addressParts[5] || "",
       },
+      donationDetails: {
+        purpose: donation.attributes.purpose || "",
+        donationType: donation.attributes.type || "",
+        amount: donation.attributes.donationAmount || "",
+        transactionType: donation.attributes.transactionType || "",
+        inMemoryOf: donation.attributes.InMemoryOf || "",
+        donationFor: donation.attributes.donationFor || "Math",
+      },
+      transactionDetails: {
+        date: donation.attributes.ddch_date || "",
+        transactionId: donation.attributes.ddch_number || "",
+        bankName: donation.attributes.bankName || "",
+        branchName: donation.attributes.branchName || "",
+      },
+    };
+
+    console.log("AllDonation - Prepared donation data:", donationData);
+
+    navigate("/newDonation", {
+      state: { donationData },
     });
   };
 

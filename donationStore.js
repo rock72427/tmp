@@ -369,6 +369,37 @@ const useDonationStore = create((set) => ({
         },
       },
     })),
+
+  // Add to your existing store
+  initializeFromDonationData: (donationData) => {
+    console.log("Store - Initializing with donation data:", donationData);
+    set((state) => {
+      // Find the next available tab index
+      const nextTabId = Object.keys(state.donorTabs).length;
+
+      return {
+        donorTabs: {
+          ...state.donorTabs,
+          [nextTabId]: {
+            // Create new tab with next available ID
+            math: {
+              donorDetails: donationData.donorDetails,
+              donationDetails: donationData.donationDetails,
+              transactionDetails: donationData.transactionDetails,
+            },
+            mission: {
+              donorDetails: donationData.donorDetails,
+              donationDetails: donationData.donationDetails,
+              transactionDetails: donationData.transactionDetails,
+            },
+            activeSection:
+              donationData.donationDetails.donationFor?.toLowerCase() || "math",
+          },
+        },
+        activeTabId: nextTabId, // Switch to the newly created tab
+      };
+    });
+  },
 }));
 
 export default useDonationStore;
