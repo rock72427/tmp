@@ -94,8 +94,12 @@ const ReceiptPreviewModal = ({
   };
 
   const handlePrint = () => {
-    // Create a new window and write the receipt template
-    const printWindow = window.open("", "_blank");
+    // Create a temporary hidden iframe
+    const printFrame = document.createElement("iframe");
+    printFrame.style.display = "none";
+    document.body.appendChild(printFrame);
+
+    // Generate receipt content
     const receiptContent = ReceiptTemplate({
       uniqueDonorId: receiptData.uniqueNo,
       receiptNumber: receiptData.receiptNumber,
@@ -130,9 +134,30 @@ const ReceiptPreviewModal = ({
       user: receiptData.user,
     });
 
-    printWindow.document.write(receiptContent);
-    printWindow.document.close();
-    onConfirmPrint();
+    // Remove any existing print script from the content
+    const contentWithoutPrintScript = receiptContent.replace(
+      /<script[\s\S]*?<\/script>/gi,
+      ""
+    );
+
+    // Write the content to the iframe
+    printFrame.contentDocument.write(contentWithoutPrintScript);
+    printFrame.contentDocument.close();
+
+    // Force the print dialog to appear immediately
+    printFrame.onload = () => {
+      try {
+        printFrame.contentWindow.print();
+        onConfirmPrint();
+      } catch (error) {
+        console.error("Print failed:", error);
+      } finally {
+        // Remove the iframe after a short delay
+        setTimeout(() => {
+          document.body.removeChild(printFrame);
+        }, 500);
+      }
+    };
   };
 
   return (
