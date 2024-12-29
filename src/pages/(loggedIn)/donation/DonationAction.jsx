@@ -273,15 +273,68 @@ const DonationAction = ({ totalAmount = 0, activeTab, transactionType }) => {
 
   const handleConfirmPrint = async () => {
     try {
-      // Create receipt, guest, and donation here
-      await createReceipt("completed");
+      // Get current tab and donation details
+      const currentTab = donorTabs[activeTabId];
+      const currentDonationId =
+        currentTab[currentSection]?.donationDetails?.donationId;
+      const currentStatus = currentTab[currentSection]?.donationDetails?.status;
+
+      console.log("Current donation details:", {
+        donationId: currentDonationId,
+        status: currentStatus,
+        section: currentSection,
+        tab: currentTab,
+      });
+
+      if (currentStatus === "pending" && currentDonationId) {
+        console.log(
+          "Attempting to update pending donation:",
+          currentDonationId
+        );
+
+        // Update donation status in the database
+        const updateResponse = await updateDonationById(currentDonationId, {
+          data: {
+            status: "completed",
+            // Include any other required fields that might be needed
+            updatedAt: new Date().toISOString(),
+          },
+        });
+
+        console.log("Update response:", updateResponse);
+
+        if (!updateResponse || !updateResponse.data) {
+          throw new Error("Failed to get response from update operation");
+        }
+
+        // Update status in the store
+        updateDonationDetails(activeTabId, currentSection, {
+          status: "completed",
+        });
+
+        console.log("Store updated successfully");
+      } else {
+        console.log("Creating new receipt as donation is not pending");
+        await createReceipt("completed");
+      }
+
       setShowReceiptPreview(false);
 
       // Remove the current tab after successful printing
-      const { removeDonorTab, activeTabId } = useDonationStore.getState();
+      const { removeDonorTab } = useDonationStore.getState();
       removeDonorTab(activeTabId);
     } catch (error) {
-      // Error handling is done in createReceipt
+      console.error("Detailed error in handleConfirmPrint:", {
+        message: error.message,
+        stack: error.stack,
+        response: error.response?.data,
+      });
+
+      alert(
+        `Failed to update donation status: ${
+          error.message || "Unknown error occurred"
+        }`
+      );
     }
   };
 

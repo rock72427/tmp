@@ -89,7 +89,9 @@ const DonationHeader = ({ onTabChange }) => {
   // Get the current tab's donation status
   const isCompleted =
     donorTabs[activeTabId]?.[donorTabs[activeTabId]?.activeSection]
-      ?.donationDetails?.status === "completed";
+      ?.donationDetails?.status === "completed" ||
+    donorTabs[activeTabId]?.[donorTabs[activeTabId]?.activeSection]
+      ?.donationDetails?.status === "pending";
 
   return (
     <div className="atth-donation-wrapper">
