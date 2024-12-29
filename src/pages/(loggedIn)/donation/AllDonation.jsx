@@ -279,6 +279,7 @@ const AllDonation = ({
         transactionType: transactionType,
         inMemoryOf: donation.attributes.InMemoryOf || "",
         donationFor: donation.attributes.donationFor || "Math",
+        status: donation.attributes.status || "completed",
       },
       transactionDetails: {
         date: donation.attributes.ddch_date || "",

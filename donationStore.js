@@ -28,6 +28,7 @@ const initialDonationDetails = {
   panNumber: "",
   transactionType: "Cash",
   inMemoryOf: "",
+  status: "",
 };
 
 const initialTransactionDetails = {
@@ -374,29 +375,34 @@ const useDonationStore = create((set) => ({
   initializeFromDonationData: (donationData) => {
     console.log("Store - Initializing with donation data:", donationData);
     set((state) => {
-      // Find the next available tab index
       const nextTabId = Object.keys(state.donorTabs).length;
+
+      const donationDetailsWithStatus = {
+        ...donationData.donationDetails,
+        status: "completed",
+      };
+
+      console.log("Status being set:", donationDetailsWithStatus.status);
 
       return {
         donorTabs: {
           ...state.donorTabs,
           [nextTabId]: {
-            // Create new tab with next available ID
             math: {
               donorDetails: donationData.donorDetails,
-              donationDetails: donationData.donationDetails,
+              donationDetails: donationDetailsWithStatus,
               transactionDetails: donationData.transactionDetails,
             },
             mission: {
               donorDetails: donationData.donorDetails,
-              donationDetails: donationData.donationDetails,
+              donationDetails: donationDetailsWithStatus,
               transactionDetails: donationData.transactionDetails,
             },
             activeSection:
               donationData.donationDetails.donationFor?.toLowerCase() || "math",
           },
         },
-        activeTabId: nextTabId, // Switch to the newly created tab
+        activeTabId: nextTabId,
       };
     });
   },

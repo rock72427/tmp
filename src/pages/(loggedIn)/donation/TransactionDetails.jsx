@@ -98,6 +98,10 @@ const TransactionDetails = ({ activeTab }) => {
     }
   };
 
+  const isCompleted =
+    donorTabs[activeTabId][currentSection].donationDetails.status ===
+    "completed";
+
   return (
     <div
       className="transaction-container"
@@ -121,6 +125,7 @@ const TransactionDetails = ({ activeTab }) => {
             placeholder="dd-mm-yyyy"
             value={currentTransactionDetails.date}
             onChange={handleDateChange}
+            disabled={isCompleted}
           />
           {fieldErrors.transaction?.date && (
             <span
@@ -147,6 +152,7 @@ const TransactionDetails = ({ activeTab }) => {
             value={currentTransactionDetails.transactionId}
             onChange={handleTransactionIdChange}
             placeholder="Enter numbers only"
+            disabled={isCompleted}
           />
           {(transactionIdError || fieldErrors.transaction?.transactionId) && (
             <span
@@ -173,6 +179,7 @@ const TransactionDetails = ({ activeTab }) => {
             value={currentTransactionDetails.bankName}
             onChange={handleBankNameChange}
             placeholder="Enter bank name"
+            disabled={isCompleted}
           />
           {(bankNameError || fieldErrors.transaction?.bankName) && (
             <span
@@ -199,6 +206,7 @@ const TransactionDetails = ({ activeTab }) => {
             value={currentTransactionDetails.branchName}
             onChange={handleBranchNameChange}
             placeholder="Enter branch name"
+            disabled={isCompleted}
           />
           {(branchNameError || fieldErrors.transaction?.branchName) && (
             <span

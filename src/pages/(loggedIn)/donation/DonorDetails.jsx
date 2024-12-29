@@ -56,6 +56,10 @@ const DonorDetails = ({ activeTab }) => {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [guestList, setGuestList] = useState([]);
 
+  const isCompleted =
+    donorTabs[activeTabId][currentSection].donationDetails.status ===
+    "completed";
+
   const updateAndSyncDonorDetails = (details) => {
     updateDonorDetails(activeTabId, currentSection, details);
     const otherSection = currentSection === "math" ? "mission" : "math";
@@ -344,6 +348,7 @@ const DonorDetails = ({ activeTab }) => {
                 className="donor-select"
                 value={currentDonorDetails.title}
                 onChange={handleTitleChange}
+                disabled={isCompleted}
               >
                 <option>Sri</option>
                 <option>Smt</option>
@@ -364,6 +369,7 @@ const DonorDetails = ({ activeTab }) => {
                   onChange={handleNameChange}
                   pattern="[A-Za-z\s.]+"
                   title="Please enter only letters, spaces, and dots"
+                  disabled={isCompleted}
                 />
                 {showSuggestions && suggestions.length > 0 && (
                   <ul
@@ -433,6 +439,7 @@ const DonorDetails = ({ activeTab }) => {
               value={currentDonorDetails.phone}
               onChange={handlePhoneChange}
               maxLength={10}
+              disabled={isCompleted}
             />
             {(phoneError || fieldErrors.donor?.phone) && (
               <span
@@ -459,6 +466,7 @@ const DonorDetails = ({ activeTab }) => {
               className="donor-select"
               value={currentDonorDetails.deeksha}
               onChange={handleDeekshaChange}
+              disabled={isCompleted}
             >
               <option value="">Select Deeksha</option>
               {deekshaOptions.map((option, index) => (
@@ -490,6 +498,7 @@ const DonorDetails = ({ activeTab }) => {
               name="roomNo"
               value={currentDonorDetails.roomNo}
               onChange={handleInputChange}
+              disabled={isCompleted}
             />
           </div>
         </div>
@@ -503,6 +512,7 @@ const DonorDetails = ({ activeTab }) => {
               name="email"
               value={currentDonorDetails.email}
               onChange={handleInputChange}
+              disabled={isCompleted}
             />
             {emailError && (
               <span
@@ -528,6 +538,7 @@ const DonorDetails = ({ activeTab }) => {
                 className="identity-select"
                 value={currentDonorDetails.identityType}
                 onChange={handleIdentityTypeChange}
+                disabled={isCompleted}
               >
                 <option>Aadhaar</option>
                 <option>PAN Card</option>
@@ -540,6 +551,7 @@ const DonorDetails = ({ activeTab }) => {
                 type="text"
                 value={currentDonorDetails.identityNumber}
                 onChange={handleIdentityInputChange}
+                disabled={isCompleted}
               />
             </div>
             {fieldErrors.donor.identityNumber && (
@@ -570,6 +582,7 @@ const DonorDetails = ({ activeTab }) => {
                 value={currentDonorDetails.pincode}
                 onChange={handlePincodeChange}
                 maxLength={6}
+                disabled={isCompleted}
               />
               {loading && <span className="loading-spinner">🔄</span>}
             </div>
@@ -598,6 +611,7 @@ const DonorDetails = ({ activeTab }) => {
               name="state"
               value={currentDonorDetails.state}
               onChange={handleInputChange}
+              disabled={isCompleted}
             />
           </div>
 
@@ -611,6 +625,7 @@ const DonorDetails = ({ activeTab }) => {
               name="district"
               value={currentDonorDetails.district}
               onChange={handleInputChange}
+              disabled={isCompleted}
             />
           </div>
         </div>
@@ -624,6 +639,7 @@ const DonorDetails = ({ activeTab }) => {
               name="flatNo"
               value={currentDonorDetails.flatNo}
               onChange={handleInputChange}
+              disabled={isCompleted}
             />
           </div>
 
@@ -635,6 +651,7 @@ const DonorDetails = ({ activeTab }) => {
               name="streetName"
               value={currentDonorDetails.streetName}
               onChange={handleInputChange}
+              disabled={isCompleted}
             />
           </div>
 
@@ -646,6 +663,7 @@ const DonorDetails = ({ activeTab }) => {
               name="postOffice"
               value={currentDonorDetails.postOffice}
               onChange={handleInputChange}
+              disabled={isCompleted}
             />
           </div>
         </div>

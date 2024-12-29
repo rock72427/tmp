@@ -44,8 +44,11 @@ const DonationHeader = ({ onTabChange }) => {
   }, [nextReceiptNumbers]);
 
   const handleTabChange = (section) => {
-    setActiveSection(activeTabId, section.toLowerCase());
-    onTabChange(section);
+    if (!isCompleted) {
+      // Only allow tab changes if not completed
+      setActiveSection(activeTabId, section.toLowerCase());
+      onTabChange(section);
+    }
   };
 
   const formatDateTime = (date) => {
@@ -75,6 +78,11 @@ const DonationHeader = ({ onTabChange }) => {
   const currentReceiptNumber =
     activeTab?.receiptNumbers?.[activeTab?.activeSection] || "";
 
+  // Get the current tab's donation status
+  const isCompleted =
+    donorTabs[activeTabId]?.[donorTabs[activeTabId]?.activeSection]
+      ?.donationDetails?.status === "completed";
+
   return (
     <div className="atth-donation-wrapper">
       <div className="atth-donation-header">
@@ -85,33 +93,43 @@ const DonationHeader = ({ onTabChange }) => {
               className="atth-donor-tabs"
               style={{ flexWrap: "wrap", maxHeight: "80px", overflowY: "auto" }}
             >
-              {donorTabsArray.map((tab) => (
-                <button
-                  key={tab.id}
-                  className={`atth-btn-donor ${
-                    activeTabId === tab.id ? "active" : ""
-                  }`}
-                  style={{
-                    fontSize: "0.95rem",
-                    margin: "4px",
-                    whiteSpace: "nowrap",
-                    backgroundColor: activeTabId === tab.id ? "#eb831c" : "",
-                    color: activeTabId === tab.id ? "#fff" : "",
-                  }}
-                  onClick={() => setActiveTab(tab.id)}
-                >
-                  {tab.label}
-                  <span
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleRemoveDonor(tab.id);
+              {donorTabsArray.map((tab) => {
+                const isTabCompleted =
+                  donorTabs[tab.id]?.[donorTabs[tab.id]?.activeSection]
+                    ?.donationDetails?.status === "completed";
+
+                return (
+                  <button
+                    key={tab.id}
+                    className={`atth-btn-donor ${
+                      activeTabId === tab.id ? "active" : ""
+                    }`}
+                    style={{
+                      fontSize: "0.95rem",
+                      margin: "4px",
+                      whiteSpace: "nowrap",
+                      backgroundColor: activeTabId === tab.id ? "#eb831c" : "",
+                      color: activeTabId === tab.id ? "#fff" : "",
+                      opacity: isTabCompleted ? 0.7 : 1,
+                      cursor: "pointer",
                     }}
-                    style={{ marginLeft: "8px" }}
+                    onClick={() => setActiveTab(tab.id)}
                   >
-                    ×
-                  </span>
-                </button>
-              ))}
+                    {tab.label}
+                    {!isTabCompleted && (
+                      <span
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleRemoveDonor(tab.id);
+                        }}
+                        style={{ marginLeft: "8px" }}
+                      >
+                        ×
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
             </div>
             <button
               className="atth-btn-add"
@@ -160,6 +178,10 @@ const DonationHeader = ({ onTabChange }) => {
               }`}
               onClick={() => handleTabChange("Math")}
               data-tab="math"
+              style={{
+                cursor: isCompleted ? "not-allowed" : "pointer",
+                opacity: isCompleted ? 0.7 : 1,
+              }}
             >
               Math
             </button>
@@ -171,6 +193,10 @@ const DonationHeader = ({ onTabChange }) => {
               }`}
               onClick={() => handleTabChange("Mission")}
               data-tab="mission"
+              style={{
+                cursor: isCompleted ? "not-allowed" : "pointer",
+                opacity: isCompleted ? 0.7 : 1,
+              }}
             >
               Mission
             </button>
@@ -180,7 +206,7 @@ const DonationHeader = ({ onTabChange }) => {
             <span className="atth-receipt-number">{currentReceiptNumber}</span>
           </div>
         </div>
-        <button className="atth-btn-reset">↻ Reset</button>
+        {!isCompleted && <button className="atth-btn-reset">↻ Reset</button>}
       </div>
     </div>
   );

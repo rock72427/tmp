@@ -102,6 +102,10 @@ const Details = ({ activeTab, onTransactionTypeChange }) => {
     clearFieldError("inMemoryOf");
   };
 
+  const isCompleted =
+    donorTabs[activeTabId][currentSection].donationDetails.status ===
+    "completed";
+
   return (
     <div
       className={`donation-form ${
@@ -118,6 +122,7 @@ const Details = ({ activeTab, onTransactionTypeChange }) => {
             className="donation-form__select"
             value={currentDonationDetails.purpose}
             onChange={handlePurposeChange}
+            disabled={isCompleted}
           >
             <option value="" disabled>
               Select Purpose
@@ -184,6 +189,7 @@ const Details = ({ activeTab, onTransactionTypeChange }) => {
             placeholder=""
             value={currentDonationDetails.amount}
             onChange={handleAmountChange}
+            disabled={isCompleted}
           />
           {fieldErrors.donation.amount && (
             <span
