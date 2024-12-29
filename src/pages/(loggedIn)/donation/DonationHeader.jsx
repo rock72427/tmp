@@ -16,6 +16,7 @@ const DonationHeader = ({ onTabChange }) => {
     removeDonorTab,
     nextReceiptNumbers,
     fetchLatestReceiptNumbers,
+    clearInitializedData,
   } = useDonationStore();
 
   // Add auth store
@@ -68,8 +69,15 @@ const DonationHeader = ({ onTabChange }) => {
   };
 
   const handleRemoveDonor = (id) => {
-    if (Object.keys(donorTabs).length > 1) {
-      // Prevent removing last tab
+    const isInitializedTab =
+      donorTabs[id]?.[donorTabs[id]?.activeSection]?.donationDetails
+        ?.donationId;
+
+    if (isInitializedTab) {
+      // If it's an initialized tab, just clear the data
+      clearInitializedData(id);
+    } else if (Object.keys(donorTabs).length > 1) {
+      // Otherwise, remove the tab if it's not the last one
       removeDonorTab(id);
     }
   };

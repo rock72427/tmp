@@ -132,7 +132,7 @@ const useDonationStore = create((set) => ({
     }),
 
   // Remove donor tab
-  removeDonorTab: (tabId) =>
+  removeDonorTab: (id) =>
     set((state) => {
       // If it's the last tab, create a new empty tab instead of removing
       if (Object.keys(state.donorTabs).length <= 1) {
@@ -154,7 +154,7 @@ const useDonationStore = create((set) => ({
 
       // Normal removal logic for non-last tabs
       const newDonorTabs = { ...state.donorTabs };
-      delete newDonorTabs[tabId];
+      delete newDonorTabs[id];
 
       // Reassign receipt numbers to remaining tabs
       const sortedTabIds = Object.keys(newDonorTabs).sort(
@@ -175,11 +175,12 @@ const useDonationStore = create((set) => ({
         };
       });
 
-      const remainingTabs = Object.keys(newDonorTabs).map(Number);
-      const newActiveTabId =
-        state.activeTabId === tabId
-          ? Math.max(...remainingTabs)
-          : state.activeTabId;
+      // If the removed tab was active, set a new active tab
+      let newActiveTabId = state.activeTabId;
+      if (state.activeTabId === id) {
+        const remainingIds = Object.keys(newDonorTabs);
+        newActiveTabId = remainingIds.length > 0 ? Number(remainingIds[0]) : 1;
+      }
 
       return {
         donorTabs: newDonorTabs,
@@ -423,6 +424,22 @@ const useDonationStore = create((set) => ({
       };
     });
   },
+
+  // Add this new action
+  clearInitializedData: (tabId) =>
+    set((state) => ({
+      donorTabs: {
+        ...state.donorTabs,
+        [tabId]: {
+          ...initialTabState,
+          receiptNumbers: {
+            math: `MT ${state.nextReceiptNumbers.mtNumber}`,
+            mission: `MSN ${state.nextReceiptNumbers.msnNumber}`,
+          },
+          uniqueNo: `C${state.nextReceiptNumbers.uniqueNumber}`,
+        },
+      },
+    })),
 }));
 
 export default useDonationStore;
