@@ -3,18 +3,26 @@ import useDonationStore from "../../../../donationStore";
 import { useAuthStore } from "../../../../store/authStore";
 import { createNewReceiptDetail } from "../../../../services/src/services/receiptDetailsService";
 import { createNewGuestDetails } from "../../../../services/src/services/guestDetailsService";
-import { createNewDonation } from "../../../../services/src/services/donationsService";
+import {
+  createNewDonation,
+  updateDonationById,
+} from "../../../../services/src/services/donationsService";
 import { useEffect, useState } from "react";
 import ReceiptPreviewModal from "./ReceiptPreviewModal";
+import { loginUser } from "../../../../services/auth";
 
 const DonationAction = ({ totalAmount = 0, activeTab, transactionType }) => {
-  const { donorTabs, activeTabId, setFieldErrors } = useDonationStore();
+  const { donorTabs, activeTabId, setFieldErrors, updateDonationDetails } =
+    useDonationStore();
   const { user } = useAuthStore();
   const currentSection = activeTab.toLowerCase();
   const [showReceiptPreview, setShowReceiptPreview] = useState(false);
   const [receiptData, setReceiptData] = useState(null);
   const [uniqueNumbers, setUniqueNumbers] = useState([]);
   const [showPendingConfirmation, setShowPendingConfirmation] = useState(false);
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [password, setPassword] = useState("");
+  const [passwordError, setPasswordError] = useState("");
 
   useEffect(() => {
     console.log("user", user);
@@ -287,6 +295,124 @@ const DonationAction = ({ totalAmount = 0, activeTab, transactionType }) => {
     removeDonorTab(activeTabId);
   };
 
+  const handleCancelClick = () => {
+    setShowPasswordModal(true);
+    setPassword("");
+    setPasswordError("");
+  };
+
+  const handleCancelDonation = async () => {
+    try {
+      // Verify password using stored username
+      await loginUser({
+        identifier: user.username,
+        password: password,
+      });
+
+      // Update the donation status in the store
+      updateDonationDetails(activeTabId, currentSection, {
+        status: "cancelled",
+      });
+
+      // If password verification succeeds, proceed with cancellation
+      await updateDonationById(donationId, {
+        data: {
+          status: "cancelled",
+        },
+      });
+
+      // Close modal and reset states
+      setShowPasswordModal(false);
+      setPassword("");
+      setPasswordError("");
+    } catch (error) {
+      console.error("Error:", error);
+      setPasswordError("Invalid password");
+    }
+  };
+
+  const renderPasswordModal = () => {
+    return (
+      <div
+        className="modal-overlay"
+        style={{
+          display: showPasswordModal ? "flex" : "none",
+          position: "fixed",
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: "rgba(0, 0, 0, 0.5)",
+          justifyContent: "center",
+          alignItems: "center",
+          zIndex: 1000,
+        }}
+      >
+        <div
+          style={{
+            backgroundColor: "white",
+            padding: "20px",
+            borderRadius: "8px",
+            width: "500px",
+          }}
+        >
+          <h3>Enter Password to Confirm</h3>
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Enter your password"
+            style={{
+              width: "100%",
+              padding: "8px",
+              marginTop: "10px",
+              marginBottom: "10px",
+            }}
+          />
+          {passwordError && <p style={{ color: "red" }}>{passwordError}</p>}
+          <div
+            style={{
+              display: "flex",
+              gap: "10px",
+              marginTop: "10px",
+              justifyContent: "flex-end",
+            }}
+          >
+            <button
+              onClick={() => {
+                setShowPasswordModal(false);
+                setPassword("");
+                setPasswordError("");
+              }}
+              style={{
+                padding: "8px 16px",
+                backgroundColor: "#gray",
+                border: "none",
+                borderRadius: "4px",
+                cursor: "pointer",
+              }}
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleCancelDonation}
+              style={{
+                padding: "8px 16px",
+                backgroundColor: "#ea7704",
+                color: "white",
+                border: "none",
+                borderRadius: "4px",
+                cursor: "pointer",
+              }}
+            >
+              Confirm
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   // Add check for completed status
   const isCompleted =
     donorTabs[activeTabId][currentSection]?.donationDetails?.status ===
@@ -350,7 +476,7 @@ const DonationAction = ({ totalAmount = 0, activeTab, transactionType }) => {
               backgroundColor: isCompleted ? "#ffbdcb" : "#8b5cf6",
               color: isCompleted ? "#fc5275" : "#fff",
             }}
-            onClick={handlePrintReceipt}
+            onClick={isCompleted ? handleCancelClick : handlePrintReceipt}
           >
             <i className={isCompleted ? "fas fa-times" : "fas fa-print"}></i>
             {isCompleted ? "Cancel" : "Print Receipt"}
@@ -417,6 +543,8 @@ const DonationAction = ({ totalAmount = 0, activeTab, transactionType }) => {
           </div>
         </div>
       )}
+
+      {renderPasswordModal()}
     </>
   );
 };
