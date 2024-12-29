@@ -8,6 +8,7 @@ import * as XLSX from "xlsx";
 import { useNavigate } from "react-router-dom";
 import { loginUser } from "../../../../services/auth";
 import { useAuthStore } from "../../../../store/authStore";
+import useDonationStore from "../../../../donationStore";
 
 const AllDonation = ({
   searchTerm = "",
@@ -171,6 +172,7 @@ const AllDonation = ({
   };
 
   const handleCancelClick = (donationId) => {
+    console.log("Cancelling donation with ID:", donationId);
     setSelectedDonationId(donationId);
     setShowPasswordModal(true);
     setPassword("");
@@ -280,6 +282,7 @@ const AllDonation = ({
         inMemoryOf: donation.attributes.InMemoryOf || "",
         donationFor: donation.attributes.donationFor || "Math",
         status: donation.attributes.status || "completed",
+        donationId: donation.id,
       },
       transactionDetails: {
         date: donation.attributes.ddch_date || "",
@@ -287,12 +290,13 @@ const AllDonation = ({
         bankName: donation.attributes.bankName || "",
         branchName: donation.attributes.branchName || "",
       },
-      showTransactionDetails: ["Cheque", "DD", "Bank Transfer"].includes(
-        transactionType
-      ),
+      donationId: donation.id,
     };
 
     console.log("AllDonation - Prepared donation data:", donationData);
+
+    // Initialize the donation store with the data
+    useDonationStore.getState().initializeFromDonationData(donationData);
 
     navigate("/newDonation", {
       state: { donationData },

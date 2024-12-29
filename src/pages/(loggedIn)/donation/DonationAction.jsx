@@ -303,31 +303,47 @@ const DonationAction = ({ totalAmount = 0, activeTab, transactionType }) => {
 
   const handleCancelDonation = async () => {
     try {
+      // Get the current donation ID from the store
+      const currentTab = donorTabs[activeTabId];
+      const donationId =
+        currentTab[currentSection]?.donationDetails?.donationId;
+
+      console.log("Cancelling donation with ID:", donationId);
+
       // Verify password using stored username
       await loginUser({
         identifier: user.username,
         password: password,
       });
 
-      // Update the donation status in the store
-      updateDonationDetails(activeTabId, currentSection, {
-        status: "cancelled",
-      });
-
       // If password verification succeeds, proceed with cancellation
-      await updateDonationById(donationId, {
-        data: {
-          status: "cancelled",
-        },
-      });
+      if (donationId) {
+        await updateDonationById(donationId, {
+          data: {
+            status: "cancelled",
+          },
+        });
 
-      // Close modal and reset states
-      setShowPasswordModal(false);
-      setPassword("");
-      setPasswordError("");
+        // Update the donation status in the store
+        updateDonationDetails(activeTabId, currentSection, {
+          status: "cancelled",
+        });
+
+        // Close modal and reset states
+        setShowPasswordModal(false);
+        setPassword("");
+        setPasswordError("");
+
+        // Remove the tab from the store
+        const { removeDonorTab } = useDonationStore.getState();
+        removeDonorTab(activeTabId);
+      } else {
+        console.error("No donation ID found");
+        setPasswordError("Unable to cancel donation: No donation ID found");
+      }
     } catch (error) {
       console.error("Error:", error);
-      setPasswordError("Invalid password");
+      setPasswordError("Invalid password or unable to cancel donation");
     }
   };
 

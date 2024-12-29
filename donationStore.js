@@ -29,6 +29,7 @@ const initialDonationDetails = {
   transactionType: "Cash",
   inMemoryOf: "",
   status: "",
+  donationId: null,
 };
 
 const initialTransactionDetails = {
@@ -380,9 +381,14 @@ const useDonationStore = create((set) => ({
       const donationDetailsWithStatus = {
         ...donationData.donationDetails,
         status: "completed",
+        donationId: donationData.donationId,
       };
 
       console.log("Status being set:", donationDetailsWithStatus.status);
+      console.log(
+        "Donation ID being set:",
+        donationDetailsWithStatus.donationId
+      );
 
       return {
         donorTabs: {
