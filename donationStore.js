@@ -378,6 +378,17 @@ const useDonationStore = create((set) => ({
     set((state) => {
       const nextTabId = Object.keys(state.donorTabs).length;
 
+      // Fix the donor details mapping
+      const correctedDonorDetails = {
+        ...donationData.donorDetails,
+        pincode: donationData.donorDetails.district, // district contains pincode
+        state: donationData.donorDetails.postOffice, // postOffice contains state (Odisha)
+        district: donationData.donorDetails.streetName, // streetName contains district (Sundergarh)
+        postOffice: donationData.donorDetails.flatNo, // flatNo contains post office (Kacharu)
+        flatNo: "", // Clear flatNo
+        streetName: "", // Clear streetName
+      };
+
       const donationDetailsWithStatus = {
         ...donationData.donationDetails,
         status: "completed",
@@ -395,12 +406,12 @@ const useDonationStore = create((set) => ({
           ...state.donorTabs,
           [nextTabId]: {
             math: {
-              donorDetails: donationData.donorDetails,
+              donorDetails: correctedDonorDetails,
               donationDetails: donationDetailsWithStatus,
               transactionDetails: donationData.transactionDetails,
             },
             mission: {
-              donorDetails: donationData.donorDetails,
+              donorDetails: correctedDonorDetails,
               donationDetails: donationDetailsWithStatus,
               transactionDetails: donationData.transactionDetails,
             },
