@@ -10,6 +10,8 @@ import {
 import { useEffect, useState } from "react";
 import ReceiptPreviewModal from "./ReceiptPreviewModal";
 import { loginUser } from "../../../../services/auth";
+import ConsentLetterTemplate from "./ConsentLetterTemplate";
+import ThankLetterTemplate from "./ThankLetterTemplate";
 
 const DonationAction = ({ totalAmount = 0, activeTab, transactionType }) => {
   const { donorTabs, activeTabId, setFieldErrors, updateDonationDetails } =
@@ -429,6 +431,294 @@ const DonationAction = ({ totalAmount = 0, activeTab, transactionType }) => {
     );
   };
 
+  const handleConsentLetter = () => {
+    // Add number to words conversion function
+    const numberToWords = (num) => {
+      const single = [
+        "",
+        "One",
+        "Two",
+        "Three",
+        "Four",
+        "Five",
+        "Six",
+        "Seven",
+        "Eight",
+        "Nine",
+      ];
+      const double = [
+        "Ten",
+        "Eleven",
+        "Twelve",
+        "Thirteen",
+        "Fourteen",
+        "Fifteen",
+        "Sixteen",
+        "Seventeen",
+        "Eighteen",
+        "Nineteen",
+      ];
+      const tens = [
+        "",
+        "",
+        "Twenty",
+        "Thirty",
+        "Forty",
+        "Fifty",
+        "Sixty",
+        "Seventy",
+        "Eighty",
+        "Ninety",
+      ];
+      const formatTens = (num) => {
+        if (num < 10) return single[num];
+        if (num < 20) return double[num - 10];
+        return (
+          tens[Math.floor(num / 10)] + (num % 10 ? " " + single[num % 10] : "")
+        );
+      };
+
+      if (num === 0) return "Zero";
+
+      const convert = (num) => {
+        if (num < 100) return formatTens(num);
+        if (num < 1000)
+          return (
+            single[Math.floor(num / 100)] +
+            " Hundred" +
+            (num % 100 ? " and " + formatTens(num % 100) : "")
+          );
+        if (num < 100000)
+          return (
+            convert(Math.floor(num / 1000)) +
+            " Thousand" +
+            (num % 1000 ? " " + convert(num % 1000) : "")
+          );
+        if (num < 10000000)
+          return (
+            convert(Math.floor(num / 100000)) +
+            " Lakh" +
+            (num % 100000 ? " " + convert(num % 100000) : "")
+          );
+        return (
+          convert(Math.floor(num / 10000000)) +
+          " Crore" +
+          (num % 10000000 ? " " + convert(num % 10000000) : "")
+        );
+      };
+
+      return convert(Math.floor(num)) + " Rupees Only";
+    };
+
+    // Create a temporary hidden iframe
+    const printFrame = document.createElement("iframe");
+    printFrame.style.display = "none";
+    document.body.appendChild(printFrame);
+
+    const amount =
+      parseFloat(
+        donorTabs[activeTabId][currentSection].donationDetails.amount
+      ) || 0;
+
+    // Create the HTML content without the automatic print trigger
+    const htmlContent = ConsentLetterTemplate({
+      donationData: {
+        donationDate: new Date().toISOString(),
+        uniqueDonorId: donorTabs[activeTabId].uniqueNo,
+        amount: amount,
+        transactionType,
+        donationType:
+          donorTabs[activeTabId][currentSection].donationDetails.donationType,
+        purpose: donorTabs[activeTabId][currentSection].donationDetails.purpose,
+        title: donorTabs[activeTabId][currentSection].donorDetails.title,
+        name: donorTabs[activeTabId][currentSection].donorDetails.name,
+        houseNumber: donorTabs[activeTabId][currentSection].donorDetails.flatNo,
+        streetName:
+          donorTabs[activeTabId][currentSection].donorDetails.streetName,
+        postOffice:
+          donorTabs[activeTabId][currentSection].donorDetails.postOffice,
+        district: donorTabs[activeTabId][currentSection].donorDetails.district,
+        state: donorTabs[activeTabId][currentSection].donorDetails.state,
+        pincode: donorTabs[activeTabId][currentSection].donorDetails.pincode,
+        phone: donorTabs[activeTabId][currentSection].donorDetails.phone,
+        inMemoryOf:
+          donorTabs[activeTabId][currentSection].donationDetails.inMemoryOf,
+        receiptNumber: donorTabs[activeTabId].receiptNumbers[currentSection],
+      },
+      formatDate: (dateString) =>
+        new Date(dateString).toLocaleDateString("en-IN"),
+      numberToWords: numberToWords,
+    });
+
+    // Remove any existing print script from the content
+    const contentWithoutPrintScript = htmlContent.replace(
+      /<script[\s\S]*?<\/script>/gi,
+      ""
+    );
+
+    // Write the content to the iframe
+    printFrame.contentDocument.write(contentWithoutPrintScript);
+    printFrame.contentDocument.close();
+
+    // Force the print dialog to appear immediately
+    printFrame.onload = () => {
+      try {
+        printFrame.contentWindow.print();
+      } catch (error) {
+        console.error("Print failed:", error);
+      } finally {
+        // Remove the iframe after a short delay
+        setTimeout(() => {
+          document.body.removeChild(printFrame);
+        }, 500);
+      }
+    };
+  };
+
+  const handleThankLetter = () => {
+    // Add number to words conversion function
+    const numberToWords = (num) => {
+      const single = [
+        "",
+        "One",
+        "Two",
+        "Three",
+        "Four",
+        "Five",
+        "Six",
+        "Seven",
+        "Eight",
+        "Nine",
+      ];
+      const double = [
+        "Ten",
+        "Eleven",
+        "Twelve",
+        "Thirteen",
+        "Fourteen",
+        "Fifteen",
+        "Sixteen",
+        "Seventeen",
+        "Eighteen",
+        "Nineteen",
+      ];
+      const tens = [
+        "",
+        "",
+        "Twenty",
+        "Thirty",
+        "Forty",
+        "Fifty",
+        "Sixty",
+        "Seventy",
+        "Eighty",
+        "Ninety",
+      ];
+      const formatTens = (num) => {
+        if (num < 10) return single[num];
+        if (num < 20) return double[num - 10];
+        return (
+          tens[Math.floor(num / 10)] + (num % 10 ? " " + single[num % 10] : "")
+        );
+      };
+
+      if (num === 0) return "Zero";
+
+      const convert = (num) => {
+        if (num < 100) return formatTens(num);
+        if (num < 1000)
+          return (
+            single[Math.floor(num / 100)] +
+            " Hundred" +
+            (num % 100 ? " and " + formatTens(num % 100) : "")
+          );
+        if (num < 100000)
+          return (
+            convert(Math.floor(num / 1000)) +
+            " Thousand" +
+            (num % 1000 ? " " + convert(num % 1000) : "")
+          );
+        if (num < 10000000)
+          return (
+            convert(Math.floor(num / 100000)) +
+            " Lakh" +
+            (num % 100000 ? " " + convert(num % 100000) : "")
+          );
+        return (
+          convert(Math.floor(num / 10000000)) +
+          " Crore" +
+          (num % 10000000 ? " " + convert(num % 10000000) : "")
+        );
+      };
+
+      return convert(Math.floor(num)) + " Rupees Only";
+    };
+
+    // Create a temporary hidden iframe
+    const printFrame = document.createElement("iframe");
+    printFrame.style.display = "none";
+    document.body.appendChild(printFrame);
+
+    const amount =
+      parseFloat(
+        donorTabs[activeTabId][currentSection].donationDetails.amount
+      ) || 0;
+
+    // Create the HTML content without the automatic print trigger
+    const htmlContent = ThankLetterTemplate({
+      donationData: {
+        donationDate: new Date().toISOString(),
+        uniqueDonorId: donorTabs[activeTabId].uniqueNo,
+        amount: amount,
+        transactionType,
+        donationType:
+          donorTabs[activeTabId][currentSection].donationDetails.donationType,
+        purpose: donorTabs[activeTabId][currentSection].donationDetails.purpose,
+        title: donorTabs[activeTabId][currentSection].donorDetails.title,
+        name: donorTabs[activeTabId][currentSection].donorDetails.name,
+        houseNumber: donorTabs[activeTabId][currentSection].donorDetails.flatNo,
+        streetName:
+          donorTabs[activeTabId][currentSection].donorDetails.streetName,
+        postOffice:
+          donorTabs[activeTabId][currentSection].donorDetails.postOffice,
+        district: donorTabs[activeTabId][currentSection].donorDetails.district,
+        state: donorTabs[activeTabId][currentSection].donorDetails.state,
+        pincode: donorTabs[activeTabId][currentSection].donorDetails.pincode,
+        phone: donorTabs[activeTabId][currentSection].donorDetails.phone,
+        inMemoryOf:
+          donorTabs[activeTabId][currentSection].donationDetails.inMemoryOf,
+        receiptNumber: donorTabs[activeTabId].receiptNumbers[currentSection],
+      },
+      formatDate: (dateString) =>
+        new Date(dateString).toLocaleDateString("en-IN"),
+      numberToWords: numberToWords,
+    });
+
+    // Remove any existing print script from the content
+    const contentWithoutPrintScript = htmlContent.replace(
+      /<script[\s\S]*?<\/script>/gi,
+      ""
+    );
+
+    // Write the content to the iframe
+    printFrame.contentDocument.write(contentWithoutPrintScript);
+    printFrame.contentDocument.close();
+
+    // Force the print dialog to appear immediately
+    printFrame.onload = () => {
+      try {
+        printFrame.contentWindow.print();
+      } catch (error) {
+        console.error("Print failed:", error);
+      } finally {
+        // Remove the iframe after a short delay
+        setTimeout(() => {
+          document.body.removeChild(printFrame);
+        }, 500);
+      }
+    };
+  };
+
   // Add check for completed status
   const isCompleted =
     donorTabs[activeTabId][currentSection]?.donationDetails?.status ===
@@ -451,6 +741,7 @@ const DonationAction = ({ totalAmount = 0, activeTab, transactionType }) => {
               cursor: isCompleted ? "pointer" : "not-allowed",
             }}
             disabled={!isCompleted}
+            onClick={handleConsentLetter}
           >
             <i className="far fa-file-alt"></i>
             Consent Letter
@@ -464,6 +755,7 @@ const DonationAction = ({ totalAmount = 0, activeTab, transactionType }) => {
               cursor: isCompleted ? "pointer" : "not-allowed",
             }}
             disabled={!isCompleted}
+            onClick={handleThankLetter}
           >
             <i className="far fa-envelope"></i>
             Thank Letter
