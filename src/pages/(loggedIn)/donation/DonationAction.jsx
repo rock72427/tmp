@@ -343,11 +343,61 @@ const DonationAction = ({ totalAmount = 0, activeTab, transactionType }) => {
   };
 
   const handleConfirmPending = async () => {
-    setShowPendingConfirmation(false);
-    await createReceipt("pending");
-    // Remove the current tab after successful pending operation
-    const { removeDonorTab, activeTabId } = useDonationStore.getState();
-    removeDonorTab(activeTabId);
+    try {
+      setShowPendingConfirmation(false);
+
+      // Get current tab and donation details
+      const currentTab = donorTabs[activeTabId];
+      const currentDonationId =
+        currentTab[currentSection]?.donationDetails?.donationId;
+
+      console.log("Setting donation to pending:", {
+        donationId: currentDonationId,
+        section: currentSection,
+        tab: currentTab,
+      });
+
+      if (currentDonationId) {
+        // Update existing donation status to pending
+        const updateResponse = await updateDonationById(currentDonationId, {
+          data: {
+            status: "pending",
+            updatedAt: new Date().toISOString(),
+          },
+        });
+
+        console.log("Update response:", updateResponse);
+
+        if (!updateResponse || !updateResponse.data) {
+          throw new Error("Failed to update donation status");
+        }
+
+        // Update the donation status in the store
+        updateDonationDetails(activeTabId, currentSection, {
+          status: "pending",
+        });
+      } else {
+        // Create new donation with pending status if no donation ID exists
+        console.log(
+          "No existing donation found, creating new pending donation"
+        );
+        const receiptResponse = await createReceipt("pending");
+        console.log("New pending receipt created:", receiptResponse);
+
+        // Update store with new donation details
+        updateDonationDetails(activeTabId, currentSection, {
+          status: "pending",
+          donationId: receiptResponse?.data?.id,
+        });
+      }
+
+      // Remove the current tab after successful operation
+      const { removeDonorTab } = useDonationStore.getState();
+      removeDonorTab(activeTabId);
+    } catch (error) {
+      console.error("Error handling pending donation:", error);
+      alert(`Failed to process pending donation: ${error.message}`);
+    }
   };
 
   const handleCancelClick = () => {
