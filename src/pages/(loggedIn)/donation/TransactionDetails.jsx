@@ -126,6 +126,10 @@ const TransactionDetails = ({ activeTab }) => {
             value={currentTransactionDetails.date}
             onChange={handleDateChange}
             disabled={isCompleted}
+            style={{
+              backgroundColor: isCompleted ? "#f5f5f5" : "white",
+              opacity: isCompleted ? 0.7 : 1,
+            }}
           />
           {fieldErrors.transaction?.date && (
             <span
@@ -153,6 +157,10 @@ const TransactionDetails = ({ activeTab }) => {
             onChange={handleTransactionIdChange}
             placeholder="Enter numbers only"
             disabled={isCompleted}
+            style={{
+              backgroundColor: isCompleted ? "#f5f5f5" : "white",
+              opacity: isCompleted ? 0.7 : 1,
+            }}
           />
           {(transactionIdError || fieldErrors.transaction?.transactionId) && (
             <span
@@ -180,6 +188,10 @@ const TransactionDetails = ({ activeTab }) => {
             onChange={handleBankNameChange}
             placeholder="Enter bank name"
             disabled={isCompleted}
+            style={{
+              backgroundColor: isCompleted ? "#f5f5f5" : "white",
+              opacity: isCompleted ? 0.7 : 1,
+            }}
           />
           {(bankNameError || fieldErrors.transaction?.bankName) && (
             <span
@@ -207,6 +219,10 @@ const TransactionDetails = ({ activeTab }) => {
             onChange={handleBranchNameChange}
             placeholder="Enter branch name"
             disabled={isCompleted}
+            style={{
+              backgroundColor: isCompleted ? "#f5f5f5" : "white",
+              opacity: isCompleted ? 0.7 : 1,
+            }}
           />
           {(branchNameError || fieldErrors.transaction?.branchName) && (
             <span

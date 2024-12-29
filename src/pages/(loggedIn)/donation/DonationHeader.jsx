@@ -116,17 +116,15 @@ const DonationHeader = ({ onTabChange }) => {
                     onClick={() => setActiveTab(tab.id)}
                   >
                     {tab.label}
-                    {!isTabCompleted && (
-                      <span
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleRemoveDonor(tab.id);
-                        }}
-                        style={{ marginLeft: "8px" }}
-                      >
-                        ×
-                      </span>
-                    )}
+                    <span
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleRemoveDonor(tab.id);
+                      }}
+                      style={{ marginLeft: "8px" }}
+                    >
+                      ×
+                    </span>
                   </button>
                 );
               })}

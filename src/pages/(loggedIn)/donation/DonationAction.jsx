@@ -287,6 +287,11 @@ const DonationAction = ({ totalAmount = 0, activeTab, transactionType }) => {
     removeDonorTab(activeTabId);
   };
 
+  // Add check for completed status
+  const isCompleted =
+    donorTabs[activeTabId][currentSection]?.donationDetails?.status ===
+    "completed";
+
   return (
     <>
       <div className="donation-action-bar">
@@ -298,8 +303,12 @@ const DonationAction = ({ totalAmount = 0, activeTab, transactionType }) => {
         <div className="donation-actions">
           <button
             className="donation-action-btn consent-letter"
-            style={{ border: "1px solid #ccc" }}
-            disabled={true}
+            style={{
+              border: "1px solid #ccc",
+              opacity: isCompleted ? 1 : 0.7,
+              cursor: isCompleted ? "pointer" : "not-allowed",
+            }}
+            disabled={!isCompleted}
           >
             <i className="far fa-file-alt"></i>
             Consent Letter
@@ -307,8 +316,12 @@ const DonationAction = ({ totalAmount = 0, activeTab, transactionType }) => {
 
           <button
             className="donation-action-btn thank-letter"
-            style={{ border: "1px solid #ccc" }}
-            disabled={true}
+            style={{
+              border: "1px solid #ccc",
+              opacity: isCompleted ? 1 : 0.7,
+              cursor: isCompleted ? "pointer" : "not-allowed",
+            }}
+            disabled={!isCompleted}
           >
             <i className="far fa-envelope"></i>
             Thank Letter
@@ -316,8 +329,13 @@ const DonationAction = ({ totalAmount = 0, activeTab, transactionType }) => {
 
           <button
             className="donation-action-btn pending"
-            style={{ border: "1px solid #ccc" }}
+            style={{
+              border: "1px solid #ccc",
+              opacity: isCompleted ? 0.7 : 1,
+              cursor: isCompleted ? "not-allowed" : "pointer",
+            }}
             onClick={handlePending}
+            disabled={isCompleted}
           >
             <i className="far fa-clock"></i>
             Pending
@@ -325,11 +343,17 @@ const DonationAction = ({ totalAmount = 0, activeTab, transactionType }) => {
 
           <button
             className="donation-action-btn print-receipt"
-            style={{ border: "1px solid #ccc" }}
+            style={{
+              borderWidth: "1px",
+              borderStyle: "solid",
+              borderColor: isCompleted ? "#fc5275" : "#8b5cf6",
+              backgroundColor: isCompleted ? "#ffbdcb" : "#8b5cf6",
+              color: isCompleted ? "#fc5275" : "#fff",
+            }}
             onClick={handlePrintReceipt}
           >
-            <i className="fas fa-print"></i>
-            Print Receipt
+            <i className={isCompleted ? "fas fa-times" : "fas fa-print"}></i>
+            {isCompleted ? "Cancel" : "Print Receipt"}
           </button>
         </div>
       </div>

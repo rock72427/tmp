@@ -123,6 +123,10 @@ const Details = ({ activeTab, onTransactionTypeChange }) => {
             value={currentDonationDetails.purpose}
             onChange={handlePurposeChange}
             disabled={isCompleted}
+            style={{
+              backgroundColor: isCompleted ? "#f5f5f5" : "white",
+              opacity: isCompleted ? 0.7 : 1,
+            }}
           >
             <option value="" disabled>
               Select Purpose
@@ -173,6 +177,11 @@ const Details = ({ activeTab, onTransactionTypeChange }) => {
             className="donation-form__select"
             value={currentDonationDetails.donationType}
             onChange={handleDonationTypeChange}
+            disabled={isCompleted}
+            style={{
+              backgroundColor: isCompleted ? "#f5f5f5" : "white",
+              opacity: isCompleted ? 0.7 : 1,
+            }}
           >
             <option value="Others (Revenue)">Others (Revenue)</option>
             <option value="CORPUS">CORPUS</option>
@@ -190,6 +199,10 @@ const Details = ({ activeTab, onTransactionTypeChange }) => {
             value={currentDonationDetails.amount}
             onChange={handleAmountChange}
             disabled={isCompleted}
+            style={{
+              backgroundColor: isCompleted ? "#f5f5f5" : "white",
+              opacity: isCompleted ? 0.7 : 1,
+            }}
           />
           {fieldErrors.donation.amount && (
             <span
@@ -217,6 +230,11 @@ const Details = ({ activeTab, onTransactionTypeChange }) => {
               placeholder="Enter PAN Number"
               value={currentDonationDetails.panNumber}
               onChange={handlePanNumberChange}
+              disabled={isCompleted}
+              style={{
+                backgroundColor: isCompleted ? "#f5f5f5" : "white",
+                opacity: isCompleted ? 0.7 : 1,
+              }}
             />
           </div>
         )}
@@ -227,6 +245,11 @@ const Details = ({ activeTab, onTransactionTypeChange }) => {
             className="donation-form__select"
             value={currentDonationDetails.transactionType}
             onChange={handleTransactionTypeChange}
+            disabled={isCompleted}
+            style={{
+              backgroundColor: isCompleted ? "#f5f5f5" : "white",
+              opacity: isCompleted ? 0.7 : 1,
+            }}
           >
             <option value="Cash">Cash</option>
             <option value="M.O">M.O</option>
@@ -244,6 +267,11 @@ const Details = ({ activeTab, onTransactionTypeChange }) => {
             placeholder=""
             value={currentDonationDetails.inMemoryOf}
             onChange={handleInMemoryOfChange}
+            disabled={isCompleted}
+            style={{
+              backgroundColor: isCompleted ? "#f5f5f5" : "white",
+              opacity: isCompleted ? 0.7 : 1,
+            }}
           />
           {fieldErrors.donation.inMemoryOf && (
             <span

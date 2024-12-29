@@ -349,6 +349,10 @@ const DonorDetails = ({ activeTab }) => {
                 value={currentDonorDetails.title}
                 onChange={handleTitleChange}
                 disabled={isCompleted}
+                style={{
+                  backgroundColor: isCompleted ? "#f5f5f5" : "white",
+                  opacity: isCompleted ? 0.7 : 1,
+                }}
               >
                 <option>Sri</option>
                 <option>Smt</option>
@@ -370,6 +374,10 @@ const DonorDetails = ({ activeTab }) => {
                   pattern="[A-Za-z\s.]+"
                   title="Please enter only letters, spaces, and dots"
                   disabled={isCompleted}
+                  style={{
+                    backgroundColor: isCompleted ? "#f5f5f5" : "white",
+                    opacity: isCompleted ? 0.7 : 1,
+                  }}
                 />
                 {showSuggestions && suggestions.length > 0 && (
                   <ul
@@ -440,6 +448,10 @@ const DonorDetails = ({ activeTab }) => {
               onChange={handlePhoneChange}
               maxLength={10}
               disabled={isCompleted}
+              style={{
+                backgroundColor: isCompleted ? "#f5f5f5" : "white",
+                opacity: isCompleted ? 0.7 : 1,
+              }}
             />
             {(phoneError || fieldErrors.donor?.phone) && (
               <span
@@ -460,7 +472,8 @@ const DonorDetails = ({ activeTab }) => {
         <div className="donor-details__row">
           <div className="donor-details__field">
             <label className="donor-label">
-              Initiation / Mantra Diksha from
+              Initiation / Mantra Diksha from{" "}
+              <span className="required">*</span>
             </label>
             <select
               className="donor-select"
@@ -499,6 +512,10 @@ const DonorDetails = ({ activeTab }) => {
               value={currentDonorDetails.roomNo}
               onChange={handleInputChange}
               disabled={isCompleted}
+              style={{
+                backgroundColor: isCompleted ? "#f5f5f5" : "white",
+                opacity: isCompleted ? 0.7 : 1,
+              }}
             />
           </div>
         </div>
@@ -513,6 +530,10 @@ const DonorDetails = ({ activeTab }) => {
               value={currentDonorDetails.email}
               onChange={handleInputChange}
               disabled={isCompleted}
+              style={{
+                backgroundColor: isCompleted ? "#f5f5f5" : "white",
+                opacity: isCompleted ? 0.7 : 1,
+              }}
             />
             {emailError && (
               <span
@@ -539,6 +560,10 @@ const DonorDetails = ({ activeTab }) => {
                 value={currentDonorDetails.identityType}
                 onChange={handleIdentityTypeChange}
                 disabled={isCompleted}
+                style={{
+                  backgroundColor: isCompleted ? "#f5f5f5" : "white",
+                  opacity: isCompleted ? 0.7 : 1,
+                }}
               >
                 <option>Aadhaar</option>
                 <option>PAN Card</option>
@@ -552,6 +577,10 @@ const DonorDetails = ({ activeTab }) => {
                 value={currentDonorDetails.identityNumber}
                 onChange={handleIdentityInputChange}
                 disabled={isCompleted}
+                style={{
+                  backgroundColor: isCompleted ? "#f5f5f5" : "white",
+                  opacity: isCompleted ? 0.7 : 1,
+                }}
               />
             </div>
             {fieldErrors.donor.identityNumber && (
@@ -583,6 +612,10 @@ const DonorDetails = ({ activeTab }) => {
                 onChange={handlePincodeChange}
                 maxLength={6}
                 disabled={isCompleted}
+                style={{
+                  backgroundColor: isCompleted ? "#f5f5f5" : "white",
+                  opacity: isCompleted ? 0.7 : 1,
+                }}
               />
               {loading && <span className="loading-spinner">🔄</span>}
             </div>
@@ -612,6 +645,10 @@ const DonorDetails = ({ activeTab }) => {
               value={currentDonorDetails.state}
               onChange={handleInputChange}
               disabled={isCompleted}
+              style={{
+                backgroundColor: isCompleted ? "#f5f5f5" : "white",
+                opacity: isCompleted ? 0.7 : 1,
+              }}
             />
           </div>
 
@@ -626,6 +663,10 @@ const DonorDetails = ({ activeTab }) => {
               value={currentDonorDetails.district}
               onChange={handleInputChange}
               disabled={isCompleted}
+              style={{
+                backgroundColor: isCompleted ? "#f5f5f5" : "white",
+                opacity: isCompleted ? 0.7 : 1,
+              }}
             />
           </div>
         </div>
@@ -640,6 +681,10 @@ const DonorDetails = ({ activeTab }) => {
               value={currentDonorDetails.flatNo}
               onChange={handleInputChange}
               disabled={isCompleted}
+              style={{
+                backgroundColor: isCompleted ? "#f5f5f5" : "white",
+                opacity: isCompleted ? 0.7 : 1,
+              }}
             />
           </div>
 
@@ -652,6 +697,10 @@ const DonorDetails = ({ activeTab }) => {
               value={currentDonorDetails.streetName}
               onChange={handleInputChange}
               disabled={isCompleted}
+              style={{
+                backgroundColor: isCompleted ? "#f5f5f5" : "white",
+                opacity: isCompleted ? 0.7 : 1,
+              }}
             />
           </div>
 
@@ -664,6 +713,10 @@ const DonorDetails = ({ activeTab }) => {
               value={currentDonorDetails.postOffice}
               onChange={handleInputChange}
               disabled={isCompleted}
+              style={{
+                backgroundColor: isCompleted ? "#f5f5f5" : "white",
+                opacity: isCompleted ? 0.7 : 1,
+              }}
             />
           </div>
         </div>
