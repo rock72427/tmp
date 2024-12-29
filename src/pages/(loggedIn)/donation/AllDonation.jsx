@@ -218,28 +218,62 @@ const AllDonation = ({
   };
 
   const handleSubmit = (donation) => {
-    console.log("Submitting donation:", donation);
-    console.log("Donation data being passed:", donation);
-    navigate("/newDonation", {
-      state: {
-        donationData: {
-          id: donation.id,
-          receiptNumber:
-            donation.attributes.receipt_detail?.data?.attributes
-              ?.Receipt_number,
-          donorName: donation.attributes.guest?.data?.attributes?.name,
-          donationDate:
-            donation.attributes.receipt_detail?.data?.attributes?.donation_date,
-          phoneNumber:
-            donation.attributes.guest?.data?.attributes?.phone_number,
-          donatedFor: donation.attributes.donationFor,
-          status: donation.attributes.status,
-          amount: donation.attributes.donationAmount,
-          createdBy:
-            donation.attributes.receipt_detail?.data?.attributes?.createdBy
-              ?.data?.id || donation.attributes.createdBy?.data?.id,
-        },
+    console.log("AllDonation - Processing pending donation:", donation);
+
+    // Extract guest data for easier access
+    const guestData = donation.attributes.guest?.data?.attributes || {};
+    const receiptData =
+      donation.attributes.receipt_detail?.data?.attributes || {};
+
+    // Format the address components
+    const address = guestData.address || "";
+    const addressParts = address.split(", ");
+
+    // Determine transaction type
+    const transactionType = donation.attributes.transactionType || "Cash";
+
+    const donationData = {
+      donorDetails: {
+        title: guestData.name?.split(" ")[0] || "",
+        name: guestData.name?.split(" ").slice(1).join(" ") || "",
+        phone: guestData.phone_number?.replace("+91", "") || "",
+        email: guestData.email || "",
+        deeksha: guestData.deeksha || "",
+        identityType: guestData.identity_proof || "",
+        identityNumber: guestData.identity_number || "",
+        flatNo: addressParts[0] || "",
+        streetName: addressParts[1] || "",
+        postOffice: addressParts[2] || "",
+        district: addressParts[3] || "",
+        state: addressParts[4] || "",
+        pincode: addressParts[5] || "",
       },
+      donationDetails: {
+        purpose: donation.attributes.purpose || "",
+        donationType: donation.attributes.type || "",
+        amount: donation.attributes.donationAmount || "",
+        transactionType: transactionType,
+        inMemoryOf: donation.attributes.InMemoryOf || "",
+        donationFor: donation.attributes.donationFor || "Math",
+        status: "pending",
+        donationId: donation.id,
+      },
+      transactionDetails: {
+        date: donation.attributes.ddch_date || "",
+        transactionId: donation.attributes.ddch_number || "",
+        bankName: donation.attributes.bankName || "",
+        branchName: donation.attributes.branchName || "",
+      },
+      donationId: donation.id,
+    };
+
+    console.log("AllDonation - Prepared pending donation data:", donationData);
+
+    // Initialize the donation store with the data
+    useDonationStore.getState().initializeFromDonationData(donationData);
+
+    navigate("/newDonation", {
+      state: { donationData },
     });
   };
 
@@ -281,7 +315,7 @@ const AllDonation = ({
         transactionType: transactionType,
         inMemoryOf: donation.attributes.InMemoryOf || "",
         donationFor: donation.attributes.donationFor || "Math",
-        status: donation.attributes.status || "completed",
+        status: "completed",
         donationId: donation.id,
       },
       transactionDetails: {
@@ -293,7 +327,10 @@ const AllDonation = ({
       donationId: donation.id,
     };
 
-    console.log("AllDonation - Prepared donation data:", donationData);
+    console.log(
+      "AllDonation - Prepared completed donation data:",
+      donationData
+    );
 
     // Initialize the donation store with the data
     useDonationStore.getState().initializeFromDonationData(donationData);

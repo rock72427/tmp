@@ -392,7 +392,7 @@ const useDonationStore = create((set) => ({
 
       const donationDetailsWithStatus = {
         ...donationData.donationDetails,
-        status: "completed",
+        status: donationData.donationDetails.status,
         donationId: donationData.donationId,
       };
 
