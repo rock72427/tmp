@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "./DonorDetails.scss";
 import useDonationStore from "../../../../donationStore";
 import { fetchGuestDetails } from "../../../../services/src/services/guestDetailsService";
@@ -55,6 +55,11 @@ const DonorDetails = ({ activeTab }) => {
   const [suggestions, setSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [guestList, setGuestList] = useState([]);
+  const [isDeekshaDropdownOpen, setIsDeekshaDropdownOpen] = useState(false);
+  const [deekshaSearchQuery, setDeekshaSearchQuery] = useState("");
+  const [showCustomDeeksha, setShowCustomDeeksha] = useState(false);
+  const [customDeeksha, setCustomDeeksha] = useState("");
+  const deekshaDropdownRef = useRef(null);
 
   const isCompleted =
     donorTabs[activeTabId][currentSection].donationDetails.status ===
@@ -324,6 +329,22 @@ const DonorDetails = ({ activeTab }) => {
     };
   }, []);
 
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        deekshaDropdownRef.current &&
+        !deekshaDropdownRef.current.contains(event.target)
+      ) {
+        setIsDeekshaDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   return (
     <div
       className={`donor-details ${
@@ -475,31 +496,135 @@ const DonorDetails = ({ activeTab }) => {
               Initiation / Mantra Diksha from{" "}
               <span className="required">*</span>
             </label>
-            <select
-              className="donor-select"
-              value={currentDonorDetails.deeksha}
-              onChange={handleDeekshaChange}
-              disabled={isCompleted}
+            <div
+              className="custom-dropdown"
+              style={{ position: "relative" }}
+              ref={deekshaDropdownRef}
             >
-              <option value="">Select Deeksha</option>
-              {deekshaOptions.map((option, index) => (
-                <option key={index} value={option}>
-                  {option}
-                </option>
-              ))}
-            </select>
-            {fieldErrors.donor.deeksha && (
-              <span
-                className="error-message"
+              <div
+                className="dropdown-header"
+                onClick={() => setIsDeekshaDropdownOpen(!isDeekshaDropdownOpen)}
                 style={{
-                  color: "red",
-                  fontSize: "12px",
-                  marginTop: "4px",
-                  display: "block",
+                  padding: "10px",
+                  border: "1px solid #ccc",
+                  borderRadius: "4px",
+                  cursor: "pointer",
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  backgroundColor: "#FFF",
                 }}
               >
-                {fieldErrors.donor.deeksha}
-              </span>
+                <span>
+                  {showCustomDeeksha
+                    ? "Others"
+                    : currentDonorDetails.deeksha || "Select Deeksha"}
+                </span>
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 16 16"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  style={{
+                    transform: isDeekshaDropdownOpen
+                      ? "rotate(180deg)"
+                      : "rotate(0deg)",
+                    transition: "transform 0.2s ease",
+                  }}
+                >
+                  <path
+                    d="M4 6L8 10L12 6"
+                    stroke="#6B7280"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </div>
+              {isDeekshaDropdownOpen && (
+                <div
+                  className="dropdown-options"
+                  style={{
+                    position: "absolute",
+                    top: "100%",
+                    left: 0,
+                    right: 0,
+                    maxHeight: "200px",
+                    overflowY: "auto",
+                    backgroundColor: "white",
+                    border: "1px solid #ccc",
+                    borderRadius: "4px",
+                    zIndex: 1000,
+                    boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+                  }}
+                >
+                  <input
+                    type="text"
+                    placeholder="Search..."
+                    value={deekshaSearchQuery}
+                    onChange={(e) => setDeekshaSearchQuery(e.target.value)}
+                    style={{
+                      width: "100%",
+                      padding: "8px",
+                      border: "none",
+                      borderBottom: "1px solid #ccc",
+                      outline: "none",
+                    }}
+                    onClick={(e) => e.stopPropagation()}
+                    autoFocus
+                  />
+                  {deekshaOptions
+                    .filter((option) =>
+                      option
+                        .toLowerCase()
+                        .includes(deekshaSearchQuery.toLowerCase())
+                    )
+                    .map((option) => (
+                      <div
+                        key={option}
+                        onClick={() => {
+                          if (option === "Others") {
+                            setShowCustomDeeksha(true);
+                            setCustomDeeksha("");
+                            updateAndSyncDonorDetails({ deeksha: "" });
+                          } else {
+                            setShowCustomDeeksha(false);
+                            updateAndSyncDonorDetails({ deeksha: option });
+                          }
+                          setIsDeekshaDropdownOpen(false);
+                          setDeekshaSearchQuery("");
+                        }}
+                        style={{
+                          padding: "10px",
+                          cursor: "pointer",
+                          ":hover": {
+                            backgroundColor: "#f5f5f5",
+                          },
+                        }}
+                      >
+                        {option}
+                      </div>
+                    ))}
+                </div>
+              )}
+            </div>
+            {showCustomDeeksha && (
+              <input
+                type="text"
+                placeholder="Please specify your Mantra Diksha"
+                value={customDeeksha}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setCustomDeeksha(value);
+                  updateAndSyncDonorDetails({ deeksha: value });
+                }}
+                style={{ marginTop: "10px" }}
+                className="donor-input"
+              />
+            )}
+            {fieldErrors.donor.deeksha && (
+              <span className="error-message">{fieldErrors.donor.deeksha}</span>
             )}
           </div>
 
