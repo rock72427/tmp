@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { fetchReceiptDetails } from "./services/src/services/receiptDetailsService";
+import { fetchGuestUniqueNo } from "./services/src/services/guestDetailsService";
 
 const initialDonorDetails = {
   guestId: "",
@@ -280,17 +281,21 @@ const useDonationStore = create((set) => ({
   // Add this new action
   fetchLatestReceiptNumbers: async () => {
     try {
-      const details = await fetchReceiptDetails();
+      const [receiptDetails, guestDetails] = await Promise.all([
+        fetchReceiptDetails(),
+        fetchGuestUniqueNo(),
+      ]);
 
-      const mtNumbers = details.data
+      const mtNumbers = receiptDetails.data
         .filter((item) => item.attributes.Receipt_number?.startsWith("MT"))
         .map((item) => parseInt(item.attributes.Receipt_number.split(" ")[1]));
 
-      const msnNumbers = details.data
+      const msnNumbers = receiptDetails.data
         .filter((item) => item.attributes.Receipt_number?.startsWith("MSN"))
         .map((item) => parseInt(item.attributes.Receipt_number.split(" ")[1]));
 
-      const uniqueNumbers = details.data
+      // Get unique numbers from guestDetails instead
+      const uniqueNumbers = guestDetails.data
         .filter((item) => item.attributes.unique_no)
         .map((item) => parseInt(item.attributes.unique_no.substring(1)));
 

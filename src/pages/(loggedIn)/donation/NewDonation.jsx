@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from "react";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import DonationHeader from "./DonationHeader";
 import DonorDetails from "./DonorDetails";
 import Details from "./Details";
@@ -66,8 +68,22 @@ const NewDonation = () => {
     width: isMobile ? "100%" : "30%",
   };
 
+  // Add this function to show success toast
+  const showSuccessToast = () => {
+    toast.success("Donation created successfully!", {
+      position: "top-right",
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+    });
+  };
+
   return (
     <div>
+      <ToastContainer />
       <DonationHeader onTabChange={setActiveTab} />
       <div className="container" style={containerStyle}>
         <div style={leftSectionStyle}>
@@ -75,6 +91,7 @@ const NewDonation = () => {
           <DonationAction
             activeTab={activeTab}
             transactionType={transactionType}
+            onDonationSuccess={showSuccessToast}
           />
         </div>
         <div style={rightSectionStyle}>

@@ -52,14 +52,18 @@ const DonorDetails = ({ activeTab }) => {
   const [phoneError, setPhoneError] = useState("");
   const [emailError, setEmailError] = useState("");
   const [identityError, setIdentityError] = useState("");
-  const [suggestions, setSuggestions] = useState([]);
-  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [nameSuggestions, setNameSuggestions] = useState([]);
+  const [phoneSuggestions, setPhoneSuggestions] = useState([]);
+  const [showNameSuggestions, setShowNameSuggestions] = useState(false);
+  const [showPhoneSuggestions, setShowPhoneSuggestions] = useState(false);
   const [guestList, setGuestList] = useState([]);
   const [isDeekshaDropdownOpen, setIsDeekshaDropdownOpen] = useState(false);
   const [deekshaSearchQuery, setDeekshaSearchQuery] = useState("");
   const [showCustomDeeksha, setShowCustomDeeksha] = useState(false);
   const [customDeeksha, setCustomDeeksha] = useState("");
   const deekshaDropdownRef = useRef(null);
+  const nameDropdownRef = useRef(null);
+  const phoneDropdownRef = useRef(null);
 
   const isCompleted =
     donorTabs[activeTabId][currentSection].donationDetails.status ===
@@ -122,8 +126,8 @@ const DonorDetails = ({ activeTab }) => {
 
   const handleNameChange = (e) => {
     const value = e.target.value;
-    // Only allow letters, spaces, and dots
-    if (/^[A-Za-z\s.]*$/.test(value)) {
+    // Allow letters, numbers, spaces, and dots
+    if (/^[A-Za-z0-9\s.]*$/.test(value)) {
       updateAndSyncDonorDetails({ name: value });
 
       // Filter suggestions based on input
@@ -131,11 +135,11 @@ const DonorDetails = ({ activeTab }) => {
         const filtered = guestList.filter((guest) =>
           guest.attributes.name.toLowerCase().includes(value.toLowerCase())
         );
-        setSuggestions(filtered);
-        setShowSuggestions(true);
+        setNameSuggestions(filtered);
+        setShowNameSuggestions(true);
       } else {
-        setSuggestions([]);
-        setShowSuggestions(false);
+        setNameSuggestions([]);
+        setShowNameSuggestions(false);
       }
     }
   };
@@ -223,14 +227,26 @@ const DonorDetails = ({ activeTab }) => {
 
     // Allow only numbers
     if (/^\d*$/.test(value)) {
-      // Update the value even if less than 10 digits
       updateAndSyncDonorDetails({ phone: value });
       clearFieldError("phone");
 
-      // Show error only if user has entered something and it's not 10 digits
-      if (value.length > 0 && value.length !== 10) {
-        setPhoneError("Phone number must be 10 digits");
+      // Filter suggestions based on phone input
+      if (value.length > 0) {
+        const filtered = guestList.filter((guest) =>
+          guest.attributes.phone_number.replace("+91", "").includes(value)
+        );
+        setPhoneSuggestions(filtered);
+        setShowPhoneSuggestions(filtered.length > 0);
+
+        // Only show error if no suggestions and not a valid phone number
+        if (filtered.length === 0 && value.length !== 10) {
+          setPhoneError("Phone number must be 10 digits");
+        } else {
+          setPhoneError("");
+        }
       } else {
+        setPhoneSuggestions([]);
+        setShowPhoneSuggestions(false);
         setPhoneError("");
       }
     }
@@ -238,8 +254,15 @@ const DonorDetails = ({ activeTab }) => {
 
   const handleFetchGuests = async () => {
     try {
+      console.log("Fetching guest details...");
       const guests = await fetchGuestDetails();
-      console.log("Guests:", guests);
+      console.log("Fetched guest details:", guests);
+      console.log("Guest data structure:", {
+        fullResponse: guests,
+        dataArray: guests.data,
+        firstGuest: guests.data?.[0],
+        firstGuestAttributes: guests.data?.[0]?.attributes,
+      });
 
       // Fetch and log receipt details
       const receipts = await fetchReceiptDetails();
@@ -247,7 +270,7 @@ const DonorDetails = ({ activeTab }) => {
 
       setGuestList(guests.data);
     } catch (error) {
-      console.error("Error fetching data:", error);
+      console.error("Error fetching guest details:", error);
     }
   };
 
@@ -262,13 +285,8 @@ const DonorDetails = ({ activeTab }) => {
       identity_proof,
       identity_number,
       address,
-      donations,
+      unique_no,
     } = guest.attributes;
-
-    // Check if there's a unique_no in the receipt details
-    const uniqueNo =
-      donations?.data[0]?.attributes?.receipt_detail?.data?.attributes
-        ?.unique_no;
 
     // Extract address components
     const rawAddressParts = address.split(", ");
@@ -298,10 +316,9 @@ const DonorDetails = ({ activeTab }) => {
       streetName,
     });
 
-    // If unique_no exists, update it in the store
-    if (uniqueNo) {
-      // You'll need to add a new action in your store to update the uniqueNo
-      updateUniqueNo(activeTabId, uniqueNo);
+    // Update unique_no if it exists in guest attributes
+    if (unique_no) {
+      updateUniqueNo(activeTabId, unique_no);
     }
 
     // Extract and set title if present
@@ -310,7 +327,8 @@ const DonorDetails = ({ activeTab }) => {
       updateAndSyncDonorDetails({ title: titleMatch[0] });
     }
 
-    setShowSuggestions(false);
+    setShowNameSuggestions(false);
+    setShowPhoneSuggestions(false);
   };
 
   useEffect(() => {
@@ -336,6 +354,20 @@ const DonorDetails = ({ activeTab }) => {
         !deekshaDropdownRef.current.contains(event.target)
       ) {
         setIsDeekshaDropdownOpen(false);
+      }
+
+      if (
+        nameDropdownRef.current &&
+        !nameDropdownRef.current.contains(event.target)
+      ) {
+        setShowNameSuggestions(false);
+      }
+
+      if (
+        phoneDropdownRef.current &&
+        !phoneDropdownRef.current.contains(event.target)
+      ) {
+        setShowPhoneSuggestions(false);
       }
     };
 
@@ -386,21 +418,22 @@ const DonorDetails = ({ activeTab }) => {
               <div
                 className="autocomplete-container"
                 style={{ position: "relative", flex: 1 }}
+                ref={nameDropdownRef}
               >
                 <input
                   className="donor-input"
                   type="text"
                   value={currentDonorDetails.name}
                   onChange={handleNameChange}
-                  pattern="[A-Za-z\s.]+"
-                  title="Please enter only letters, spaces, and dots"
+                  pattern="[A-Za-z0-9\s.]+"
+                  title="Please enter letters, numbers, spaces, and dots"
                   disabled={isCompleted}
                   style={{
                     backgroundColor: isCompleted ? "#f5f5f5" : "white",
                     opacity: isCompleted ? 0.7 : 1,
                   }}
                 />
-                {showSuggestions && suggestions.length > 0 && (
+                {showNameSuggestions && nameSuggestions.length > 0 && (
                   <ul
                     className="suggestions-list"
                     style={{
@@ -419,7 +452,7 @@ const DonorDetails = ({ activeTab }) => {
                       margin: 0,
                     }}
                   >
-                    {suggestions.map((guest) => (
+                    {nameSuggestions.map((guest) => (
                       <li
                         key={guest.id}
                         onClick={() => handleSuggestionClick(guest)}
@@ -461,19 +494,67 @@ const DonorDetails = ({ activeTab }) => {
             <label className="donor-label">
               Phone No. <span className="required">*</span>
             </label>
-            <input
-              className="donor-input"
-              type="tel"
-              name="phone"
-              value={currentDonorDetails.phone}
-              onChange={handlePhoneChange}
-              maxLength={10}
-              disabled={isCompleted}
-              style={{
-                backgroundColor: isCompleted ? "#f5f5f5" : "white",
-                opacity: isCompleted ? 0.7 : 1,
-              }}
-            />
+            <div
+              className="autocomplete-container"
+              style={{ position: "relative" }}
+              ref={phoneDropdownRef}
+            >
+              <input
+                className="donor-input"
+                type="tel"
+                name="phone"
+                value={currentDonorDetails.phone}
+                onChange={handlePhoneChange}
+                maxLength={10}
+                disabled={isCompleted}
+                style={{
+                  backgroundColor: isCompleted ? "#f5f5f5" : "white",
+                  opacity: isCompleted ? 0.7 : 1,
+                }}
+              />
+              {showPhoneSuggestions && phoneSuggestions.length > 0 && (
+                <ul
+                  className="suggestions-list"
+                  style={{
+                    position: "absolute",
+                    top: "100%",
+                    left: 0,
+                    right: 0,
+                    zIndex: 1000,
+                    backgroundColor: "white",
+                    border: "1px solid #ccc",
+                    borderRadius: "4px",
+                    maxHeight: "200px",
+                    overflowY: "auto",
+                    listStyle: "none",
+                    padding: 0,
+                    margin: 0,
+                  }}
+                >
+                  {phoneSuggestions.map((guest) => (
+                    <li
+                      key={guest.id}
+                      onClick={() => handleSuggestionClick(guest)}
+                      style={{
+                        padding: "8px 12px",
+                        cursor: "pointer",
+                        borderBottom: "1px solid #eee",
+                      }}
+                      onMouseEnter={(e) =>
+                        (e.target.style.backgroundColor = "#f0f0f0")
+                      }
+                      onMouseLeave={(e) =>
+                        (e.target.style.backgroundColor = "white")
+                      }
+                    >
+                      {`${
+                        guest.attributes.name
+                      } - ${guest.attributes.phone_number.replace("+91", "")}`}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
             {(phoneError || fieldErrors.donor?.phone) && (
               <span
                 className="error-message"

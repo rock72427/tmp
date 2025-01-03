@@ -13,7 +13,12 @@ import { loginUser } from "../../../../services/auth";
 import ConsentLetterTemplate from "./ConsentLetterTemplate";
 import ThankLetterTemplate from "./ThankLetterTemplate";
 
-const DonationAction = ({ totalAmount = 0, activeTab, transactionType }) => {
+const DonationAction = ({
+  totalAmount = 0,
+  activeTab,
+  transactionType,
+  onDonationSuccess,
+}) => {
   const { donorTabs, activeTabId, setFieldErrors, updateDonationDetails } =
     useDonationStore();
   const { user } = useAuthStore();
@@ -320,21 +325,19 @@ const DonationAction = ({ totalAmount = 0, activeTab, transactionType }) => {
 
       setShowReceiptPreview(false);
 
+      // Call the success callback
+      onDonationSuccess?.();
+
+      // Fetch new receipt numbers
+      const { fetchLatestReceiptNumbers } = useDonationStore.getState();
+      await fetchLatestReceiptNumbers();
+
       // Remove the current tab after successful printing
       const { removeDonorTab } = useDonationStore.getState();
       removeDonorTab(activeTabId);
     } catch (error) {
-      console.error("Detailed error in handleConfirmPrint:", {
-        message: error.message,
-        stack: error.stack,
-        response: error.response?.data,
-      });
-
-      alert(
-        `Failed to update donation status: ${
-          error.message || "Unknown error occurred"
-        }`
-      );
+      console.error("Error in handleConfirmPrint:", error);
+      alert(`Failed to process donation: ${error.message}`);
     }
   };
 
@@ -390,6 +393,13 @@ const DonationAction = ({ totalAmount = 0, activeTab, transactionType }) => {
           donationId: receiptResponse?.data?.id,
         });
       }
+
+      // Call the success callback
+      onDonationSuccess?.();
+
+      // Fetch new receipt numbers
+      const { fetchLatestReceiptNumbers } = useDonationStore.getState();
+      await fetchLatestReceiptNumbers();
 
       // Remove the current tab after successful operation
       const { removeDonorTab } = useDonationStore.getState();
