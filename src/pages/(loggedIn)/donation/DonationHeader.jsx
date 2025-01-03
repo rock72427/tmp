@@ -65,7 +65,10 @@ const DonationHeader = ({ onTabChange }) => {
   };
 
   const handleAddDonation = () => {
-    addNewDonorTab();
+    // Check if we already have 5 donor tabs
+    if (Object.keys(donorTabs).length < 5) {
+      addNewDonorTab();
+    }
   };
 
   const handleRemoveDonor = (id) => {
@@ -144,8 +147,16 @@ const DonationHeader = ({ onTabChange }) => {
                 fontSize: "0.95rem",
                 marginLeft: "12px",
                 alignSelf: "flex-start",
+                // Add cursor style and opacity when max limit is reached
+                cursor:
+                  Object.keys(donorTabs).length >= 5
+                    ? "not-allowed"
+                    : "pointer",
+                opacity: Object.keys(donorTabs).length >= 5 ? 0.7 : 1,
               }}
               onClick={handleAddDonation}
+              // Optionally disable the button when limit is reached
+              disabled={Object.keys(donorTabs).length >= 5}
             >
               + Add Donation
             </button>

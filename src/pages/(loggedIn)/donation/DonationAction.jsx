@@ -146,7 +146,6 @@ const DonationAction = ({ totalAmount = 0, activeTab, transactionType }) => {
         Receipt_number: currentTab.receiptNumbers[currentSection],
         donation_date: new Date().toISOString().split("T")[0],
         createdby: user?.id,
-        unique_no: currentTab.uniqueNo,
         counter: user?.counter,
         status: status,
       });
@@ -166,6 +165,7 @@ const DonationAction = ({ totalAmount = 0, activeTab, transactionType }) => {
           email: currentDonorDetails.email,
           identity_proof: currentDonorDetails.identityType,
           identity_number: currentDonorDetails.identityNumber,
+          unique_no: currentTab.uniqueNo,
           address: [
             currentDonorDetails.flatNo,
             currentDonorDetails.streetName,
