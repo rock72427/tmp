@@ -155,51 +155,114 @@ const DonorDetails = ({ activeTab }) => {
   };
 
   const validateIdentityNumber = (type, value) => {
+    if (!value) return ""; // Don't show error for empty value
+
     switch (type) {
       case "Aadhaar":
-        // 12 digits only
-        if (!/^\d*$/.test(value))
+        if (!/^\d+$/.test(value))
           return "Aadhaar number should only contain digits";
-        if (value.length > 0 && value.length < 12)
-          return "Aadhaar number must be 12 digits";
-        return "";
+        if (value.length < 12)
+          return (
+            "Aadhaar number must be 12 digits (currently: " + value.length + ")"
+          );
+        if (value.length > 12) return "Aadhaar number cannot exceed 12 digits";
+        break;
 
       case "PAN Card":
-        // 10 characters, first 5 letters, next 4 numbers, last letter
-        const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
-        if (value.length > 0 && !panRegex.test(value))
-          return "Invalid PAN format (e.g., ABCDE1234F)";
-        return "";
+        if (!/^[A-Z]{0,5}[0-9]{0,4}[A-Z]{0,1}$/.test(value))
+          return "Invalid PAN format";
+        if (value.length < 10)
+          return "PAN must be 10 characters (currently: " + value.length + ")";
+        if (value.length > 10) return "PAN cannot exceed 10 characters";
+        if (value.length === 10 && !/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(value)) {
+          return "Invalid PAN format (must be like ABCDE1234F)";
+        }
+        break;
 
       case "Voter ID":
-        // Typically 10 characters, alphanumeric
-        const voterRegex = /^[A-Z]{3}[0-9]{7}$/;
-        if (value.length > 0 && !voterRegex.test(value))
-          return "Invalid Voter ID format (e.g., ABC1234567)";
-        return "";
+        if (!/^[A-Z]{0,3}[0-9]{0,7}$/.test(value))
+          return "Invalid Voter ID format";
+        if (value.length < 10)
+          return (
+            "Voter ID must be 10 characters (currently: " + value.length + ")"
+          );
+        if (value.length > 10) return "Voter ID cannot exceed 10 characters";
+        if (value.length === 10 && !/^[A-Z]{3}[0-9]{7}$/.test(value)) {
+          return "Invalid Voter ID format (must be like ABC1234567)";
+        }
+        break;
 
       case "Passport":
-        // 8 characters, letter followed by 7 numbers
-        const passportRegex = /^[A-Z]{1}[0-9]{7}$/;
-        if (value.length > 0 && !passportRegex.test(value))
-          return "Invalid Passport format (e.g., A1234567)";
-        return "";
+        if (!/^[A-Z]{0,1}[0-9]{0,7}$/.test(value))
+          return "Invalid Passport format";
+        if (value.length < 8)
+          return (
+            "Passport must be 8 characters (currently: " + value.length + ")"
+          );
+        if (value.length > 8) return "Passport cannot exceed 8 characters";
+        if (value.length === 8 && !/^[A-Z]{1}[0-9]{7}$/.test(value)) {
+          return "Invalid Passport format (must be like A1234567)";
+        }
+        break;
 
       case "Driving License":
-        // 15 characters, alphanumeric
-        const dlRegex = /^[A-Z]{2}[0-9]{13}$/;
-        if (value.length > 0 && !dlRegex.test(value))
-          return "Invalid Driving License format (e.g., DL0420160000000)";
-        return "";
-
-      default:
-        return "";
+        if (!/^[A-Z]{0,2}[0-9]{0,13}$/.test(value))
+          return "Invalid Driving License format";
+        if (value.length < 15)
+          return (
+            "Driving License must be 15 characters (currently: " +
+            value.length +
+            ")"
+          );
+        if (value.length > 15)
+          return "Driving License cannot exceed 15 characters";
+        if (value.length === 15 && !/^[A-Z]{2}[0-9]{13}$/.test(value)) {
+          return "Invalid Driving License format (must be like DL0420160000000)";
+        }
+        break;
     }
+    return "";
   };
 
   const handleIdentityInputChange = (e) => {
-    const value = e.target.value;
-    updateAndSyncDonorDetails({ identityNumber: value });
+    const value = e.target.value.toUpperCase(); // Convert to uppercase for consistency
+    const identityType = currentDonorDetails.identityType;
+
+    // Validate based on identity type
+    const error = validateIdentityNumber(identityType, value);
+    setIdentityError(error);
+
+    // Only update if the input matches the expected format or is empty
+    switch (identityType) {
+      case "Aadhaar":
+        if (/^\d*$/.test(value) && value.length <= 12) {
+          updateAndSyncDonorDetails({ identityNumber: value });
+        }
+        break;
+      case "PAN Card":
+        if (/^[A-Z0-9]*$/.test(value) && value.length <= 10) {
+          updateAndSyncDonorDetails({ identityNumber: value });
+        }
+        break;
+      case "Voter ID":
+        if (/^[A-Z0-9]*$/.test(value) && value.length <= 10) {
+          updateAndSyncDonorDetails({ identityNumber: value });
+        }
+        break;
+      case "Passport":
+        if (/^[A-Z0-9]*$/.test(value) && value.length <= 8) {
+          updateAndSyncDonorDetails({ identityNumber: value });
+        }
+        break;
+      case "Driving License":
+        if (/^[A-Z0-9]*$/.test(value) && value.length <= 15) {
+          updateAndSyncDonorDetails({ identityNumber: value });
+        }
+        break;
+      default:
+        updateAndSyncDonorDetails({ identityNumber: value });
+    }
+
     clearFieldError("identityNumber");
   };
 
@@ -789,7 +852,7 @@ const DonorDetails = ({ activeTab }) => {
                 }}
               />
             </div>
-            {fieldErrors.donor.identityNumber && (
+            {(identityError || fieldErrors.donor.identityNumber) && (
               <span
                 className="error-message"
                 style={{
@@ -799,7 +862,7 @@ const DonorDetails = ({ activeTab }) => {
                   display: "block",
                 }}
               >
-                {fieldErrors.donor.identityNumber}
+                {identityError || fieldErrors.donor.identityNumber}
               </span>
             )}
           </div>
