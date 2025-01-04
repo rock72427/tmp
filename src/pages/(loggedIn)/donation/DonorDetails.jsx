@@ -782,16 +782,20 @@ const DonorDetails = ({ activeTab }) => {
             >
               <div
                 className="dropdown-header"
-                onClick={() => setIsDeekshaDropdownOpen(!isDeekshaDropdownOpen)}
+                onClick={() =>
+                  !isCompleted &&
+                  setIsDeekshaDropdownOpen(!isDeekshaDropdownOpen)
+                }
                 style={{
                   padding: "10px",
                   border: "1px solid #ccc",
                   borderRadius: "4px",
-                  cursor: "pointer",
+                  cursor: isCompleted ? "not-allowed" : "pointer",
                   display: "flex",
                   justifyContent: "space-between",
                   alignItems: "center",
-                  backgroundColor: "#FFF",
+                  backgroundColor: isCompleted ? "#f5f5f5" : "#FFF",
+                  opacity: isCompleted ? 0.7 : 1,
                 }}
               >
                 <span>
@@ -895,22 +899,29 @@ const DonorDetails = ({ activeTab }) => {
                 placeholder="Please specify your Mantra Diksha"
                 value={customDeeksha}
                 onChange={(e) => {
-                  const value = e.target.value;
-                  setCustomDeeksha(value);
-                  updateAndSyncDonorDetails({ deeksha: value });
-                  if (value.trim()) {
-                    clearFieldError("deeksha");
-                  } else {
-                    setFieldErrors({
-                      ...fieldErrors,
-                      donor: {
-                        ...fieldErrors.donor,
-                        deeksha: "Please specify Mantra Diksha",
-                      },
-                    });
+                  if (!isCompleted) {
+                    const value = e.target.value;
+                    setCustomDeeksha(value);
+                    updateAndSyncDonorDetails({ deeksha: value });
+                    if (value.trim()) {
+                      clearFieldError("deeksha");
+                    } else {
+                      setFieldErrors({
+                        ...fieldErrors,
+                        donor: {
+                          ...fieldErrors.donor,
+                          deeksha: "Please specify Mantra Diksha",
+                        },
+                      });
+                    }
                   }
                 }}
-                style={{ marginTop: "10px" }}
+                style={{
+                  marginTop: "10px",
+                  backgroundColor: isCompleted ? "#f5f5f5" : "white",
+                  opacity: isCompleted ? 0.7 : 1,
+                }}
+                disabled={isCompleted}
                 className="donor-input"
               />
             )}
