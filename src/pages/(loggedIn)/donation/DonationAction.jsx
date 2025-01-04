@@ -990,6 +990,20 @@ const DonationAction = ({
     };
   };
 
+  // Calculate total amount including completed donations
+  const calculatedTotalAmount = () => {
+    const currentDonationDetails =
+      donorTabs[activeTabId][currentSection]?.donationDetails;
+
+    // If the donation is completed, use its amount
+    if (currentDonationDetails?.status === "completed") {
+      return parseFloat(currentDonationDetails.amount) || 0;
+    }
+
+    // Otherwise use the passed totalAmount
+    return totalAmount;
+  };
+
   // Add check for completed status
   const isCompleted =
     donorTabs[activeTabId][currentSection]?.donationDetails?.status ===
@@ -1001,7 +1015,7 @@ const DonationAction = ({
       <div className="donation-action-bar">
         <div className="donation-total-amount">
           <span>Total Donation Amount</span>
-          <span>₹ {totalAmount.toFixed(2)}</span>
+          <span>₹ {calculatedTotalAmount().toFixed(2)}</span>
         </div>
 
         <div className="donation-actions">
