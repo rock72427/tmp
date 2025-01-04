@@ -81,6 +81,16 @@ const NewDonation = () => {
     });
   };
 
+  // Add this function to check if transaction details should be shown
+  const shouldShowTransactionDetails = () => {
+    const currentSection = activeTab.toLowerCase();
+    const currentDonationDetails =
+      donationStore.donorTabs[activeTabId][currentSection].donationDetails;
+    const transactionType = currentDonationDetails?.transactionType || "Cash";
+
+    return ["Cheque", "Bank Transfer", "DD"].includes(transactionType);
+  };
+
   return (
     <div>
       <ToastContainer />
@@ -118,9 +128,7 @@ const NewDonation = () => {
             alignItems: "center",
           }}
         >
-          {(transactionType === "Cheque" ||
-            transactionType === "Bank Transfer" ||
-            transactionType === "DD") && (
+          {shouldShowTransactionDetails() && (
             <TransactionDetails activeTab={activeTab} />
           )}
         </div>
