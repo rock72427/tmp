@@ -636,13 +636,14 @@ const DonorDetails = ({ activeTab }) => {
                   opacity: isCompleted ? 0.7 : 1,
                 }}
               >
-                <option>Sri</option>
-                <option>Smt</option>
-                <option>Mr</option>
-                <option>Mrs</option>
-                <option>Ms</option>
-                <option>Dr</option>
-                <option>Prof</option>
+                <option value="">Title</option>
+                <option value="Sri">Sri</option>
+                <option value="Smt">Smt</option>
+                <option value="Mr">Mr</option>
+                <option value="Mrs">Mrs</option>
+                <option value="Ms">Ms</option>
+                <option value="Dr">Dr</option>
+                <option value="Prof">Prof</option>
               </select>
               <div
                 className="autocomplete-container"
