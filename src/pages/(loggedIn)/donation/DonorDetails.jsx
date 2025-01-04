@@ -452,39 +452,42 @@ const DonorDetails = ({ activeTab }) => {
       identity_number,
       address,
       unique_no,
-      donations,
     } = guest.attributes;
 
-    // Extract address components
-    const rawAddressParts = address.split(", ");
-    const flatNo =
-      rawAddressParts[0] && rawAddressParts[0].trim() !== ""
-        ? rawAddressParts[0]
-        : "";
-    const streetName =
-      rawAddressParts[1] && rawAddressParts[1].trim() !== ""
-        ? rawAddressParts[1]
-        : "";
+    // Split address by commas and trim whitespace
+    const addressParts = address.split(",").map((part) => part.trim());
 
-    // Update donor details with guest ID and full guest data
+    // Extract components from the end of the array
+    const pincode = addressParts[addressParts.length - 1] || "";
+    const state = addressParts[addressParts.length - 2] || "";
+    const district = addressParts[addressParts.length - 3] || "";
+    const postOffice = addressParts[addressParts.length - 4] || "";
+
+    // Remaining parts (if any) are considered street address
+    const streetAddress = addressParts
+      .slice(0, addressParts.length - 4)
+      .join(", ");
+
+    // Update donor details
     updateAndSyncDonorDetails({
       guestId: guest.id,
-      guestData: guest, // Store the full guest data
+      guestData: guest,
       name: name.replace(/^(Sri|Smt|Mr|Mrs|Ms|Dr|Prof)\s+/, ""),
       phone: phone_number.replace("+91", ""),
       email,
       deeksha,
       identityType: identity_proof,
       identityNumber: identity_number,
-      pincode: rawAddressParts[rawAddressParts.length - 1] || "",
-      state: rawAddressParts[rawAddressParts.length - 2] || "",
-      district: rawAddressParts[rawAddressParts.length - 3] || "",
-      postOffice: rawAddressParts[rawAddressParts.length - 4] || "",
-      flatNo,
-      streetName,
+      pincode,
+      state,
+      district,
+      postOffice,
+      // If there's a street address, use it for both fields
+      flatNo: streetAddress,
+      streetName: "", // Leave empty as we don't have a clear separation
     });
 
-    // Update unique_no if it exists in guest attributes
+    // Update unique_no if it exists
     if (unique_no) {
       updateUniqueNo(activeTabId, unique_no);
     }
@@ -497,6 +500,7 @@ const DonorDetails = ({ activeTab }) => {
 
     setShowNameSuggestions(false);
     setShowPhoneSuggestions(false);
+    setShowIdentitySuggestions(false);
   };
 
   useEffect(() => {
