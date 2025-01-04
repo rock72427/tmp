@@ -69,8 +69,11 @@ const Details = ({ activeTab, onTransactionTypeChange }) => {
 
   const handleAmountChange = (e) => {
     const value = e.target.value;
-    updateDonationDetails(activeTabId, currentSection, { amount: value });
-    clearFieldError("amount");
+    // Only allow positive integers
+    if (/^\d*$/.test(value)) {
+      updateDonationDetails(activeTabId, currentSection, { amount: value });
+      clearFieldError("amount");
+    }
   };
 
   const [panError, setPanError] = useState("");
@@ -146,6 +149,18 @@ const Details = ({ activeTab, onTransactionTypeChange }) => {
   const isCompleted =
     donorTabs[activeTabId][currentSection].donationDetails.status ===
     "completed";
+
+  const [showPanInput, setShowPanInput] = useState(false);
+
+  const handlePanSelectionChange = (e) => {
+    const value = e.target.value;
+    if (value === "None") {
+      setShowPanInput(false);
+      handlePanNumberChange({ target: { value: "" } });
+    } else {
+      setShowPanInput(true);
+    }
+  };
 
   return (
     <div
@@ -235,7 +250,7 @@ const Details = ({ activeTab, onTransactionTypeChange }) => {
           </label>
           <input
             className="donation-form__input"
-            type="number"
+            type="text"
             placeholder=""
             value={currentDonationDetails.amount}
             onChange={handleAmountChange}
@@ -265,18 +280,36 @@ const Details = ({ activeTab, onTransactionTypeChange }) => {
             <label className="donation-form__label">
               PAN Number <span className="donation-form__required">*</span>
             </label>
-            <input
-              className="donation-form__input"
-              type="text"
-              placeholder="Enter PAN Number"
-              value={currentDonationDetails.panNumber}
-              onChange={handlePanNumberChange}
+            <select
+              className="donation-form__select"
+              value={showPanInput ? "enter" : "None"}
+              onChange={handlePanSelectionChange}
               disabled={isCompleted}
               style={{
                 backgroundColor: isCompleted ? "#f5f5f5" : "white",
                 opacity: isCompleted ? 0.7 : 1,
               }}
-            />
+            >
+              <option value="None">None</option>
+              <option value="enter">Enter PAN Number</option>
+            </select>
+
+            {showPanInput && (
+              <input
+                className="donation-form__input"
+                type="text"
+                placeholder="Enter PAN Number"
+                value={currentDonationDetails.panNumber}
+                onChange={handlePanNumberChange}
+                disabled={isCompleted}
+                style={{
+                  marginTop: "10px",
+                  backgroundColor: isCompleted ? "#f5f5f5" : "white",
+                  opacity: isCompleted ? 0.7 : 1,
+                }}
+              />
+            )}
+
             {panError && (
               <span
                 className="error-message"

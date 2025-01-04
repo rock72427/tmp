@@ -87,10 +87,10 @@ const DonationAction = ({
       missingFields.push("Donation Amount");
       errors.donation.amount = "Amount is required";
     }
-    if (!donationDetails.inMemoryOf) {
-      missingFields.push("In Memory Of");
-      errors.donation.inMemoryOf = "In Memory Of is required";
-    }
+    // if (!donationDetails.inMemoryOf) {
+    //   missingFields.push("In Memory Of");
+    //   errors.donation.inMemoryOf = "In Memory Of is required";
+    // }
 
     // Transaction Details validation if applicable
     if (["Cheque", "Bank Transfer", "DD"].includes(transactionType)) {
@@ -106,10 +106,10 @@ const DonationAction = ({
         missingFields.push("Bank Name");
         errors.transaction.bankName = "Bank name is required";
       }
-      if (!transactionDetails.branchName) {
-        missingFields.push("Branch Name");
-        errors.transaction.branchName = "Branch name is required";
-      }
+      // if (!transactionDetails.branchName) {
+      //   missingFields.push("Branch Name");
+      //   errors.transaction.branchName = "Branch name is required";
+      // }
     }
 
     const hasErrors = missingFields.length > 0;
