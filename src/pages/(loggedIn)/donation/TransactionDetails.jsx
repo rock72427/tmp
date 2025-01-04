@@ -102,6 +102,14 @@ const TransactionDetails = ({ activeTab }) => {
     donorTabs[activeTabId][currentSection].donationDetails.status ===
     "completed";
 
+  const getTodayDate = () => {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, "0");
+    const day = String(today.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  };
+
   return (
     <div
       className="transaction-container"
@@ -125,6 +133,7 @@ const TransactionDetails = ({ activeTab }) => {
             placeholder="dd-mm-yyyy"
             value={currentTransactionDetails.date}
             onChange={handleDateChange}
+            min={getTodayDate()}
             disabled={isCompleted}
             style={{
               backgroundColor: isCompleted ? "#f5f5f5" : "white",
