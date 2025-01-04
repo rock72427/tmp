@@ -326,7 +326,7 @@ const ReceiptTemplate = ({
 
               </div>
               <div class="footer">
-                <p>${user?.username}</p>
+                <p>${user?.username} (C${user?.counter})</p>
               </div>
             </div>
             <script>

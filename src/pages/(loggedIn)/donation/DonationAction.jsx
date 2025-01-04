@@ -12,6 +12,7 @@ import ReceiptPreviewModal from "./ReceiptPreviewModal";
 import { loginUser } from "../../../../services/auth";
 import ConsentLetterTemplate from "./ConsentLetterTemplate";
 import ThankLetterTemplate from "./ThankLetterTemplate";
+import ReceiptTemplate from "./ReceiptTemplate";
 
 const DonationAction = ({
   totalAmount = 0,
@@ -318,6 +319,10 @@ const DonationAction = ({
           currentTab[currentSection].transactionDetails.transactionId,
         bankName: currentTab[currentSection].transactionDetails.bankName,
         branchName: currentTab[currentSection].transactionDetails.branchName,
+      },
+      user: {
+        username: user?.username,
+        counter: user?.counter?.replace("Counter ", ""),
       },
     });
 
@@ -869,6 +874,44 @@ const DonationAction = ({
 
     // Write the content to the iframe
     printFrame.contentDocument.write(contentWithoutPrintScript);
+    printFrame.contentDocument.close();
+
+    // Force the print dialog to appear immediately
+    printFrame.onload = () => {
+      try {
+        printFrame.contentWindow.print();
+      } catch (error) {
+        console.error("Print failed:", error);
+      } finally {
+        // Remove the iframe after a short delay
+        setTimeout(() => {
+          document.body.removeChild(printFrame);
+        }, 500);
+      }
+    };
+  };
+
+  const handlePrint = () => {
+    if (!validateFields()) return;
+
+    // Generate receipt content
+    const receiptContent = ReceiptTemplate({
+      receiptData: {
+        ...receiptData,
+        user: {
+          username: user?.username,
+          counter: user?.counter?.replace("Counter ", ""),
+        },
+      },
+    });
+
+    // Create a temporary hidden iframe
+    const printFrame = document.createElement("iframe");
+    printFrame.style.display = "none";
+    document.body.appendChild(printFrame);
+
+    // Write the content to the iframe
+    printFrame.contentDocument.write(receiptContent);
     printFrame.contentDocument.close();
 
     // Force the print dialog to appear immediately
