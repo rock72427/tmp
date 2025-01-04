@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import "./Details.scss";
 import useDonationStore from "../../../../donationStore";
 
@@ -32,6 +32,7 @@ const Details = ({ activeTab, onTransactionTypeChange }) => {
     updateAndSyncDonorDetails,
     fieldErrors,
     setFieldErrors,
+    updateDonorDetails,
   } = useDonationStore();
 
   const currentSection = activeTab.toLowerCase();
@@ -72,19 +73,59 @@ const Details = ({ activeTab, onTransactionTypeChange }) => {
     clearFieldError("amount");
   };
 
-  const handlePanNumberChange = (e) => {
-    const value = e.target.value;
-    updateDonationDetails(activeTabId, currentSection, {
-      panNumber: value,
-    });
+  const [panError, setPanError] = useState("");
 
-    if (
-      donorTabs[activeTabId][currentSection].donorDetails.identityType ===
-      "PAN Card"
-    ) {
-      updateAndSyncDonorDetails({
-        identityNumber: value,
+  const validatePanNumber = (value) => {
+    if (!value) return ""; // Don't show error for empty value
+
+    if (!/^[A-Z]{0,5}[0-9]{0,4}[A-Z]{0,1}$/.test(value)) {
+      return "Invalid PAN format";
+    }
+    if (value.length < 10) {
+      return "PAN must be 10 characters (currently: " + value.length + ")";
+    }
+    if (value.length > 10) {
+      return "PAN cannot exceed 10 characters";
+    }
+    if (value.length === 10 && !/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(value)) {
+      return "Invalid PAN format (must be like ABCDE1234F)";
+    }
+    return "";
+  };
+
+  const handlePanNumberChange = (e) => {
+    const value = e.target.value.toUpperCase();
+
+    // Only allow valid PAN characters
+    if (/^[A-Z0-9]*$/.test(value) && value.length <= 10) {
+      // Validate PAN format
+      const error = validatePanNumber(value);
+      setPanError(error);
+
+      // Update PAN number in donation details
+      updateDonationDetails(activeTabId, currentSection, {
+        panNumber: value,
       });
+
+      // Update PAN in other section (math/mission) as well
+      const otherSection = currentSection === "math" ? "mission" : "math";
+      updateDonationDetails(activeTabId, otherSection, {
+        panNumber: value,
+      });
+
+      // If amount is > 9999, also update the identity proof in donor details
+      if (Number(currentDonationDetails.amount) > 9999) {
+        updateDonorDetails(activeTabId, currentSection, {
+          identityType: "PAN Card",
+          identityNumber: value,
+        });
+
+        // Sync with other section's donor details
+        updateDonorDetails(activeTabId, otherSection, {
+          identityType: "PAN Card",
+          identityNumber: value,
+        });
+      }
     }
   };
 
@@ -236,6 +277,19 @@ const Details = ({ activeTab, onTransactionTypeChange }) => {
                 opacity: isCompleted ? 0.7 : 1,
               }}
             />
+            {panError && (
+              <span
+                className="error-message"
+                style={{
+                  color: "red",
+                  fontSize: "12px",
+                  marginTop: "4px",
+                  display: "block",
+                }}
+              >
+                {panError}
+              </span>
+            )}
           </div>
         )}
 

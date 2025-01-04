@@ -225,22 +225,30 @@ const DonorDetails = ({ activeTab }) => {
   };
 
   const handleIdentityInputChange = (e) => {
-    const value = e.target.value.toUpperCase(); // Convert to uppercase for consistency
+    const value = e.target.value.toUpperCase();
     const identityType = currentDonorDetails.identityType;
 
-    // Validate based on identity type
     const error = validateIdentityNumber(identityType, value);
     setIdentityError(error);
 
     // Only update if the input matches the expected format or is empty
     switch (identityType) {
-      case "Aadhaar":
-        if (/^\d*$/.test(value) && value.length <= 12) {
-          updateAndSyncDonorDetails({ identityNumber: value });
-        }
-        break;
       case "PAN Card":
         if (/^[A-Z0-9]*$/.test(value) && value.length <= 10) {
+          updateAndSyncDonorDetails({ identityNumber: value });
+          // Also update PAN number in donation details
+          updateDonationDetails(activeTabId, currentSection, {
+            panNumber: value,
+          });
+          // Update the other section's PAN number as well
+          const otherSection = currentSection === "math" ? "mission" : "math";
+          updateDonationDetails(activeTabId, otherSection, {
+            panNumber: value,
+          });
+        }
+        break;
+      case "Aadhaar":
+        if (/^\d*$/.test(value) && value.length <= 12) {
           updateAndSyncDonorDetails({ identityNumber: value });
         }
         break;
@@ -273,13 +281,12 @@ const DonorDetails = ({ activeTab }) => {
       identityNumber: "", // Reset the number when type changes
     });
 
-    // If changing from PAN Card, clear PAN number from other sections
+    // If changing from PAN Card, clear PAN number from donation details
     if (currentDonorDetails.identityType === "PAN Card") {
-      const otherSection = currentSection === "math" ? "mission" : "math";
-      updateDonationDetails(activeTabId, otherSection, {
+      updateDonationDetails(activeTabId, "math", {
         panNumber: "",
       });
-      updateDonationDetails(activeTabId, currentSection, {
+      updateDonationDetails(activeTabId, "mission", {
         panNumber: "",
       });
     }
