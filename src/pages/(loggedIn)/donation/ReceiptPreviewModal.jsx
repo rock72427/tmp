@@ -220,7 +220,7 @@ const ReceiptPreviewModal = ({
             style={{
               display: "flex",
               justifyContent: "space-between",
-              marginBottom: "40px",
+              marginBottom: "20px",
             }}
           >
             <span>
@@ -229,7 +229,16 @@ const ReceiptPreviewModal = ({
                 {receiptData.uniqueNo} / {receiptData.receiptNumber}
               </span>
             </span>
-            <span>Date: {receiptData.date}</span>
+            <span>
+              Date:{" "}
+              {new Date(receiptData.date)
+                .toLocaleDateString("en-GB", {
+                  day: "2-digit",
+                  month: "2-digit",
+                  year: "numeric",
+                })
+                .replace(/\//g, "-")}
+            </span>
           </div>
 
           <div style={{ marginBottom: "20px" }}>
