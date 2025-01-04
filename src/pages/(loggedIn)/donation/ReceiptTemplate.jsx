@@ -252,12 +252,21 @@ const ReceiptTemplate = ({
       By ${currentReceipt?.donationDetails?.transactionType || "Cash"}
       ${
         currentReceipt?.donationDetails?.transactionDetails?.transactionId
-          ? ` No. ${currentReceipt?.donationDetails?.transactionDetails?.transactionId}`
+          ? `No. ${currentReceipt?.donationDetails?.transactionDetails?.transactionId}`
           : ""
       }
       ${
         currentReceipt?.donationDetails?.transactionDetails?.ddDate
-          ? ` Dt. ${currentReceipt?.donationDetails?.transactionDetails?.ddDate}`
+          ? ` Dt. ${new Date(
+              currentReceipt?.donationDetails?.transactionDetails?.ddDate
+            )
+              .toLocaleDateString("en-GB", {
+                day: "2-digit",
+                month: "2-digit",
+                year: "numeric",
+              })
+              .split("/")
+              .join("-")}`
           : ""
       }
     </p>

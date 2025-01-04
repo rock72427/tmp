@@ -93,6 +93,49 @@ const ReceiptPreviewModal = ({
     return result;
   };
 
+  const handlePrintReceipt = () => {
+    if (!validateFields()) return;
+
+    const currentTab = donorTabs[activeTabId];
+    const currentDonorDetails = currentTab[currentSection].donorDetails;
+    const currentDonationDetails = currentTab[currentSection].donationDetails;
+    const currentTransactionDetails =
+      currentTab[currentSection].transactionDetails;
+
+    const amount = parseFloat(currentDonationDetails.amount) || 0;
+
+    setReceiptData({
+      receiptNumber: currentTab.receiptNumbers[currentSection],
+      uniqueNo: currentTab.uniqueNo,
+      date: new Date().toLocaleDateString(),
+      donorName: `${currentDonorDetails.title} ${currentDonorDetails.name}`,
+      address: {
+        flatNo: currentDonorDetails.flatNo,
+        postOffice: currentDonorDetails.postOffice,
+        district: currentDonorDetails.district,
+        state: currentDonorDetails.state,
+        pincode: currentDonorDetails.pincode,
+      },
+      transactionType: transactionType,
+      donationType: currentDonationDetails.donationType,
+      amount: amount.toFixed(2),
+      purpose: currentDonationDetails.purpose,
+      otherPurpose: currentDonationDetails.specifiedPurpose,
+      identityType: currentDonorDetails.identityType,
+      identityNumber: currentDonorDetails.identityNumber,
+      inMemoryOf: currentDonationDetails.inMemoryOf,
+      transactionDetails: {
+        date: currentTransactionDetails?.date,
+        transactionId: currentTransactionDetails?.transactionId,
+        bankName: currentTransactionDetails?.bankName,
+        branchName: currentTransactionDetails?.branchName,
+      },
+      user: user,
+    });
+
+    setShowReceiptPreview(true);
+  };
+
   const handlePrint = () => {
     // Create a temporary hidden iframe
     const printFrame = document.createElement("iframe");
@@ -125,6 +168,7 @@ const ReceiptPreviewModal = ({
           otherPurpose: receiptData.otherPurpose,
           inMemoryOf: receiptData.inMemoryOf,
           transactionDetails: {
+            transactionId: receiptData.transactionDetails?.transactionId,
             ddDate: receiptData.transactionDetails?.date,
             bankName: receiptData.transactionDetails?.bankName,
             branchName: receiptData.transactionDetails?.branchName,
