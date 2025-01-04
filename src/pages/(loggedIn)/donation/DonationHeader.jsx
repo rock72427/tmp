@@ -28,14 +28,19 @@ const DonationHeader = ({ onTabChange }) => {
     .map((id) => {
       const tab = donorTabs[id];
       const activeSection = tab.activeSection;
-      const donorName = tab[activeSection]?.donorDetails?.name;
-      const donorTitle = tab[activeSection]?.donorDetails?.title;
+      const donorDetails = tab[activeSection]?.donorDetails;
+
+      // Debug logs
+      console.log("Tab ID:", id);
+      console.log("Active Section:", activeSection);
+      console.log("Donor Details:", donorDetails);
+      console.log("Title:", donorDetails?.title);
+      console.log("Name:", donorDetails?.name);
 
       return {
         id: Number(id),
-        // Use donor's name if available, otherwise fallback to default label
-        label: donorName
-          ? `${donorTitle || ""} ${donorName}`.trim()
+        label: donorDetails?.name
+          ? `${donorDetails?.title || ""} ${donorDetails?.name}`.trim()
           : `New Donor ${id}`,
       };
     });
