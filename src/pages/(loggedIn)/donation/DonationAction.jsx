@@ -993,15 +993,13 @@ const DonationAction = ({
   // Calculate total amount including completed donations
   const calculatedTotalAmount = () => {
     const currentDonationDetails =
-      donorTabs[activeTabId][currentSection]?.donationDetails;
+      donorTabs[activeTabId]?.[currentSection]?.donationDetails;
 
-    // If the donation is completed, use its amount
-    if (currentDonationDetails?.status === "completed") {
-      return parseFloat(currentDonationDetails.amount) || 0;
-    }
+    if (!currentDonationDetails) return 0;
 
-    // Otherwise use the passed totalAmount
-    return totalAmount;
+    // Parse the amount, defaulting to 0 if invalid
+    const amount = parseFloat(currentDonationDetails.amount) || 0;
+    return amount;
   };
 
   // Add check for completed status

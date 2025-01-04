@@ -77,6 +77,10 @@ const Details = ({ activeTab, onTransactionTypeChange }) => {
     if (/^\d*$/.test(value)) {
       updateDonationDetails(activeTabId, currentSection, { amount: value });
       clearFieldError("amount");
+
+      // Update amount in other section (math/mission) as well
+      const otherSection = currentSection === "math" ? "mission" : "math";
+      updateDonationDetails(activeTabId, otherSection, { amount: value });
     }
   };
 
