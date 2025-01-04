@@ -60,42 +60,10 @@ const DonationAction = ({
         donorDetails.identityNumber
       );
       if (identityError) {
-        missingFields.push("Identity Proof Format");
+        missingFields.push(`Identity Proof Format: ${identityError}`);
         errors.donor.identityNumber = identityError;
       }
     }
-
-    // Add the validateIdentityNumber function
-    const validateIdentityNumber = (type, value) => {
-      switch (type) {
-        case "Aadhaar":
-          if (!/^\d{12}$/.test(value)) {
-            return "Aadhaar number must be exactly 12 digits";
-          }
-          break;
-        case "PAN Card":
-          if (!/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(value)) {
-            return "Invalid PAN format (must be like ABCDE1234F)";
-          }
-          break;
-        case "Voter ID":
-          if (!/^[A-Z]{3}[0-9]{7}$/.test(value)) {
-            return "Invalid Voter ID format (must be like ABC1234567)";
-          }
-          break;
-        case "Passport":
-          if (!/^[A-Z]{1}[0-9]{7}$/.test(value)) {
-            return "Invalid Passport format (must be like A1234567)";
-          }
-          break;
-        case "Driving License":
-          if (!/^[A-Z]{2}[0-9]{13}$/.test(value)) {
-            return "Invalid Driving License format (must be like DL0420160000000)";
-          }
-          break;
-      }
-      return "";
-    };
 
     // Donor Details validation
     if (!donorDetails.name) {
@@ -132,10 +100,6 @@ const DonationAction = ({
       missingFields.push("Donation Amount");
       errors.donation.amount = "Amount is required";
     }
-    // if (!donationDetails.inMemoryOf) {
-    //   missingFields.push("In Memory Of");
-    //   errors.donation.inMemoryOf = "In Memory Of is required";
-    // }
 
     // Transaction Details validation if applicable
     if (["Cheque", "Bank Transfer", "DD"].includes(transactionType)) {
@@ -151,34 +115,58 @@ const DonationAction = ({
         missingFields.push("Bank Name");
         errors.transaction.bankName = "Bank name is required";
       }
-      // if (!transactionDetails.branchName) {
-      //   missingFields.push("Branch Name");
-      //   errors.transaction.branchName = "Branch name is required";
-      // }
     }
+
+    // Set all errors in the store
+    setFieldErrors(errors);
 
     const hasErrors = missingFields.length > 0;
 
     if (hasErrors) {
-      // First show the alert
+      // Show alert with all missing/invalid fields
       alert(
-        `Please fill in the following required fields:\n${missingFields.join(
-          "\n"
-        )}`
+        `Please correct the following issues:\n${missingFields.join("\n")}`
       );
 
-      // Then scroll to top
+      // Scroll to top
       window.scrollTo({ top: 0, behavior: "smooth" });
-
-      // Finally set all errors at once in the store
-      setFieldErrors(errors);
 
       return false;
     }
 
-    // Clear all errors if validation passes
-    setFieldErrors({ donor: {}, donation: {}, transaction: {} });
     return true;
+  };
+
+  // Helper function to validate identity number format
+  const validateIdentityNumber = (type, value) => {
+    switch (type) {
+      case "Aadhaar":
+        if (!/^\d{12}$/.test(value)) {
+          return "Aadhaar number must be exactly 12 digits";
+        }
+        break;
+      case "PAN Card":
+        if (!/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(value)) {
+          return "Invalid PAN format (must be like ABCDE1234F)";
+        }
+        break;
+      case "Voter ID":
+        if (!/^[A-Z]{3}[0-9]{7}$/.test(value)) {
+          return "Invalid Voter ID format (must be like ABC1234567)";
+        }
+        break;
+      case "Passport":
+        if (!/^[A-Z]{1}[0-9]{7}$/.test(value)) {
+          return "Invalid Passport format (must be like A1234567)";
+        }
+        break;
+      case "Driving License":
+        if (!/^[A-Z]{2}[0-9]{13}$/.test(value)) {
+          return "Invalid Driving License format (must be like DL0420160000000)";
+        }
+        break;
+    }
+    return "";
   };
 
   const createReceipt = async (status) => {
