@@ -298,7 +298,6 @@ const ReceiptPreviewModal = ({
               style={{
                 display: "flex",
                 marginBottom: "10px",
-                marginTop: "20px",
               }}
             >
               <span
@@ -308,31 +307,89 @@ const ReceiptPreviewModal = ({
                   color: "#696969",
                 }}
               >
-                By Transaction Type:
+                The Sum of Rupees:
               </span>
-              <div style={{ color: "#666", fontWeight: 500 }}>
+              <span style={{ color: "#666", fontWeight: 500 }}>
+                {numberToWords(parseFloat(receiptData.amount))}
+              </span>
+            </div>
+
+            <div
+              style={{
+                display: "flex",
+                marginBottom: "10px",
+                marginTop: "10px",
+              }}
+            >
+              <span
+                style={{
+                  fontWeight: 300,
+                  marginRight: "5px",
+                  color: "#696969",
+                }}
+              >
+                By
+              </span>
+              <div style={{ color: "#666" }}>
                 <div>
-                  {receiptData.transactionType} &nbsp;&nbsp;
+                  <span style={{ color: "#696969", fontWeight: 300 }}>
+                    {receiptData.transactionType}
+                  </span>{" "}
+                  &nbsp;&nbsp;
                   {["Cheque", "DD", "Bank Transfer"].includes(
                     receiptData.transactionType
                   ) && (
                     <>
-                      No. {receiptData.transactionDetails?.transactionId}{" "}
-                      &nbsp;&nbsp; Dt.{" "}
-                      {new Date(receiptData.transactionDetails?.date)
-                        .toLocaleDateString("en-GB", {
-                          day: "2-digit",
-                          month: "2-digit",
-                          year: "numeric",
-                        })
-                        .split("/")
-                        .join("-")}
+                      <span
+                        style={{
+                          fontWeight: 300,
+                          color: "#696969",
+                          marginRight: "5px",
+                        }}
+                      >
+                        No.
+                      </span>
+                      <span style={{ color: "#696969", fontWeight: 300 }}>
+                        {receiptData.transactionDetails?.transactionId}
+                      </span>{" "}
+                      &nbsp;&nbsp;{" "}
+                      <span
+                        style={{
+                          fontWeight: 300,
+                          color: "#696969",
+                          marginRight: "5px",
+                        }}
+                      >
+                        Dt.
+                      </span>
+                      <span style={{ color: "#696969", fontWeight: 300 }}>
+                        {new Date(receiptData.transactionDetails?.date)
+                          .toLocaleDateString("en-GB", {
+                            day: "2-digit",
+                            month: "2-digit",
+                            year: "numeric",
+                          })
+                          .split("/")
+                          .join("-")}
+                      </span>
                       {(receiptData.transactionDetails?.bankName ||
                         receiptData.transactionDetails?.branchName) && (
                         <div>
-                          On {receiptData.transactionDetails?.bankName}
-                          {receiptData.transactionDetails?.branchName &&
-                            `, ${receiptData.transactionDetails.branchName}`}
+                          <span
+                            style={{
+                              fontWeight: 300,
+                              color: "#696969",
+                              marginRight: "5px",
+                              marginLeft: "-25px",
+                            }}
+                          >
+                            On
+                          </span>
+                          <span style={{ color: "#696969", fontWeight: 300 }}>
+                            {receiptData.transactionDetails?.bankName}
+                            {receiptData.transactionDetails?.branchName &&
+                              `, ${receiptData.transactionDetails.branchName}`}
+                          </span>
                         </div>
                       )}
                     </>
@@ -354,29 +411,9 @@ const ReceiptPreviewModal = ({
                   color: "#696969",
                 }}
               >
-                The Sum of Rupees:
-              </span>
-              <span style={{ color: "#666", fontWeight: 500 }}>
-                {numberToWords(parseFloat(receiptData.amount))}
-              </span>
-            </div>
-
-            <div
-              style={{
-                display: "flex",
-                marginBottom: "10px",
-              }}
-            >
-              <span
-                style={{
-                  fontWeight: 300,
-                  marginRight: "10px",
-                  color: "#696969",
-                }}
-              >
                 As Donation for:
               </span>
-              <span style={{ color: "#666", fontWeight: 500 }}>
+              <span style={{ color: "#696969", fontWeight: 300 }}>
                 {receiptData.donationType}
                 {receiptData.purpose && ` for ${receiptData.purpose}`}
               </span>
