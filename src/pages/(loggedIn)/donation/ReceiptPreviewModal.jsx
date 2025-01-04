@@ -283,6 +283,15 @@ const ReceiptPreviewModal = ({
                 State: {receiptData.address?.state}, Pin:{" "}
                 {receiptData.address?.pincode}
               </p>
+              <p
+                style={{
+                  margin: "5px 0 0 228px",
+                  fontWeight: 500,
+                  color: "#666",
+                }}
+              >
+                {receiptData.identityType}: {receiptData.identityNumber}
+              </p>
             </div>
 
             <div

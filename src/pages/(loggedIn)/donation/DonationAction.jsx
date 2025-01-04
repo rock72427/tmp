@@ -36,16 +36,65 @@ const DonationAction = ({
   }, [user]);
 
   const validateFields = () => {
-    const currentTab = donorTabs[activeTabId][currentSection];
-    const donorDetails = currentTab.donorDetails;
-    const donationDetails = currentTab.donationDetails;
-    const transactionDetails = currentTab.transactionDetails;
-
-    const missingFields = [];
     const errors = {
       donor: {},
       donation: {},
       transaction: {},
+    };
+    const missingFields = [];
+
+    // Get current tab and section details
+    const currentTab = donorTabs[activeTabId];
+    const donorDetails = currentTab[currentSection].donorDetails;
+    const donationDetails = currentTab[currentSection].donationDetails;
+    const transactionDetails = currentTab[currentSection].transactionDetails;
+
+    // Identity proof validation with specific format checks
+    if (!donorDetails.identityNumber) {
+      missingFields.push("Identity Proof");
+      errors.donor.identityNumber = "Identity proof is required";
+    } else {
+      // Add format validation based on identity type
+      const identityError = validateIdentityNumber(
+        donorDetails.identityType,
+        donorDetails.identityNumber
+      );
+      if (identityError) {
+        missingFields.push("Identity Proof Format");
+        errors.donor.identityNumber = identityError;
+      }
+    }
+
+    // Add the validateIdentityNumber function
+    const validateIdentityNumber = (type, value) => {
+      switch (type) {
+        case "Aadhaar":
+          if (!/^\d{12}$/.test(value)) {
+            return "Aadhaar number must be exactly 12 digits";
+          }
+          break;
+        case "PAN Card":
+          if (!/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(value)) {
+            return "Invalid PAN format (must be like ABCDE1234F)";
+          }
+          break;
+        case "Voter ID":
+          if (!/^[A-Z]{3}[0-9]{7}$/.test(value)) {
+            return "Invalid Voter ID format (must be like ABC1234567)";
+          }
+          break;
+        case "Passport":
+          if (!/^[A-Z]{1}[0-9]{7}$/.test(value)) {
+            return "Invalid Passport format (must be like A1234567)";
+          }
+          break;
+        case "Driving License":
+          if (!/^[A-Z]{2}[0-9]{13}$/.test(value)) {
+            return "Invalid Driving License format (must be like DL0420160000000)";
+          }
+          break;
+      }
+      return "";
     };
 
     // Donor Details validation
@@ -56,10 +105,6 @@ const DonationAction = ({
     if (!donorDetails.phone) {
       missingFields.push("Phone Number");
       errors.donor.phone = "Phone number is required";
-    }
-    if (!donorDetails.identityNumber) {
-      missingFields.push("Identity Proof");
-      errors.donor.identityNumber = "Identity proof is required";
     }
     if (!donorDetails.pincode) {
       missingFields.push("Pincode");
@@ -248,12 +293,10 @@ const DonationAction = ({
   const handlePrintReceipt = () => {
     if (!validateFields()) return;
 
-    // Prepare receipt data for preview
     const currentTab = donorTabs[activeTabId];
     const currentDonorDetails = currentTab[currentSection].donorDetails;
     const currentDonationDetails = currentTab[currentSection].donationDetails;
 
-    // Convert amount to number before using toFixed
     const amount = parseFloat(currentDonationDetails.amount) || 0;
 
     setReceiptData({
@@ -271,6 +314,8 @@ const DonationAction = ({
       transactionType: transactionType,
       amount: amount.toFixed(2),
       purpose: currentDonationDetails.purpose,
+      identityType: currentDonorDetails.identityType,
+      identityNumber: currentDonorDetails.identityNumber,
     });
 
     setShowReceiptPreview(true);
@@ -342,12 +387,18 @@ const DonationAction = ({
   };
 
   const handlePending = () => {
+    // First validate fields before showing confirmation
+    if (!validateFields()) return;
+
     setShowPendingConfirmation(true);
   };
 
   const handleConfirmPending = async () => {
     try {
       setShowPendingConfirmation(false);
+
+      // Validate fields again just to be safe
+      if (!validateFields()) return;
 
       // Get current tab and donation details
       const currentTab = donorTabs[activeTabId];
