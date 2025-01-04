@@ -408,8 +408,27 @@ const DonorDetails = ({ activeTab }) => {
     };
     window.addEventListener("refreshDonorDetails", handleRefresh);
 
-    // Initial fetch
-    handleFetchGuests();
+    // Initial fetch with async function
+    const fetchData = async () => {
+      try {
+        const guests = await fetchGuestDetails();
+        console.log("Fetched Guest Details:", guests.data);
+
+        setGuestList(guests.data);
+
+        // Fetch and log receipt details
+        const receipts = await fetchReceiptDetails();
+        console.log("Fetched Receipt Details:", {
+          fullResponse: receipts,
+          totalReceipts: receipts.data?.length || 0,
+          sampleReceipt: receipts.data?.[0],
+        });
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
 
     // Cleanup
     return () => {
