@@ -256,7 +256,7 @@ const ReceiptPreviewModal = ({
             <div style={{ marginBottom: "15px" }}>
               <p
                 style={{
-                  margin: "5px 0 0 228px",
+                  margin: "5px 0 0 220px",
                   fontWeight: 500,
                   color: "#666",
                 }}
@@ -265,7 +265,7 @@ const ReceiptPreviewModal = ({
               </p>
               <p
                 style={{
-                  margin: "5px 0 0 228px",
+                  margin: "5px 0 0 220px",
                   fontWeight: 500,
                   color: "#666",
                 }}
@@ -275,7 +275,7 @@ const ReceiptPreviewModal = ({
               </p>
               <p
                 style={{
-                  margin: "5px 0 0 228px",
+                  margin: "5px 0 0 220px",
                   fontWeight: 500,
                   color: "#666",
                 }}
@@ -285,7 +285,7 @@ const ReceiptPreviewModal = ({
               </p>
               <p
                 style={{
-                  margin: "5px 0 0 228px",
+                  margin: "5px 0 0 220px",
                   fontWeight: 500,
                   color: "#666",
                 }}
@@ -310,7 +310,7 @@ const ReceiptPreviewModal = ({
                 The Sum of Rupees:
               </span>
               <span style={{ color: "#666", fontWeight: 500 }}>
-                {numberToWords(parseFloat(receiptData.amount))}
+                {numberToWords(parseFloat(receiptData.amount))} Only
               </span>
             </div>
 
