@@ -911,12 +911,10 @@ const DonorDetails = ({ activeTab }) => {
                           setIsDeekshaDropdownOpen(false);
                           setDeekshaSearchQuery("");
                         }}
+                        className="deeksha-option"
                         style={{
                           padding: "10px",
                           cursor: "pointer",
-                          ":hover": {
-                            backgroundColor: "#f5f5f5",
-                          },
                         }}
                       >
                         {option}
