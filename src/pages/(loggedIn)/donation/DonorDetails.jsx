@@ -64,6 +64,9 @@ const DonorDetails = ({ activeTab }) => {
   const deekshaDropdownRef = useRef(null);
   const nameDropdownRef = useRef(null);
   const phoneDropdownRef = useRef(null);
+  const [identitySuggestions, setIdentitySuggestions] = useState([]);
+  const [showIdentitySuggestions, setShowIdentitySuggestions] = useState(false);
+  const identityDropdownRef = useRef(null);
 
   const isCompleted =
     donorTabs[activeTabId][currentSection].donationDetails.status ===
@@ -231,16 +234,26 @@ const DonorDetails = ({ activeTab }) => {
     const error = validateIdentityNumber(identityType, value);
     setIdentityError(error);
 
+    // Filter suggestions based on identity input
+    if (value.length > 0) {
+      const filtered = guestList.filter((guest) =>
+        guest.attributes.identity_number.includes(value)
+      );
+      setIdentitySuggestions(filtered);
+      setShowIdentitySuggestions(filtered.length > 0);
+    } else {
+      setIdentitySuggestions([]);
+      setShowIdentitySuggestions(false);
+    }
+
     // Only update if the input matches the expected format or is empty
     switch (identityType) {
       case "PAN Card":
         if (/^[A-Z0-9]*$/.test(value) && value.length <= 10) {
           updateAndSyncDonorDetails({ identityNumber: value });
-          // Also update PAN number in donation details
           updateDonationDetails(activeTabId, currentSection, {
             panNumber: value,
           });
-          // Update the other section's PAN number as well
           const otherSection = currentSection === "math" ? "mission" : "math";
           updateDonationDetails(activeTabId, otherSection, {
             panNumber: value,
@@ -308,9 +321,11 @@ const DonorDetails = ({ activeTab }) => {
         setPhoneSuggestions(filtered);
         setShowPhoneSuggestions(filtered.length > 0);
 
-        // Only show error if no suggestions and not a valid phone number
-        if (filtered.length === 0 && value.length !== 10) {
-          setPhoneError("Phone number must be 10 digits");
+        // Validate phone number length
+        if (value.length !== 10) {
+          setPhoneError(
+            `Phone number must be 10 digits (currently: ${value.length})`
+          );
         } else {
           setPhoneError("");
         }
@@ -356,6 +371,7 @@ const DonorDetails = ({ activeTab }) => {
       identity_number,
       address,
       unique_no,
+      donations,
     } = guest.attributes;
 
     // Extract address components
@@ -369,9 +385,10 @@ const DonorDetails = ({ activeTab }) => {
         ? rawAddressParts[1]
         : "";
 
-    // Update donor details with guest ID
+    // Update donor details with guest ID and full guest data
     updateAndSyncDonorDetails({
       guestId: guest.id,
+      guestData: guest, // Store the full guest data
       name: name.replace(/^(Sri|Smt|Mr|Mrs|Ms|Dr|Prof)\s+/, ""),
       phone: phone_number.replace("+91", ""),
       email,
@@ -457,6 +474,13 @@ const DonorDetails = ({ activeTab }) => {
         !phoneDropdownRef.current.contains(event.target)
       ) {
         setShowPhoneSuggestions(false);
+      }
+
+      if (
+        identityDropdownRef.current &&
+        !identityDropdownRef.current.contains(event.target)
+      ) {
+        setShowIdentitySuggestions(false);
       }
     };
 
@@ -866,17 +890,63 @@ const DonorDetails = ({ activeTab }) => {
                 <option>Passport</option>
                 <option>Driving License</option>
               </select>
-              <input
-                className="identity-input"
-                type="text"
-                value={currentDonorDetails.identityNumber}
-                onChange={handleIdentityInputChange}
-                disabled={isCompleted}
-                style={{
-                  backgroundColor: isCompleted ? "#f5f5f5" : "white",
-                  opacity: isCompleted ? 0.7 : 1,
-                }}
-              />
+              <div
+                className="autocomplete-container"
+                style={{ position: "relative", flex: 1 }}
+                ref={identityDropdownRef}
+              >
+                <input
+                  className="identity-input"
+                  type="text"
+                  value={currentDonorDetails.identityNumber}
+                  onChange={handleIdentityInputChange}
+                  disabled={isCompleted}
+                  style={{
+                    backgroundColor: isCompleted ? "#f5f5f5" : "white",
+                    opacity: isCompleted ? 0.7 : 1,
+                  }}
+                />
+                {showIdentitySuggestions && identitySuggestions.length > 0 && (
+                  <ul
+                    className="suggestions-list"
+                    style={{
+                      position: "absolute",
+                      top: "100%",
+                      left: 0,
+                      right: 0,
+                      zIndex: 1000,
+                      backgroundColor: "white",
+                      border: "1px solid #ccc",
+                      borderRadius: "4px",
+                      maxHeight: "200px",
+                      overflowY: "auto",
+                      listStyle: "none",
+                      padding: 0,
+                      margin: 0,
+                    }}
+                  >
+                    {identitySuggestions.map((guest) => (
+                      <li
+                        key={guest.id}
+                        onClick={() => handleSuggestionClick(guest)}
+                        style={{
+                          padding: "8px 12px",
+                          cursor: "pointer",
+                          borderBottom: "1px solid #eee",
+                        }}
+                        onMouseEnter={(e) =>
+                          (e.target.style.backgroundColor = "#f0f0f0")
+                        }
+                        onMouseLeave={(e) =>
+                          (e.target.style.backgroundColor = "white")
+                        }
+                      >
+                        {`${guest.attributes.name} - ${guest.attributes.identity_number}`}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
             </div>
             {(identityError || fieldErrors.donor.identityNumber) && (
               <span
