@@ -9,6 +9,8 @@ import { useNavigate } from "react-router-dom";
 import { loginUser } from "../../../../services/auth";
 import { useAuthStore } from "../../../../store/authStore";
 import useDonationStore from "../../../../donationStore";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const AllDonation = ({
   searchTerm = "",
@@ -212,6 +214,16 @@ const AllDonation = ({
       setPassword("");
       setPasswordError("");
       setSelectedDonationId(null);
+
+      // Add success toast notification
+      toast.success("Donation cancelled successfully!", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
     } catch (error) {
       console.error("Error:", error);
       setPasswordError("Invalid password");
@@ -373,6 +385,11 @@ const AllDonation = ({
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Enter your password"
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  handleCancelDonation(selectedDonationId);
+                }
+              }}
               style={{
                 width: "100%",
                 padding: "8px",
@@ -468,6 +485,7 @@ const AllDonation = ({
 
   return (
     <div className="all-donations-container">
+      <ToastContainer />
       {renderPasswordModal()}
       <div className="donations-section">
         <div className="table-container">
