@@ -53,6 +53,15 @@ const DonationAction = ({
     const donationDetails = currentTab[currentSection].donationDetails;
     const transactionDetails = currentTab[currentSection].transactionDetails;
 
+    // Amount validation
+    if (!donationDetails.amount) {
+      missingFields.push("Donation Amount");
+      errors.donation.amount = "Amount is required";
+    } else if (parseFloat(donationDetails.amount) <= 0) {
+      missingFields.push("Donation Amount (must be greater than 0)");
+      errors.donation.amount = "Amount must be greater than 0";
+    }
+
     // Phone number validation
     if (!donorDetails.phone) {
       missingFields.push("Phone Number");
@@ -114,10 +123,6 @@ const DonationAction = ({
     if (!donationDetails.donationType) {
       missingFields.push("Donation Type");
       errors.donation.donationType = "Donation type is required";
-    }
-    if (!donationDetails.amount) {
-      missingFields.push("Donation Amount");
-      errors.donation.amount = "Amount is required";
     }
 
     // Transaction Details validation if applicable
@@ -294,33 +299,36 @@ const DonationAction = ({
   };
 
   const handlePrintReceipt = () => {
-    if (!validateFields()) return;
-
     const currentTab = donorTabs[activeTabId];
-    const currentDonorDetails = currentTab[currentSection].donorDetails;
     const currentDonationDetails = currentTab[currentSection].donationDetails;
-
     const amount = parseFloat(currentDonationDetails.amount) || 0;
+
+    if (amount <= 0) {
+      alert("Donation amount must be greater than 0");
+      return;
+    }
+
+    if (!validateFields()) return;
 
     setReceiptData({
       receiptNumber: currentTab.receiptNumbers[currentSection],
       uniqueNo: currentTab.uniqueNo,
       date: new Date().toLocaleDateString(),
-      donorName: `${currentDonorDetails.title} ${currentDonorDetails.name}`,
+      donorName: `${currentTab[currentSection].donorDetails.title} ${currentTab[currentSection].donorDetails.name}`,
       address: {
-        flatNo: currentDonorDetails.flatNo,
-        postOffice: currentDonorDetails.postOffice,
-        district: currentDonorDetails.district,
-        state: currentDonorDetails.state,
-        pincode: currentDonorDetails.pincode,
+        flatNo: currentTab[currentSection].donorDetails.flatNo,
+        postOffice: currentTab[currentSection].donorDetails.postOffice,
+        district: currentTab[currentSection].donorDetails.district,
+        state: currentTab[currentSection].donorDetails.state,
+        pincode: currentTab[currentSection].donorDetails.pincode,
       },
       transactionType: transactionType,
       donationType: currentDonationDetails.donationType,
       amount: amount.toFixed(2),
       purpose: currentDonationDetails.purpose,
       otherPurpose: currentDonationDetails.specifiedPurpose,
-      identityType: currentDonorDetails.identityType,
-      identityNumber: currentDonorDetails.identityNumber,
+      identityType: currentTab[currentSection].donorDetails.identityType,
+      identityNumber: currentTab[currentSection].donorDetails.identityNumber,
       inMemoryOf: currentDonationDetails.inMemoryOf,
       transactionDetails: {
         date: currentTab[currentSection].transactionDetails.date,
@@ -404,6 +412,15 @@ const DonationAction = ({
   };
 
   const handlePending = () => {
+    const currentTab = donorTabs[activeTabId];
+    const currentDonationDetails = currentTab[currentSection].donationDetails;
+    const amount = parseFloat(currentDonationDetails.amount) || 0;
+
+    if (amount <= 0) {
+      alert("Donation amount must be greater than 0");
+      return;
+    }
+
     // First validate fields before showing confirmation
     if (!validateFields()) return;
 
