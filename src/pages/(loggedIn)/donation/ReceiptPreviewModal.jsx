@@ -310,9 +310,35 @@ const ReceiptPreviewModal = ({
               >
                 By Transaction Type:
               </span>
-              <span style={{ color: "#666", fontWeight: 500 }}>
-                {receiptData.transactionType}
-              </span>
+              <div style={{ color: "#666", fontWeight: 500 }}>
+                <div>
+                  {receiptData.transactionType} &nbsp;&nbsp;
+                  {["Cheque", "DD", "Bank Transfer"].includes(
+                    receiptData.transactionType
+                  ) && (
+                    <>
+                      No. {receiptData.transactionDetails?.transactionId}{" "}
+                      &nbsp;&nbsp; Dt.{" "}
+                      {new Date(receiptData.transactionDetails?.date)
+                        .toLocaleDateString("en-GB", {
+                          day: "2-digit",
+                          month: "2-digit",
+                          year: "numeric",
+                        })
+                        .split("/")
+                        .join("-")}
+                      {(receiptData.transactionDetails?.bankName ||
+                        receiptData.transactionDetails?.branchName) && (
+                        <div>
+                          On {receiptData.transactionDetails?.bankName}
+                          {receiptData.transactionDetails?.branchName &&
+                            `, ${receiptData.transactionDetails.branchName}`}
+                        </div>
+                      )}
+                    </>
+                  )}
+                </div>
+              </div>
             </div>
 
             <div

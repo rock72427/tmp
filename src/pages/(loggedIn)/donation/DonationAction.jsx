@@ -312,7 +312,13 @@ const DonationAction = ({
       identityType: currentDonorDetails.identityType,
       identityNumber: currentDonorDetails.identityNumber,
       inMemoryOf: currentDonationDetails.inMemoryOf,
-      transactionDetails: currentTab[currentSection].transactionDetails,
+      transactionDetails: {
+        date: currentTab[currentSection].transactionDetails.date,
+        transactionId:
+          currentTab[currentSection].transactionDetails.transactionId,
+        bankName: currentTab[currentSection].transactionDetails.bankName,
+        branchName: currentTab[currentSection].transactionDetails.branchName,
+      },
     });
 
     setShowReceiptPreview(true);
