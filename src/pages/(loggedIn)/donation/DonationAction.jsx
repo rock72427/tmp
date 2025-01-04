@@ -83,6 +83,16 @@ const DonationAction = ({
     if (!donorDetails.pincode) {
       missingFields.push("Pincode");
       errors.donor.pincode = "Pincode is required";
+    } else if (donorDetails.pincode.length !== 6) {
+      missingFields.push("Pincode (must be 6 digits)");
+      errors.donor.pincode = "Pincode must be 6 digits";
+    } else if (
+      !donorDetails.state ||
+      !donorDetails.district ||
+      !donorDetails.postOffice
+    ) {
+      missingFields.push("Invalid Pincode (unable to fetch location details)");
+      errors.donor.pincode = "Invalid pincode - location details not found";
     }
     if (!donorDetails.deeksha || donorDetails.deeksha === "") {
       missingFields.push("Mantra Diksha");
@@ -129,14 +139,10 @@ const DonationAction = ({
     const hasErrors = missingFields.length > 0;
 
     if (hasErrors) {
-      // Show alert with all missing/invalid fields
       alert(
         `Please correct the following issues:\n${missingFields.join("\n")}`
       );
-
-      // Scroll to top
       window.scrollTo({ top: 0, behavior: "smooth" });
-
       return false;
     }
 
