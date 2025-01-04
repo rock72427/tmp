@@ -25,10 +25,20 @@ const DonationHeader = ({ onTabChange }) => {
   // Convert donorTabs object to array for rendering
   const donorTabsArray = Object.keys(donorTabs)
     .sort((a, b) => Number(a) - Number(b))
-    .map((id, index) => ({
-      id: Number(id),
-      label: `New Donor ${index + 1}`,
-    }));
+    .map((id) => {
+      const tab = donorTabs[id];
+      const activeSection = tab.activeSection;
+      const donorName = tab[activeSection]?.donorDetails?.name;
+      const donorTitle = tab[activeSection]?.donorDetails?.title;
+
+      return {
+        id: Number(id),
+        // Use donor's name if available, otherwise fallback to default label
+        label: donorName
+          ? `${donorTitle || ""} ${donorName}`.trim()
+          : `New Donor ${id}`,
+      };
+    });
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -126,6 +136,9 @@ const DonationHeader = ({ onTabChange }) => {
                       backgroundColor: activeTabId === tab.id ? "#eb831c" : "",
                       color: activeTabId === tab.id ? "#fff" : "",
                       cursor: "pointer",
+                      maxWidth: "200px",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
                     }}
                     onClick={() => setActiveTab(tab.id)}
                   >
