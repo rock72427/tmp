@@ -169,8 +169,39 @@ const DonorDetails = ({ activeTab }) => {
     }
   };
 
+  const validateEmail = (email) => {
+    if (!email) return ""; // Don't show error for empty email
+    const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    return emailRegex.test(email) ? "" : "Please enter a valid email address";
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+
+    if (name === "email") {
+      const error = validateEmail(value);
+      setEmailError(error);
+      if (error) {
+        setFieldErrors({
+          ...fieldErrors,
+          donor: {
+            ...fieldErrors.donor,
+            email: error,
+          },
+        });
+      } else {
+        clearFieldError("email");
+      }
+    }
+
+    // Add room number validation
+    if (name === "roomNo") {
+      // Only allow alphanumeric characters
+      if (!/^[a-zA-Z0-9]*$/.test(value)) {
+        return; // Don't update if special characters are entered
+      }
+    }
+
     updateAndSyncDonorDetails({ [name]: value });
     clearFieldError(name);
   };
