@@ -90,30 +90,82 @@ const DonorDetails = ({ activeTab }) => {
 
   const handlePincodeChange = async (e) => {
     const pincode = e.target.value;
+
+    // Only allow numbers and limit to 6 digits
+    if (!/^\d*$/.test(pincode) || pincode.length > 6) {
+      return;
+    }
+
     updateAndSyncDonorDetails({ pincode });
     clearFieldError("pincode");
 
-    if (pincode.length === 6) {
-      setLoading(true);
-      try {
-        const response = await fetch(
-          `https://api.postalpincode.in/pincode/${pincode}`
-        );
-        const [data] = await response.json();
+    // Clear related fields if pincode is incomplete or deleted
+    if (pincode.length !== 6) {
+      updateAndSyncDonorDetails({
+        state: "",
+        district: "",
+        postOffice: "",
+      });
 
-        if (data.Status === "Success") {
-          const postOfficeData = data.PostOffice[0];
-          updateAndSyncDonorDetails({
-            state: postOfficeData.State,
-            district: postOfficeData.District,
-            postOffice: postOfficeData.Name,
-          });
-        }
-      } catch (error) {
-        console.error("Error fetching pincode data:", error);
-      } finally {
-        setLoading(false);
+      if (pincode.length > 0) {
+        setFieldErrors({
+          ...fieldErrors,
+          donor: {
+            ...fieldErrors.donor,
+            pincode: "Pincode must be 6 digits",
+          },
+        });
       }
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const response = await fetch(
+        `https://api.postalpincode.in/pincode/${pincode}`
+      );
+      const [data] = await response.json();
+
+      if (data.Status === "Success") {
+        const postOfficeData = data.PostOffice[0];
+        updateAndSyncDonorDetails({
+          state: postOfficeData.State,
+          district: postOfficeData.District,
+          postOffice: postOfficeData.Name,
+        });
+        clearFieldError("pincode");
+      } else {
+        // Clear related fields and show error for invalid pincode
+        updateAndSyncDonorDetails({
+          state: "",
+          district: "",
+          postOffice: "",
+        });
+        setFieldErrors({
+          ...fieldErrors,
+          donor: {
+            ...fieldErrors.donor,
+            pincode: "Invalid pincode",
+          },
+        });
+      }
+    } catch (error) {
+      console.error("Error fetching pincode data:", error);
+      // Clear related fields and show error for failed API call
+      updateAndSyncDonorDetails({
+        state: "",
+        district: "",
+        postOffice: "",
+      });
+      setFieldErrors({
+        ...fieldErrors,
+        donor: {
+          ...fieldErrors.donor,
+          pincode: "Error validating pincode",
+        },
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -129,9 +181,11 @@ const DonorDetails = ({ activeTab }) => {
 
   const handleNameChange = (e) => {
     const value = e.target.value;
+
     // Allow letters, numbers, spaces, and dots
     if (/^[A-Za-z0-9\s.]*$/.test(value)) {
       updateAndSyncDonorDetails({ name: value });
+      clearFieldError("name");
 
       // Filter suggestions based on input
       if (value.length > 0) {
@@ -143,7 +197,24 @@ const DonorDetails = ({ activeTab }) => {
       } else {
         setNameSuggestions([]);
         setShowNameSuggestions(false);
+        // Set error for empty name
+        setFieldErrors({
+          ...fieldErrors,
+          donor: {
+            ...fieldErrors.donor,
+            name: "Name is required",
+          },
+        });
       }
+    } else {
+      // Set error for invalid characters
+      setFieldErrors({
+        ...fieldErrors,
+        donor: {
+          ...fieldErrors.donor,
+          name: "Please enter only letters, numbers, spaces, and dots",
+        },
+      });
     }
   };
 
@@ -556,6 +627,19 @@ const DonorDetails = ({ activeTab }) => {
                     opacity: isCompleted ? 0.7 : 1,
                   }}
                 />
+                {fieldErrors.donor?.name && (
+                  <span
+                    className="error-message"
+                    style={{
+                      color: "red",
+                      fontSize: "12px",
+                      marginTop: "4px",
+                      display: "block",
+                    }}
+                  >
+                    {fieldErrors.donor.name}
+                  </span>
+                )}
                 {showNameSuggestions && nameSuggestions.length > 0 && (
                   <ul
                     className="suggestions-list"
@@ -598,19 +682,6 @@ const DonorDetails = ({ activeTab }) => {
                 )}
               </div>
             </div>
-            {fieldErrors.donor.name && (
-              <span
-                className="error-message"
-                style={{
-                  color: "red",
-                  fontSize: "12px",
-                  marginTop: "4px",
-                  display: "block",
-                }}
-              >
-                {fieldErrors.donor.name}
-              </span>
-            )}
           </div>
 
           <div className="donor-details__field">
@@ -795,6 +866,7 @@ const DonorDetails = ({ activeTab }) => {
                           } else {
                             setShowCustomDeeksha(false);
                             updateAndSyncDonorDetails({ deeksha: option });
+                            clearFieldError("deeksha");
                           }
                           setIsDeekshaDropdownOpen(false);
                           setDeekshaSearchQuery("");
@@ -822,13 +894,34 @@ const DonorDetails = ({ activeTab }) => {
                   const value = e.target.value;
                   setCustomDeeksha(value);
                   updateAndSyncDonorDetails({ deeksha: value });
+                  if (value.trim()) {
+                    clearFieldError("deeksha");
+                  } else {
+                    setFieldErrors({
+                      ...fieldErrors,
+                      donor: {
+                        ...fieldErrors.donor,
+                        deeksha: "Please specify Mantra Diksha",
+                      },
+                    });
+                  }
                 }}
                 style={{ marginTop: "10px" }}
                 className="donor-input"
               />
             )}
-            {fieldErrors.donor.deeksha && (
-              <span className="error-message">{fieldErrors.donor.deeksha}</span>
+            {fieldErrors.donor?.deeksha && (
+              <span
+                className="error-message"
+                style={{
+                  color: "red",
+                  fontSize: "12px",
+                  marginTop: "4px",
+                  display: "block",
+                }}
+              >
+                {fieldErrors.donor.deeksha}
+              </span>
             )}
           </div>
 
@@ -994,7 +1087,7 @@ const DonorDetails = ({ activeTab }) => {
               />
               {loading && <span className="loading-spinner">🔄</span>}
             </div>
-            {fieldErrors.donor.pincode && (
+            {fieldErrors.donor?.pincode && (
               <span
                 className="error-message"
                 style={{
