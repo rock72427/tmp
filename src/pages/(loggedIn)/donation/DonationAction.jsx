@@ -49,6 +49,15 @@ const DonationAction = ({
     const donationDetails = currentTab[currentSection].donationDetails;
     const transactionDetails = currentTab[currentSection].transactionDetails;
 
+    // Phone number validation
+    if (!donorDetails.phone) {
+      missingFields.push("Phone Number");
+      errors.donor.phone = "Phone number is required";
+    } else if (donorDetails.phone.length !== 10) {
+      missingFields.push("Phone Number (must be 10 digits)");
+      errors.donor.phone = `Phone number must be 10 digits (currently: ${donorDetails.phone.length})`;
+    }
+
     // Identity proof validation with specific format checks
     if (!donorDetails.identityNumber) {
       missingFields.push("Identity Proof");
@@ -69,10 +78,6 @@ const DonationAction = ({
     if (!donorDetails.name) {
       missingFields.push("Name of Donor");
       errors.donor.name = "Name is required";
-    }
-    if (!donorDetails.phone) {
-      missingFields.push("Phone Number");
-      errors.donor.phone = "Phone number is required";
     }
     if (!donorDetails.pincode) {
       missingFields.push("Pincode");

@@ -308,8 +308,8 @@ const DonorDetails = ({ activeTab }) => {
   const handlePhoneChange = (e) => {
     const value = e.target.value;
 
-    // Allow only numbers
-    if (/^\d*$/.test(value)) {
+    // Allow only numbers and limit to 10 digits
+    if (/^\d*$/.test(value) && value.length <= 10) {
       updateAndSyncDonorDetails({ phone: value });
       clearFieldError("phone");
 
@@ -321,18 +321,28 @@ const DonorDetails = ({ activeTab }) => {
         setPhoneSuggestions(filtered);
         setShowPhoneSuggestions(filtered.length > 0);
 
-        // Validate phone number length
+        // Set error if length is not 10
         if (value.length !== 10) {
           setPhoneError(
             `Phone number must be 10 digits (currently: ${value.length})`
           );
+          // Also set the field error to ensure it blocks form submission
+          setFieldErrors({
+            ...fieldErrors,
+            donor: {
+              ...fieldErrors.donor,
+              phone: `Phone number must be 10 digits (currently: ${value.length})`,
+            },
+          });
         } else {
           setPhoneError("");
+          clearFieldError("phone");
         }
       } else {
         setPhoneSuggestions([]);
         setShowPhoneSuggestions(false);
         setPhoneError("");
+        clearFieldError("phone");
       }
     }
   };
