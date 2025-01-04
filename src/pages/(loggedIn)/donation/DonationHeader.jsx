@@ -23,10 +23,12 @@ const DonationHeader = ({ onTabChange }) => {
   const { user } = useAuthStore();
 
   // Convert donorTabs object to array for rendering
-  const donorTabsArray = Object.keys(donorTabs).map((id) => ({
-    id: Number(id),
-    label: `New Donor ${id}`,
-  }));
+  const donorTabsArray = Object.keys(donorTabs)
+    .sort((a, b) => Number(a) - Number(b))
+    .map((id, index) => ({
+      id: Number(id),
+      label: `New Donor ${index + 1}`,
+    }));
 
   useEffect(() => {
     const timer = setInterval(() => {
