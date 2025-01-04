@@ -56,9 +56,13 @@ const Details = ({ activeTab, onTransactionTypeChange }) => {
   };
 
   const handleSpecifiedPurposeChange = (e) => {
-    updateDonationDetails(activeTabId, currentSection, {
-      specifiedPurpose: e.target.value,
-    });
+    const value = e.target.value;
+    // Only allow letters, spaces, and basic punctuation
+    if (/^[A-Za-z\s.,()'-]*$/.test(value)) {
+      updateDonationDetails(activeTabId, currentSection, {
+        specifiedPurpose: value,
+      });
+    }
   };
 
   const handleDonationTypeChange = (e) => {
@@ -142,8 +146,11 @@ const Details = ({ activeTab, onTransactionTypeChange }) => {
 
   const handleInMemoryOfChange = (e) => {
     const value = e.target.value;
-    updateDonationDetails(activeTabId, currentSection, { inMemoryOf: value });
-    clearFieldError("inMemoryOf");
+    // Only allow letters, spaces, and basic punctuation
+    if (/^[A-Za-z\s.,()'-]*$/.test(value)) {
+      updateDonationDetails(activeTabId, currentSection, { inMemoryOf: value });
+      clearFieldError("inMemoryOf");
+    }
   };
 
   const isCompleted =

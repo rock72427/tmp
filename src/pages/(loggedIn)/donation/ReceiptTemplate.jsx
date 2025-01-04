@@ -186,7 +186,13 @@ const ReceiptTemplate = ({
               <div class="receipt-details">
                 <div class="receipt-row">
                   <span>Receipt <b>No: ${uniqueDonorId} / ${receiptNumber}</b></span>
-                  <span class="date">Date: <b>${formattedDate}</b></span>
+                  <span class="date">Date: <b>${new Date(formattedDate)
+                    .toLocaleDateString("en-GB", {
+                      day: "2-digit",
+                      month: "2-digit",
+                      year: "numeric",
+                    })
+                    .replace(/\//g, "-")}</b></span>
                 </div>
                 <div class="donor-details">
                   <p style="margin: 0;">
@@ -244,15 +250,28 @@ const ReceiptTemplate = ({
   <div style="display: flex; align-items: center; flex-wrap: wrap;">
     <p style="margin: 0;">
       By ${currentReceipt?.donationDetails?.transactionType || "Cash"}
+      ${
+        currentReceipt?.donationDetails?.transactionDetails?.transactionId
+          ? ` No. ${currentReceipt?.donationDetails?.transactionDetails?.transactionId}`
+          : ""
+      }
+      ${
+        currentReceipt?.donationDetails?.transactionDetails?.ddDate
+          ? ` Dt. ${currentReceipt?.donationDetails?.transactionDetails?.ddDate}`
+          : ""
+      }
     </p>
     ${
       currentReceipt?.donationDetails?.transactionType?.toLowerCase() !== "cash"
         ? `
-    <p style="margin: 0; padding-left: 10px;">
-      Dt. ${currentReceipt?.donationDetails?.transactionDetails?.ddDate || ""}
-    </p>
     <p style="margin: 0; width: 100%;">
-      On ${currentReceipt?.donationDetails?.transactionDetails?.bankName || ""}
+      On ${
+        currentReceipt?.donationDetails?.transactionDetails?.bankName || ""
+      }${
+            currentReceipt?.donationDetails?.transactionDetails?.branchName
+              ? `, ${currentReceipt?.donationDetails?.transactionDetails?.branchName}`
+              : ""
+          }
     </p>
     `
         : ""

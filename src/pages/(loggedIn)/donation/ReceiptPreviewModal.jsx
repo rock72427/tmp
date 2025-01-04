@@ -127,6 +127,7 @@ const ReceiptPreviewModal = ({
           transactionDetails: {
             ddDate: receiptData.transactionDetails?.date,
             bankName: receiptData.transactionDetails?.bankName,
+            branchName: receiptData.transactionDetails?.branchName,
           },
         },
       },
