@@ -300,10 +300,14 @@ const DonationAction = ({
         pincode: currentDonorDetails.pincode,
       },
       transactionType: transactionType,
+      donationType: currentDonationDetails.donationType,
       amount: amount.toFixed(2),
       purpose: currentDonationDetails.purpose,
+      otherPurpose: currentDonationDetails.specifiedPurpose,
       identityType: currentDonorDetails.identityType,
       identityNumber: currentDonorDetails.identityNumber,
+      inMemoryOf: currentDonationDetails.inMemoryOf,
+      transactionDetails: currentTab[currentSection].transactionDetails,
     });
 
     setShowReceiptPreview(true);
