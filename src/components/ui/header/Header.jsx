@@ -118,6 +118,8 @@ const Header = ({ hideElements }) => {
                   (location.pathname === "/donation" &&
                     location.hash === "#tomorrows-guests")
                     ? "active"
+                    : location.pathname === "/donation"
+                    ? "active"
                     : ""
                 }
                 onClick={(e) => {
@@ -140,7 +142,8 @@ const Header = ({ hideElements }) => {
                 className={({ isActive }) =>
                   (isActive && location.hash === "#recent-donations") ||
                   (location.pathname === "/donation" &&
-                    location.hash === "#recent-donations")
+                    location.hash === "#recent-donations") ||
+                  location.pathname === "/allDonationDetails"
                     ? "active"
                     : ""
                 }
