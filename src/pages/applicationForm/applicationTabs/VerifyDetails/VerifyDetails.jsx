@@ -172,6 +172,7 @@ const VerifyDetails = () => {
           <thead>
             <tr>
               <th style={{ width: "5%" }}>Sl No.</th>
+              <th style={{ width: "5%" }}>Unique No.</th>
               <th style={{ width: "20%" }}>Name (s)</th>
               <th style={{ width: "5%", textAlign: "center" }}>Age</th>
               <th style={{ width: "5%", textAlign: "center" }}>Gender</th>
@@ -186,6 +187,7 @@ const VerifyDetails = () => {
             {/* Applicant Row */}
             <tr>
               <td>1</td>
+              <td></td>
               <td>{`${formData.title} ${formData.name}`}</td>
               <td style={{ textAlign: "center" }}>{formData.age}</td>
               <td style={{ textAlign: "center" }}>{formData.gender}</td>
@@ -209,6 +211,7 @@ const VerifyDetails = () => {
             {formData.guests.map((guest, index) => (
               <tr key={index}>
                 <td>{index + 2}</td>
+                <td></td>
                 <td>{`${guest.guestTitle} ${guest.guestName}`}</td>
                 <td style={{ textAlign: "center" }}>{guest.guestAge}</td>
                 <td style={{ textAlign: "center" }}>{guest.guestGender}</td>
