@@ -16,9 +16,9 @@ const ReceiptTemplate = ({
             <meta charset="UTF-8" />
             <meta name="viewport" content="width=device-width, initial-scale=1.0" />
             <title>Ramakrishna Math Letterhead</title>
-            <style>
+<style>
               body {
-                margin: 0
+                margin: 0;
                 background-color: #fff;
                 font-family: Arial, sans-serif;
                 height: 100%;
@@ -159,8 +159,8 @@ const ReceiptTemplate = ({
               .it-stamp {
                 position: absolute;
                 right: -80px;
-                top: -115px;
-                transform: translateY(-50%);
+                top: -112px;
+                transform: translateY(-40%);
                 border: 2px solid #000;
                 padding: 2px;
                 font-size: 14px;
@@ -316,7 +316,11 @@ const ReceiptTemplate = ({
                 <div class="it-stamp">
                   Donations are exempt under Clause (i) of first proviso to<br>
                   sub-section (5) of Section 80G of Income Tax Act 1961,<br>
-                  vide Provisional Approval No. AAATR3497PF2021A<br>
+                  vide Provisional Approval No. ${
+                    receiptNumber?.startsWith("MT")
+                      ? "AAATR3497PF2021A"
+                      : "AAAAR1077PF20214"
+                  }<br>
                   dated 28-05-2021 valid from AY 2022-23 to AY 2026-27
                 </div>
               </div>`
