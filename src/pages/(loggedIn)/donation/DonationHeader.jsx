@@ -25,7 +25,7 @@ const DonationHeader = ({ onTabChange }) => {
   // Convert donorTabs object to array for rendering
   const donorTabsArray = Object.keys(donorTabs)
     .sort((a, b) => Number(a) - Number(b))
-    .map((id) => {
+    .map((id, index) => {
       const tab = donorTabs[id];
       const activeSection = tab.activeSection;
       const donorDetails = tab[activeSection]?.donorDetails;
@@ -41,7 +41,7 @@ const DonationHeader = ({ onTabChange }) => {
         id: Number(id),
         label: donorDetails?.name
           ? `${donorDetails?.title || ""} ${donorDetails?.name}`.trim()
-          : `New Donor ${id}`,
+          : `New Donor ${index + 1}`,
       };
     });
 

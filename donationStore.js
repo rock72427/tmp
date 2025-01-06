@@ -157,17 +157,24 @@ const useDonationStore = create((set) => ({
       const newDonorTabs = { ...state.donorTabs };
       delete newDonorTabs[id];
 
-      // Reassign receipt numbers to remaining tabs
+      // Reassign IDs to maintain sequential order
       const sortedTabIds = Object.keys(newDonorTabs).sort(
         (a, b) => Number(a) - Number(b)
       );
+      const reorderedTabs = {};
+      sortedTabIds.forEach((oldId, index) => {
+        const newId = index + 1;
+        reorderedTabs[newId] = newDonorTabs[oldId];
+      });
+
+      // Update receipt numbers for all tabs
       const baseMT = state.nextReceiptNumbers.mtNumber;
       const baseMSN = state.nextReceiptNumbers.msnNumber;
       const baseUniqueNo = state.nextReceiptNumbers.uniqueNumber;
 
-      sortedTabIds.forEach((id, index) => {
-        newDonorTabs[id] = {
-          ...newDonorTabs[id],
+      Object.keys(reorderedTabs).forEach((id, index) => {
+        reorderedTabs[id] = {
+          ...reorderedTabs[id],
           receiptNumbers: {
             math: `MT ${baseMT + index}`,
             mission: `MSN ${baseMSN + index}`,
@@ -179,12 +186,14 @@ const useDonationStore = create((set) => ({
       // If the removed tab was active, set a new active tab
       let newActiveTabId = state.activeTabId;
       if (state.activeTabId === id) {
-        const remainingIds = Object.keys(newDonorTabs);
-        newActiveTabId = remainingIds.length > 0 ? Number(remainingIds[0]) : 1;
+        newActiveTabId = 1; // Default to first tab when active tab is removed
+      } else if (state.activeTabId > id) {
+        // Adjust active tab ID if it was after the removed tab
+        newActiveTabId = state.activeTabId - 1;
       }
 
       return {
-        donorTabs: newDonorTabs,
+        donorTabs: reorderedTabs,
         activeTabId: newActiveTabId,
       };
     }),
